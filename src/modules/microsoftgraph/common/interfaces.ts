@@ -202,7 +202,7 @@ export type Event = {
   type: string
   webLink: string
   attachments: Attachment[]
-  calendar: Calendar
+  calendar?: Calendar
   extensions: Extension[]
 }
 

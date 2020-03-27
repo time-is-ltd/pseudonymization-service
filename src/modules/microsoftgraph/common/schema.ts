@@ -246,7 +246,8 @@ export const event: Schema<Event> = {
   onlineMeetingProvider: TYPES.String, 
   onlineMeetingUrl: [
     TYPES.Url,
-    TYPES.String
+    TYPES.String,
+    TYPES.Private
   ],
   originalEndTimeZone: TYPES.Datetime,
   originalStart: TYPES.Datetime,
