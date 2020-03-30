@@ -10,9 +10,6 @@ import googleapis from './modules/googleapis/googleapis.module'
 import microsoftgraph from './modules/microsoftgraph/microsoftgraph.module'
 import { Route } from './router/interfaces/router.interface'
 
-// @TODO: remove
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
-
 // Register modules
 type Module = {
   enabled: boolean,
@@ -45,8 +42,6 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
 
 const bootstrap = () => {
   const app = express()
-
-  // app.use(bodyParser())
 
   // Register routes
   modules.forEach(({ enabled, routes }) => {
@@ -83,9 +78,10 @@ const bootstrap = () => {
   }
 
   if (config.httpsPort > 0) {
-    const key = fs.readFileSync(config.sslKey)
-    const cert = fs.readFileSync(config.sslCert)
-    const httpsServer = https.createServer({ key, cert }, app)
+    const httpsServer = https.createServer({
+      key: config.sslKey,
+      cert: config.sslCert
+    }, app)
     httpsServer.listen(config.httpsPort)
   }
 }

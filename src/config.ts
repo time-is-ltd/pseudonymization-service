@@ -9,8 +9,8 @@ const apiToken: string | undefined = process.env.API_TOKEN || ''
 const anonymizationSalt: string | undefined = process.env.ANONYMIZATION_SALT
 const httpPort: number = Number.parseInt(process.env.HTTP_PORT || '0')
 const httpsPort: number = Number.parseInt(process.env.HTTPS_PORT || '0')
-const sslKey: string | undefined = process.env.SSL_KEY
-const sslCert: string | undefined = process.env.SSL_CERT
+const sslKey: string = (process.env.SSL_KEY || '').replace(/\\n/gm, '\n')
+const sslCert: string = (process.env.SSL_CERT || '').replace(/\\n/gm, '\n')
 
 export default {
   apiToken,

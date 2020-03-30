@@ -11,10 +11,11 @@ import { authorizationPathExtractorFactory } from './googleapis.service'
 
 import {
   scopes,
-  credentialsPath,
   hosts,
   paths,
-  pathTransforms
+  pathTransforms,
+  clientEmail,
+  privateKey
 } from './googleapis.config'
 
 // Path userId extractor map
@@ -77,18 +78,7 @@ const gmailBatchRoute: Route = {
 }
 
 export default () => {
-  let credentialsFileExists = false
-
-  if (!!credentialsPath) {
-    try {
-      fs.readFileSync(credentialsPath)
-      credentialsFileExists = true
-    } catch (err) {
-      console.error(`Path ${credentialsPath} to credentials file does not exist`)
-    }
-  }
-
-  const enabled = !!(scopes && credentialsFileExists)
+  const enabled = !!(scopes && clientEmail && privateKey)
 
   return {
     enabled,

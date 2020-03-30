@@ -2,13 +2,16 @@ import { google } from 'googleapis'
 import { Token } from './interfaces/token.interface'
 import { matchPath } from '../../helpers/path.helper'
 import { AuthorizationFactory } from '../../proxy/proxy-request'
-import { scopes, credentialsPath } from './googleapis.config'
+import { scopes, privateKey, clientEmail } from './googleapis.config'
 import tokenService from '../../token/token.service'
 
 export const refreshAccessToken = async (userId: string): Promise<Token> => {
   const auth = new google.auth.GoogleAuth({
     scopes,
-    keyFile: credentialsPath,
+    credentials: {
+      private_key: privateKey,
+      client_email: clientEmail
+    },
     clientOptions: { subject: userId }
   })
 
@@ -17,6 +20,7 @@ export const refreshAccessToken = async (userId: string): Promise<Token> => {
   return new Promise((resolve, reject) => {
     authClient.refreshAccessToken((err) => {
       if (err) {
+        console.error(err)
         reject(err)
       }
     })
