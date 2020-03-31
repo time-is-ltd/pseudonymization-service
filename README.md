@@ -79,7 +79,7 @@ Every private property value is removed from the response.
 ### How to get Google api credentials
 Follow https://support.google.com/a/answer/7378726?hl=en guite to create a service account with https://www.googleapis.com/auth/gmail.readonly and/or https://www.googleapis.com/auth/calendar.readonly scopes.
 
-Path to generated `credentials.json` with service account credentials must be provided via [`GSUITE_CREDENTIALS_PATH`](#enviromental-variables) enviromental variable.
+Use `client_email` and `private_key` from generated service account credentials file (`credentials.json`) as [`GSUITE_CLIENT_EMAIL`](#enviromental-variables) and [`GSUITE_PRIVATE_KEY`](#enviromental-variables) enviromental variables respectively.
 
 Populate `GSUITE_SCOPES` enviromental variable with comma separated scopes used in the service account creation guide.
 
