@@ -77,7 +77,7 @@ Every private property value is removed from the response.
 
 
 ### How to get Google api credentials
-Follow https://support.google.com/a/answer/7378726?hl=en guite to create a service account with https://www.googleapis.com/auth/gmail.readonly and/or https://www.googleapis.com/auth/calendar.readonly scopes.
+Follow https://developers.google.com/admin-sdk/directory/v1/guides/delegation guide to perform domain-wide delegation of authority with https://www.googleapis.com/auth/gmail.readonly and/or https://www.googleapis.com/auth/calendar.readonly API scopes.
 
 Use `client_email` and `private_key` from generated service account credentials file (`credentials.json`) as [`GSUITE_CLIENT_EMAIL`](#enviromental-variables) and [`GSUITE_PRIVATE_KEY`](#enviromental-variables) enviromental variables respectively.
 
