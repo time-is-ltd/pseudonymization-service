@@ -1,7 +1,7 @@
 // Env variables
-export const tenantId: string = process.env.O365_TENANT_ID 
-export const clientId: string = process.env.O365_CLIENT_ID 
-export const clientSecret: string = process.env.O365_CLIENT_SECRET 
+export const tenantId: string | undefined = process.env.O365_TENANT_ID 
+export const clientId: string | undefined = process.env.O365_CLIENT_ID 
+export const clientSecret: string | undefined = process.env.O365_CLIENT_SECRET 
 
 // Hosts
 export const hosts = [

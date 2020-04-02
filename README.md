@@ -77,9 +77,9 @@ Every private property value is removed from the response.
 
 
 ### How to get Google api credentials
-Follow https://support.google.com/a/answer/7378726?hl=en guite to create a service account with https://www.googleapis.com/auth/gmail.readonly and/or https://www.googleapis.com/auth/calendar.readonly scopes.
+Follow https://developers.google.com/admin-sdk/directory/v1/guides/delegation guide to perform domain-wide delegation of authority with https://www.googleapis.com/auth/gmail.readonly and/or https://www.googleapis.com/auth/calendar.readonly API scopes.
 
-Path to generated `credentials.json` with service account credentials must be provided via [`GSUITE_CREDENTIALS_PATH`](#enviromental-variables) enviromental variable.
+Use `client_email` and `private_key` from generated service account credentials file (`credentials.json`) as [`GSUITE_CLIENT_EMAIL`](#enviromental-variables) and [`GSUITE_PRIVATE_KEY`](#enviromental-variables) enviromental variables respectively.
 
 Populate `GSUITE_SCOPES` enviromental variable with comma separated scopes used in the service account creation guide.
 
@@ -314,14 +314,21 @@ $ cp .env.example .env
 $ vi .env
 ```
 
+4. [Optional: enable SSL](#ssl)
+
 4. Optional: Run tests
 ```shell
 $ npm run test
 ```
 
-5. Run service
+5. Install [pm2 process manager](https://pm2.keymetrics.io/)
 ```shell
-$ npm start
+$ npm install pm2 -g
+```
+
+1. Run service
+```shell
+$ pm2 start npm -- start
 ```
 
 ### Using docker-compose
@@ -337,23 +344,40 @@ $ cp .env.example .env
 $ vi .env
 ```
 
-3. Optional: Create gsuite config folder, if you want to use google api
-```shell
-$ mkdir server-config
-$ cp /path/to/google-credentials.json ./server-config/credentials.json
-```
+4. [Optional: enable SSL](#ssl)
 
-Change `GSUITE_CREDENTIALS_PATH` variable in `.env` to `/server-config/credentials.json`
-
-4. Build image
+5. Build image
 ```shell
 $ docker-compose build
 ```
 
-5. Run image
+6. Run image
 ```shell
 $ docker-compose up
 ```
+
+## SSL
+1. Get SSL certificate from [certification authority](https://letsencrypt.org/) or create self signed certificate
+```bash
+$ openssl req -nodes -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650
+```
+
+`OpenSSL` script will generate `key.pem` file with private key and `cert.pem` file with certificate.
+
+2. Convert private key file (`key.pem`) to one-line PEM format
+```bash
+$ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' key.pem
+```
+
+3. Use printed value as [`SSL_KEY` enviromental variable](#enviromental-variables)
+
+4. Convert certificate file (`cert.pem`) to one-line PEM format
+```bash
+$ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' cert.pem
+```
+
+5. Use printed value as [`SSL_CERT` enviromental variable](#enviromental-variables)
+
 
 ## Enviromental variables
 | Variable name                       | Value                | Example                               | Default value | Description
@@ -367,10 +391,11 @@ $ docker-compose up
 | `ANONYMIZATION_SALT`                | string               | yvUCixgSV6EMcE2FpZispWkju8N3LrWp      | true          | Salt that is used in data anonymization. Must be 32 characters long.
 | `HTTP_PORT`                         | number               | 80                                    |               | Http listening port
 | `HTTPS_PORT`                        | number               | 443                                   |               | Https listening port. You have to provide `SSL_KEY` and `SSL_CERT` enviromental variables
-| `SSL_KEY`                           | string               | /path/to/privkey.pem                  |               | Path to private key
-| `SSL_CERT`                          | string               | /path/to/fullchain.pem                |               | Path to certificate
-| `GSUITE_CREDENTIALS_PATH`           | string               | /path/to/credentials.json             |               | Path to google service account credentials.json file. You can get google service account credentials via [How to get Google api credentials guide](#how-to-get-google-api-credentials).
-| `GSUITE_SCOPES`                     | string               | https://www.googleapis.com/auth/gmail |               | OAuth 2.0 Scopes for Google APIs
+| `SSL_KEY`                           | string               |                  |               | Converted file with private key (`key.pem`) to one-line PEM format. Follow [SSL guide](#ssl) to get SSL PEM files.
+| `SSL_CERT`                          | string               |                 |               | Converted file with certificate (`cert.pem`) to one-line PEM format. Follow [SSL guide](#ssl) to get SSL PEM files.
+| `GSUITE_CLIENT_EMAIL`        | string               |             |               | Value of `client_email` property located in google service account credentials.json file. You can get google service account credentials via [How to get Google api credentials guide](#how-to-get-google-api-credentials).
+| `GSUITE_PRIVATE_KEY`        | string               |             |               | Value of `private_key` property located in google service account credentials.json file. You can get google service account credentials via [How to get Google api credentials guide](#how-to-get-google-api-credentials).
+| `GSUITE_SCOPES`                     | string               | https://www.googleapis.com/auth/gmail.readonly, https://www.googleapis.com/auth/calendar.readonly |               | OAuth 2.0 Scopes for Google APIs
 | `O365_TENANT_ID`                    | string               | 00000000-0000-0000-0000-000000000000  |               | Office 365 tenant ID. You can get tenant ID via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
 | `O365_CLIENT_ID`                    | string               | 00000000-0000-0000-0000-000000000000  |               | Office 365 client ID. You can get client ID via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
 | `O365_CLIENT_SECRET`                | string               |                                       |               | Office 365 client secret. You can get client secret via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
