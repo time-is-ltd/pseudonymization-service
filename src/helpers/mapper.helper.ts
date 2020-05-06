@@ -54,7 +54,7 @@ const boolean = value => typeof value === 'boolean' ? value : false
 const number = value => typeof value === 'number' ? value : 0
 const stringArray = value => (Array.isArray(value) ? value : []).map(value => string(value))
 
-export const TYPES = {
+const BASE_TYPES = {
   // String values
   String: Symbol('String'),
   Text: Symbol('Text'),
@@ -75,13 +75,29 @@ export const TYPES = {
   
   // Other
   Private: Symbol('Private'),
-  Array: Symbol('Array'),
+  Array: Symbol('Array')
+}
+
+const TYPE_ALIASES = {
+  PrivateString: [
+    BASE_TYPES.Private,
+    BASE_TYPES.String
+  ],
+  PrivateText: [
+    BASE_TYPES.Private,
+    BASE_TYPES.Text
+  ]
+}
+
+export const TYPES = {
+  ...BASE_TYPES,
+  ...TYPE_ALIASES
 }
 
 
 const TYPE_PRIORITY_MAP = {
-  [TYPES.Array.toString()]: 100,
-  [TYPES.Private.toString()]: 50
+  [BASE_TYPES.Array.toString()]: 100,
+  [BASE_TYPES.Private.toString()]: 50
 }
 
 const getTypePriority = (type: symbol) => {
@@ -90,27 +106,27 @@ const getTypePriority = (type: symbol) => {
 
 const getValue2 = (type: Symbol, value: any) => {
   switch (type) {
-    case TYPES.Private:
+    case BASE_TYPES.Private:
       return undefined
-    case TYPES.Array:
+    case BASE_TYPES.Array:
       return Array.isArray(value) ? value : []
-    case TYPES.Text:
-    case TYPES.String:
-    case TYPES.Datetime:
-    case TYPES.Id:
-    case TYPES.ContentType:
-    case TYPES.ETag:
-    case TYPES.Url:
-    case TYPES.Username:
+    case BASE_TYPES.Text:
+    case BASE_TYPES.String:
+    case BASE_TYPES.Datetime:
+    case BASE_TYPES.Id:
+    case BASE_TYPES.ContentType:
+    case BASE_TYPES.ETag:
+    case BASE_TYPES.Url:
+    case BASE_TYPES.Username:
       return string(value)
-    case TYPES.Number:
+    case BASE_TYPES.Number:
       return number(value)
       break
-    case TYPES.Boolean:
+    case BASE_TYPES.Boolean:
       return boolean(value)
-    case TYPES.Email:
+    case BASE_TYPES.Email:
       return email(value)
-    case TYPES.Filename:
+    case BASE_TYPES.Filename:
       return filename(value)
   }
 
@@ -124,9 +140,9 @@ const getValue = (types: symbol[], value: any) => {
     return bPriority - aPriority
   })
 
-  const isArray = sortedTypes.indexOf(TYPES.Array) > -1
+  const isArray = sortedTypes.indexOf(BASE_TYPES.Array) > -1
   return sortedTypes.reduce((value, type) => {
-    if (isArray && type !== TYPES.Array) {
+    if (isArray && type !== BASE_TYPES.Array) {
       return value
         .map(val => getValue2(type, val))
         .filter(val => val !== undefined)

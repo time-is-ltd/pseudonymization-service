@@ -52,60 +52,59 @@ export type UserCalendars = {
   resultSizeEstimate: string
 }
 
-const schema: Schema<UserCalendars> = {
-  kind: TYPES.String,
-  etag: TYPES.ETag,
-  items: [
-    {
-      id: TYPES.String,
-      kind: TYPES.String,
-      etag: TYPES.String,
-      summary: [
-        TYPES.Private,
-        TYPES.Text
-      ],
-      description: [
-        TYPES.Private,
-        TYPES.Text
-      ],
-      location: TYPES.String,
-      timeZone: TYPES.Datetime,
-      summaryOverride: [
-        TYPES.Private,
-        TYPES.String
-      ],
-      colorId: TYPES.String,
-      backgroundColor: TYPES.String,
-      foregroundColor: TYPES.String,
-      hidden: TYPES.Boolean,
-      selected: TYPES.Boolean,
-      accessRole: TYPES.String,
-      defaultReminders: [
-        {
-          method: TYPES.String,
-          minutes: TYPES.Number
-        }
-      ],
-      notificationSettings: {
-        notifications: [
+const schemaFactory = (anonymizeDescription = true, anonymizeSummary = true): Schema<UserCalendars> => {
+  const summary = anonymizeSummary === true ? TYPES.PrivateText : TYPES.Text
+  const description = anonymizeDescription === true ? TYPES.PrivateText : TYPES.Text
+
+  return {
+    kind: TYPES.String,
+    etag: TYPES.ETag,
+    items: [
+      {
+        id: TYPES.String,
+        kind: TYPES.String,
+        etag: TYPES.String,
+        summary,
+        description,
+        location: TYPES.String,
+        timeZone: TYPES.Datetime,
+        summaryOverride: [
+          TYPES.Private,
+          TYPES.String
+        ],
+        colorId: TYPES.String,
+        backgroundColor: TYPES.String,
+        foregroundColor: TYPES.String,
+        hidden: TYPES.Boolean,
+        selected: TYPES.Boolean,
+        accessRole: TYPES.String,
+        defaultReminders: [
           {
-            type: TYPES.String,
-            method: TYPES.String
+            method: TYPES.String,
+            minutes: TYPES.Number
           }
-        ]
-      },
-      primary: TYPES.Boolean,
-      deleted: TYPES.Boolean,
-      conferenceProperties: {
-        allowedConferenceSolutionTypes: [
-          TYPES.String,
-          TYPES.Array
-        ]
+        ],
+        notificationSettings: {
+          notifications: [
+            {
+              type: TYPES.String,
+              method: TYPES.String
+            }
+          ]
+        },
+        primary: TYPES.Boolean,
+        deleted: TYPES.Boolean,
+        conferenceProperties: {
+          allowedConferenceSolutionTypes: [
+            TYPES.String,
+            TYPES.Array
+          ]
+        }
       }
-    }
-  ],
-  nextPageToken: TYPES.String,
-  resultSizeEstimate: TYPES.String
+    ],
+    nextPageToken: TYPES.String,
+    resultSizeEstimate: TYPES.String
+  }
 }
 
-export default jsonMapper<typeof schema, UserCalendars>(schema)
+export default (anonymizeDescription = true, anonymizeSummary = true) => jsonMapper<Schema<UserCalendars>, UserCalendars>(schemaFactory(anonymizeDescription, anonymizeSummary))

@@ -169,207 +169,203 @@ const eventUserSchema: Schema<EventUser> = {
   self: TYPES.Boolean
 }
 
-const schema: Schema<Event> = {
-  kind: TYPES.String,
-  etag: TYPES.ETag,
-  summary: [
-    TYPES.Text,
-    TYPES.Private
-  ],
-  updated: TYPES.Datetime,
-  timeZone: TYPES.String,
-  accessRole: TYPES.String,
-  defaultReminders: [
-    {
-      method: TYPES.String,
-      minutes: TYPES.Number
-    }
-  ],
-  nextSyncToken: TYPES.String,
-  nextPageToken: TYPES.String,
-  items: [
-    {
-      kind: TYPES.String,
-      etag: TYPES.ETag,
-      id: TYPES.Id,
-      status: TYPES.String,
-      htmlLink: [
-        TYPES.Url,
-        TYPES.Private
-      ],
-      created: TYPES.Datetime,
-      updated: TYPES.Datetime,
-      summary: [
-        TYPES.Text,
-        TYPES.Private
-      ],
-      description: [
-        TYPES.Text,
-        TYPES.Private
-      ],
-      creator: eventUserSchema,
-      organizer: eventUserSchema,
-      start: eventDateSchema,
-      end: eventDateSchema,
-      endTimeUnspecified: TYPES.Boolean,
-      recurrence: [
-        TYPES.String,
-        TYPES.Array
-      ],
-      recurringEventId: TYPES.String,
-      originalStartTime: eventDateSchema,
-      transparency: TYPES.String,
-      visibility: TYPES.String,
-      iCalUID: TYPES.String,
-      sequence: TYPES.Number,
-      attendees: [
-        {
-          id: TYPES.String,
-          email: TYPES.Email,
-          displayName: [
-            TYPES.Username,
-            TYPES.Private
-          ],
-          self: TYPES.Boolean,
-          organizer: TYPES.Boolean,
-          responseStatus: TYPES.String,
-          resource: TYPES.Boolean,
-          optional: TYPES.Boolean,
-          comment: [
-            TYPES.Text,
-            TYPES.Private
-          ],
-          additionalGuests: TYPES.Number
-        }
-      ],
-      attendeesOmitted: TYPES.Boolean,
-      hangoutLink: [
-        TYPES.Url,
-        TYPES.Private
-      ],
-      conferenceData: {
-        createRequest: {
-          requestId: TYPES.String,
-          conferenceSolutionKey: {
-            type: TYPES.String
-          },
-          status: {
-            statusCode: TYPES.String
-          }
-        },
-        entryPoints: [
+const schemaFactory = (anonymizeDescription = true, anonymizeSummary = true): Schema<Event> => {
+  const summary = anonymizeSummary === true ? TYPES.PrivateText : TYPES.Text
+  const description = anonymizeDescription === true ? TYPES.PrivateText : TYPES.Text
+
+  return {
+    kind: TYPES.String,
+    etag: TYPES.ETag,
+    summary,
+    updated: TYPES.Datetime,
+    timeZone: TYPES.String,
+    accessRole: TYPES.String,
+    defaultReminders: [
+      {
+        method: TYPES.String,
+        minutes: TYPES.Number
+      }
+    ],
+    nextSyncToken: TYPES.String,
+    nextPageToken: TYPES.String,
+    items: [
+      {
+        kind: TYPES.String,
+        etag: TYPES.ETag,
+        id: TYPES.Id,
+        status: TYPES.String,
+        htmlLink: [
+          TYPES.Url,
+          TYPES.Private
+        ],
+        created: TYPES.Datetime,
+        updated: TYPES.Datetime,
+        summary,
+        description,
+        creator: eventUserSchema,
+        organizer: eventUserSchema,
+        start: eventDateSchema,
+        end: eventDateSchema,
+        endTimeUnspecified: TYPES.Boolean,
+        recurrence: [
+          TYPES.String,
+          TYPES.Array
+        ],
+        recurringEventId: TYPES.String,
+        originalStartTime: eventDateSchema,
+        transparency: TYPES.String,
+        visibility: TYPES.String,
+        iCalUID: TYPES.String,
+        sequence: TYPES.Number,
+        attendees: [
           {
-            entryPointType: TYPES.String,
-            uri: [
-              TYPES.Url,
+            id: TYPES.String,
+            email: TYPES.Email,
+            displayName: [
+              TYPES.Username,
               TYPES.Private
             ],
-            label: [
+            self: TYPES.Boolean,
+            organizer: TYPES.Boolean,
+            responseStatus: TYPES.String,
+            resource: TYPES.Boolean,
+            optional: TYPES.Boolean,
+            comment: [
               TYPES.Text,
               TYPES.Private
             ],
-            pin: [
-              TYPES.String,
-              TYPES.Private
-            ],
-            accessCode: [
-              TYPES.String,
-              TYPES.Private
-            ],
-            meetingCode: [
-              TYPES.String,
-              TYPES.Private
-            ],
-            passcode: [
-              TYPES.String,
-              TYPES.Private
-            ],
-            password: [
-              TYPES.String,
-              TYPES.Private
-            ]
+            additionalGuests: TYPES.Number
           }
         ],
-        conferenceSolution: {
-          key: {
-            type: TYPES.String
+        attendeesOmitted: TYPES.Boolean,
+        hangoutLink: [
+          TYPES.Url,
+          TYPES.Private
+        ],
+        conferenceData: {
+          createRequest: {
+            requestId: TYPES.String,
+            conferenceSolutionKey: {
+              type: TYPES.String
+            },
+            status: {
+              statusCode: TYPES.String
+            }
           },
-          name: TYPES.String,
-          iconUri: TYPES.String
-        },
-        conferenceId: TYPES.String,
-        signature: [
-          TYPES.String,
-          TYPES.Private
-        ],
-        notes: [
-          TYPES.Text,
-          TYPES.Private
-        ],
-        gadget: {
-          type: TYPES.String,
-          title: [
+          entryPoints: [
+            {
+              entryPointType: TYPES.String,
+              uri: [
+                TYPES.Url,
+                TYPES.Private
+              ],
+              label: [
+                TYPES.Text,
+                TYPES.Private
+              ],
+              pin: [
+                TYPES.String,
+                TYPES.Private
+              ],
+              accessCode: [
+                TYPES.String,
+                TYPES.Private
+              ],
+              meetingCode: [
+                TYPES.String,
+                TYPES.Private
+              ],
+              passcode: [
+                TYPES.String,
+                TYPES.Private
+              ],
+              password: [
+                TYPES.String,
+                TYPES.Private
+              ]
+            }
+          ],
+          conferenceSolution: {
+            key: {
+              type: TYPES.String
+            },
+            name: TYPES.String,
+            iconUri: TYPES.String
+          },
+          conferenceId: TYPES.String,
+          signature: [
             TYPES.String,
             TYPES.Private
           ],
-          link: [
-            TYPES.Url,
+          notes: [
+            TYPES.Text,
             TYPES.Private
           ],
-          iconLink: [
-            TYPES.Url,
-            TYPES.Private
-          ],
-          width: TYPES.Number,
-          height: TYPES.Number,
-          display: TYPES.String
+          gadget: {
+            type: TYPES.String,
+            title: [
+              TYPES.String,
+              TYPES.Private
+            ],
+            link: [
+              TYPES.Url,
+              TYPES.Private
+            ],
+            iconLink: [
+              TYPES.Url,
+              TYPES.Private
+            ],
+            width: TYPES.Number,
+            height: TYPES.Number,
+            display: TYPES.String
+          },
         },
-      },
-      anyoneCanAddSelf: TYPES.Boolean,
-      guestsCanInviteOthers: TYPES.Boolean,
-      guestsCanModify: TYPES.Boolean,
-      guestsCanSeeOtherGuests: TYPES.Boolean,
-      privateCopy: TYPES.Boolean,
-      locked: TYPES.Boolean,
-      reminders: {
-        useDefault: TYPES.Boolean,
-        overrides: [
+        anyoneCanAddSelf: TYPES.Boolean,
+        guestsCanInviteOthers: TYPES.Boolean,
+        guestsCanModify: TYPES.Boolean,
+        guestsCanSeeOtherGuests: TYPES.Boolean,
+        privateCopy: TYPES.Boolean,
+        locked: TYPES.Boolean,
+        reminders: {
+          useDefault: TYPES.Boolean,
+          overrides: [
+            {
+              method: TYPES.String,
+              minutes: TYPES.Number
+            }
+          ]
+        },
+        source: {
+          url: [
+            TYPES.Url,
+            TYPES.Private
+          ],
+          title: [
+            TYPES.Url,
+            TYPES.Private
+          ],
+        },
+        attachments: [
           {
-            method: TYPES.String,
-            minutes: TYPES.Number
+            fileUrl: [
+              TYPES.Url,
+              TYPES.Private
+            ],
+            title: [
+              TYPES.String,
+              TYPES.Private
+            ],
+            mimeType: TYPES.ContentType,
+            iconLink: [
+              TYPES.Url,
+              TYPES.Private
+            ],
+            fileId: TYPES.String
           }
         ]
-      },
-      source: {
-        url: [
-          TYPES.Url,
-          TYPES.Private
-        ],
-        title: [
-          TYPES.Url,
-          TYPES.Private
-        ],
-      },
-      attachments: [
-        {
-          fileUrl: [
-            TYPES.Url,
-            TYPES.Private
-          ],
-          title: [
-            TYPES.String,
-            TYPES.Private
-          ],
-          mimeType: TYPES.ContentType,
-          iconLink: [
-            TYPES.Url,
-            TYPES.Private
-          ],
-          fileId: TYPES.String
-        }
-      ]
-    }
-  ]
+      }
+    ]
+  }
 }
 
-export default jsonMapper<typeof schema, Event>(schema)
+export default (anonymizeDescription = true, anonymizeSummary = true) => jsonMapper<Schema<Event>, Event>(schemaFactory(anonymizeDescription, anonymizeSummary))

@@ -1,4 +1,4 @@
-import userMessagesMapper, {
+import userMessagesMapperFactory, {
   UserCalendars
 } from './list-user-calendars.mapper'
 
@@ -64,7 +64,7 @@ const buildInputMessage = (messageCount: number = 0): UserCalendars => {
   }
 }
 
-const buildOutputMessage = (messageCount: number = 0): UserCalendars => {
+const buildOutputMessage = (anonymizeDescription = true, anonymizeSummary = true) => (messageCount: number = 0): UserCalendars => {
   return {
     kind: 'calendar#calendarList',
     etag: '\"p329eh0casdec0c\"',
@@ -72,8 +72,8 @@ const buildOutputMessage = (messageCount: number = 0): UserCalendars => {
       id: `id${i}`,
       kind: 'calendar#calendarListEntry',
       etag: '\'1552555992370000\'',
-      summary: '',
-      description: '',
+      summary: anonymizeSummary === true ? '' : 'summary',
+      description: anonymizeDescription === true ? '' : 'description',
       location: 'location',
       timeZone: 'America/New_York',
       summaryOverride: '',
@@ -123,8 +123,29 @@ const buildOutputMessage = (messageCount: number = 0): UserCalendars => {
 }
 
 testMapper(
-  'Google apis: User messages mapper',
-  userMessagesMapper,
+  'Google apis: User messages mapper - anonymize summary and description',
+  userMessagesMapperFactory(true, true),
   buildInputMessage,
-  buildOutputMessage
+  buildOutputMessage(true, true)
+)
+
+testMapper(
+  'Google apis: User messages mapper - anonymize summary',
+  userMessagesMapperFactory(false, true),
+  buildInputMessage,
+  buildOutputMessage(false, true)
+)
+
+testMapper(
+  'Google apis: User messages mapper - anonymize description',
+  userMessagesMapperFactory(true, false),
+  buildInputMessage,
+  buildOutputMessage(true, false)
+)
+
+testMapper(
+  'Google apis: User messages mapper - do not anonymize description and summary',
+  userMessagesMapperFactory(false, false),
+  buildInputMessage,
+  buildOutputMessage(false, false)
 )

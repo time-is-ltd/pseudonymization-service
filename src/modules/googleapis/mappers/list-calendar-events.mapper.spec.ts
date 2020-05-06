@@ -1,4 +1,4 @@
-import calendarEventsMapper, {
+import listCalendarEventsMapperFactory, {
   Event,
   EventAttendee,
   EventUser
@@ -185,10 +185,10 @@ const inputEvent: Event = {
   ]
 }
 
-const outputEvent: Event = {
+const getOutputEvent = (anonymizeDescription = true, anonymizeSummary = true): Event => ({
   kind: 'calendar#events',
   etag: '\'p3hsa7g2ekvuasc0g\'',
-  summary: '',
+  summary: anonymizeSummary === true ? '' : 'test@test.com',
   updated: '2019-12-18T13:17:55.691Z',
   timeZone: 'Europe/Prague',
   accessRole: 'owner',
@@ -204,8 +204,8 @@ const outputEvent: Event = {
       htmlLink: '',
       created: '2019-04-26T08:53:25.000Z',
       updated: '2019-04-28T18:39:32.321Z',
-      summary: '',
-      description: '',
+      summary: anonymizeSummary === true ? '' : 'Event summary',
+      description: anonymizeDescription === true ? '' : 'Event Description',
       creator: buildOutputUser(1),
       organizer: buildOutputUser(1),
       start: {
@@ -309,12 +309,33 @@ const outputEvent: Event = {
       ]
     }
   ]
-}
+})
 
 testMapper(
-  'Google apis: Calendar events mapper',
-  calendarEventsMapper,
+  'Google apis: Calendar events mapper - anonymize summary and description',
+  listCalendarEventsMapperFactory(true, true),
   () => inputEvent,
-  () => outputEvent
+  () => getOutputEvent(true, true)
+)
+
+testMapper(
+  'Google apis: Calendar events mapper - anonymize summary',
+  listCalendarEventsMapperFactory(false, true),
+  () => inputEvent,
+  () => getOutputEvent(false, true)
+)
+
+testMapper(
+  'Google apis: Calendar events mapper - anonymize description',
+  listCalendarEventsMapperFactory(true, false),
+  () => inputEvent,
+  () => getOutputEvent(true, false)
+)
+
+testMapper(
+  'Google apis: Calendar events mapper - do not anonymize description and summary',
+  listCalendarEventsMapperFactory(false, false),
+  () => inputEvent,
+  () => getOutputEvent(false, false)
 )
 

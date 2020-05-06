@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 import listUserMessagesMapper from './mappers/list-user-messages.mapper'
 import getUserMessageMapper from './mappers/get-user-message.mapper'
-import listCalendarEventsMapper from './mappers/list-calendar-events.mapper'
-import listUserCalendars from './mappers/list-user-calendars.mapper'
+import listCalendarEventsMapperFactory from './mappers/list-calendar-events.mapper'
+import listUserCalendarsMapperFactory from './mappers/list-user-calendars.mapper'
 import proxyJsonRequestHandler from '../../proxy/handlers/proxy-json-request.handler'
 import proxyBatchRequestHandler from '../../proxy/handlers/proxy-batch-request.handler'
 import { getPathPartFactory } from '../../helpers/path.helper'
@@ -17,6 +17,11 @@ import {
   clientEmail,
   privateKey
 } from './googleapis.config'
+
+import {
+  anonymizeCalendarDescription,
+  anonymizeCalendarSummary
+} from '../../config'
 
 // Path userId extractor map
 const pathExtractorMap = Object
@@ -52,7 +57,7 @@ const listUserCalendarsRoute: Route = {
   path: paths.listUserCalendarsPath,
   handler: proxyJsonRequestHandler(
     authorizationFactory,
-    listUserCalendars,
+    listUserCalendarsMapperFactory(anonymizeCalendarDescription, anonymizeCalendarSummary),
     pathTransforms.listUserCalendarsPath
   )
 }
@@ -62,7 +67,7 @@ const listCalendarEventsRoute: Route = {
   path: paths.listCalendarEventsPath,
   handler: proxyJsonRequestHandler(
     authorizationFactory,
-    listCalendarEventsMapper,
+    listCalendarEventsMapperFactory(anonymizeCalendarDescription, anonymizeCalendarSummary),
     pathTransforms.listCalendarEventsPath
   )
 }
