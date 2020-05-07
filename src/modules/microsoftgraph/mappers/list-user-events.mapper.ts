@@ -15,7 +15,7 @@ export type UserEvents = {
 const schema: Schema<UserEvents> = {
   '@odata.context': TYPES.String,
   '@odata.nextLink': TYPES.Url,
-  'value': [
+  value: [
     event
   ]
 }

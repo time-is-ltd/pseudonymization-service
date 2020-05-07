@@ -178,4 +178,6 @@ const schema: Schema<UserMessage> = {
   sizeEstimate: TYPES.Number
 }
 
-export default jsonMapper<typeof schema, Partial<UserMessage>>(schema)
+export default jsonMapper<typeof schema, Partial<UserMessage>>(schema, {
+  enrichWith: ['links']
+})

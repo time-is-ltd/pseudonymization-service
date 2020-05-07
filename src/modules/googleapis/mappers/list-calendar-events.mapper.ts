@@ -368,4 +368,10 @@ const schemaFactory = (anonymizeDescription = true, anonymizeSummary = true): Sc
   }
 }
 
-export default (anonymizeDescription = true, anonymizeSummary = true) => jsonMapper<Schema<Event>, Event>(schemaFactory(anonymizeDescription, anonymizeSummary))
+export default (anonymizeDescription = true, anonymizeSummary = true) => jsonMapper<Schema<Event>, Event>(
+  schemaFactory(anonymizeDescription, anonymizeSummary),
+  {
+    iterateOnKey: 'items',
+    enrichWith: ['links']
+  }
+)

@@ -107,4 +107,10 @@ const schemaFactory = (anonymizeDescription = true, anonymizeSummary = true): Sc
   }
 }
 
-export default (anonymizeDescription = true, anonymizeSummary = true) => jsonMapper<Schema<UserCalendars>, UserCalendars>(schemaFactory(anonymizeDescription, anonymizeSummary))
+export default (anonymizeDescription = true, anonymizeSummary = true) => jsonMapper<Schema<UserCalendars>, UserCalendars>(
+  schemaFactory(anonymizeDescription, anonymizeSummary),
+  {
+    iterateOnKey: 'items',
+    enrichWith: ['links']
+  }
+)

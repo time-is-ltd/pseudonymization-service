@@ -232,14 +232,90 @@ export const buildMapper = <S extends Object, T extends Object>(schema: S) => (v
   return Array.isArray(value) ? [] : {}
 }
 
-export const jsonMapper = <S, T>(schema: any) => async (data?: string): Promise<string> => {
+const getLinks = (obj: any) => {
+  const str = JSON.stringify(obj)
+  const links = str.match(/\:\/\/([a-z0-9-_]+(\.[a-z0-9-_]+)+(\/hangouts|\/meet|\/calls){0,1})/gmi)
+
+  return links || []
+}
+
+type EnrichmentType = 'links'
+type JsonMapperConfig<T> = {
+  iterateOnKey?: keyof T,
+  enrichWith?: EnrichmentType[]
+}
+
+const enrichObject = (obj: any, types: EnrichmentType[] = []) => {
+  if (types.length === 0) {
+    return {}
+  }
+
+  const shouldHaveLinks = types.indexOf('links') > -1
+  const links = shouldHaveLinks
+    ? {
+      '@til.links': getLinks(obj)
+    }
+    : {}
+  return {
+    ...links
+  }
+}
+
+export const jsonMapper = <S, T>(schema: any, config: JsonMapperConfig<T> = {}) => async (data?: string): Promise<string> => {
+  const { iterateOnKey, enrichWith } = config
+
   let json: Partial<T> = {}
   try {
     json = JSON.parse(data) || {}
   } catch (err) {}
 
-  const mapper = buildMapper<S, Partial<T>>(schema)
+  // @TODO: refactor
+  // Iteration key is not known
+  if (!iterateOnKey) {
+    // Response is an array
+    if (Array.isArray(json) && Array.isArray(schema)) {
+      const itemSchema = schema[0]
+      const mapper = buildMapper<S, Partial<T>>(itemSchema)
+      const result = json.map(item => {
+        const mappedJson = mapper(item)
+        return {
+          ...mappedJson,
+          ...enrichObject(json, enrichWith)
+        }
+      })
+      return JSON.stringify(result)
+    }
 
-  const result = mapper(json)
+    // Response is an object
+    const mapper = buildMapper<S, Partial<T>>(schema)
+    const mappedJson = mapper(json)
+    const result = {
+      ...mappedJson,
+      ...enrichObject(json, enrichWith)
+    }
+
+    return JSON.stringify(result)
+  }
+
+  // Iterate on specified key
+  const { [iterateOnKey]: itemSchema, ...restSchema } = schema
+  const { [iterateOnKey]: items, ...rest } = json
+
+  const rootMapper = buildMapper<S, Partial<T>>(restSchema)
+  const itemMapper = buildMapper<S, Partial<T>>(itemSchema[0])
+
+  const result = rootMapper(json)
+  if (Array.isArray(items)) {
+    result[iterateOnKey] = items.map(item => {
+      const mappedItem = itemMapper(item)
+      return {
+        ...mappedItem,
+        ...enrichObject(item, enrichWith)
+      }
+    })
+  } else {
+    result[iterateOnKey] = items
+  }
+
   return JSON.stringify(result)
 }
