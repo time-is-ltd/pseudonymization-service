@@ -12,12 +12,21 @@ export type UserEvents = {
   value: Event[]
 }
 
-const schema: Schema<UserEvents> = {
+const schema: (
+  anonymizeCalendarSummary: boolean,
+  anonymizeCalendarDescription: boolean
+) => Schema<UserEvents> = (
+  anonymizeCalendarSummary: boolean,
+  anonymizeCalendarDescription: boolean
+) => ( {
   '@odata.context': TYPES.String,
   '@odata.nextLink': TYPES.Url,
   value: [
-    event
+    event(anonymizeCalendarSummary, anonymizeCalendarDescription)
   ]
-}
+})
 
-export default jsonMapper<typeof schema, UserEvents>(schema)
+export default (
+  anonymizeCalendarSummary: boolean,
+  anonymizeCalendarDescription: boolean
+) => jsonMapper<typeof schema, UserEvents>(schema(anonymizeCalendarSummary, anonymizeCalendarDescription))

@@ -4,6 +4,7 @@ import { Route } from '../../router/interfaces/router.interface'
 import listUserMessagesMapper from './mappers/list-user-messages.mapper'
 import listUserCalendarsMapper from './mappers/list-user-calendars.mapper'
 import listUserEventsMapper from './mappers/list-user-events.mapper'
+import { anonymizeCalendarSummary, anonymizeCalendarDescription } from '../../config'
 
 import tokenService from '../../token/token.service'
 
@@ -59,19 +60,19 @@ const listUserMessagesRoute: Route = {
 const listUserCalendarsRoute: Route = {
   hosts,
   path: paths.listUserCalendarsPath,
-  handler: proxyJsonRequestHandler(authorizationFactory, listUserCalendarsMapper)
+  handler: proxyJsonRequestHandler(authorizationFactory, listUserCalendarsMapper(anonymizeCalendarSummary))
 }
 
 const listUserEventsRoute: Route = {
   hosts,
   path: paths.listUserEventsPath,
-  handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper)
+  handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper(anonymizeCalendarSummary, anonymizeCalendarDescription))
 }
 
 const listCalendarEventsRoute: Route = {
   hosts,
   path: paths.listCalendarEventsPath,
-  handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper)
+  handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper(anonymizeCalendarSummary, anonymizeCalendarDescription))
 }
 
 const oauth2TokenRoute: Route = {

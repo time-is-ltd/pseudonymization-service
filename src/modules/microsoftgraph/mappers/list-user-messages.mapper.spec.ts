@@ -397,7 +397,7 @@ const buildOutput = (messageCount: number = 0): UserMessages => {
 }
 
 testMapper(
-  'MicosoftGraph: List user messages mapper',
+  'MicrosoftGraph: List user messages mapper',
   userMessageMapper,
   buildInput,
   buildOutput

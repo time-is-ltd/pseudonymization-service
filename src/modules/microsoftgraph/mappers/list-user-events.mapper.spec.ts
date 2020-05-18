@@ -3,8 +3,7 @@ import {
   PersonId,
   getEmail,
   getAnonymizedEmail,
-  testMapper,
-  ANONYMIZED_EMAIL
+  testMapper
 } from '../../../helpers/testing'
 
 jest.mock('../../../helpers/anonymization.helper')
@@ -227,7 +226,10 @@ const event = {
   ]
 }
 
-const eventOutput = {
+const eventOutput = (
+  anonymizeCalendarSummary: boolean,
+  anonymizeCalendarDescription: boolean
+) => ({
   allowNewTimeProposals: true,
   attendees: [
     {
@@ -251,9 +253,9 @@ const eventOutput = {
   ],
   body: {
     contentType: 'contentType',
-    content: ''
+    content: anonymizeCalendarDescription ? '' : 'content'
   },
-  bodyPreview: '',
+  bodyPreview: anonymizeCalendarDescription ? '' : 'string',
   categories: ['string', 'string2'],
   changeKey: 'string',
   createdDateTime: 'String (timestamp)',
@@ -398,7 +400,7 @@ const eventOutput = {
     dateTime: 'dateTime',
     timeZone: 'timeZone'
   },
-  subject: '',
+  subject: anonymizeCalendarSummary ? '' : 'string',
   type: 'String',
   webLink: '',
   attachments: [
@@ -427,7 +429,7 @@ const eventOutput = {
       id: 'id2'
     }
   ]
-}
+})
 
 const buildInput = (messageCount: number = 0): UserEvents => {
   return {
@@ -437,17 +439,41 @@ const buildInput = (messageCount: number = 0): UserEvents => {
   }
 }
 
-const buildOutput = (messageCount: number = 0): UserEvents => {
+const buildOutput = (
+  anonymizeCalendarSummary: boolean,
+  anonymizeCalendarDescription: boolean
+) => (messageCount: number = 0): UserEvents => {
   return {
     '@odata.context': `https://graph.microsoft.com/beta/$metadata#users('john.doe%40gmail.com')/messages`,
     '@odata.nextLink': 'test',
-    value: Array.from(Array(messageCount)).map(() => eventOutput)
+    value: Array.from(Array(messageCount)).map(() => eventOutput(anonymizeCalendarSummary, anonymizeCalendarDescription))
   }
 }
 
 testMapper(
-  'MicosoftGraph: List user events mapper',
-  listUserEventsMapper,
+  'MicrosoftGraph: List user events mapper - anonymize summary and description',
+  listUserEventsMapper(true, true),
   buildInput,
-  buildOutput
+  buildOutput(true, true)
+)
+
+testMapper(
+  'MicrosoftGraph: List user events mapper - anonymize summary',
+  listUserEventsMapper(false, true),
+  buildInput,
+  buildOutput(false, true)
+)
+
+testMapper(
+  'MicrosoftGraph: List user events mapper - anonymize description',
+  listUserEventsMapper(true, false),
+  buildInput,
+  buildOutput(true, false)
+)
+
+testMapper(
+  'MicrosoftGraph: List user events mapper - do not anonymize description and summary',
+  listUserEventsMapper(false, false),
+  buildInput,
+  buildOutput(false, false)
 )

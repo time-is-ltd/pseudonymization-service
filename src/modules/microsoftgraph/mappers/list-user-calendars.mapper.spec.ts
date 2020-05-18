@@ -43,9 +43,9 @@ const calendar = {
   owner: buildInputOwner(1)
 }
 
-const calendarOutput = {
+const calendarOutput = (anonymizeCalendarSummary: boolean) => ({
   id: 'MTc0MjM3NjEtYWY5MC00NTAyLWE3MDctYTljZjIwMmM4ZjNlCg==',
-  name: '',
+  name: anonymizeCalendarSummary ? '' : 'Calendar',
   color: 'black',
   hexColor: '000000',
   isDefaultCalendar: true,
@@ -60,7 +60,7 @@ const calendarOutput = {
   isTallyingResponses: false,
   isRemovable: false,
   owner: buildOutputOwner(1)
-}
+})
 
 const buildInput = (messageCount: number = 0) => {
   return {
@@ -70,17 +70,24 @@ const buildInput = (messageCount: number = 0) => {
   }
 }
 
-const buildOutput = (messageCount: number = 0) => {
+const buildOutput = (anonymizeCalendarSummary: boolean) => (messageCount: number = 0) => {
   return {
     '@odata.context': `context`,
     '@odata.nextLink': 'test',
-    'value': Array.from(Array(messageCount)).map(() => calendarOutput)
+    'value': Array.from(Array(messageCount)).map(() => calendarOutput(anonymizeCalendarSummary))
   }
 }
 
 testMapper(
-  'MicosoftGraph: List user calendars mapper',
-  userCalendarsMapper,
+  'MicrosoftGraph: List user calendars mapper - anonymize calendar name',
+  userCalendarsMapper(true),
   buildInput,
-  buildOutput
+  buildOutput(true)
+)
+
+testMapper(
+  'MicrosoftGraph: List user calendars mapper - do not anonymize calendar name',
+  userCalendarsMapper(false),
+  buildInput,
+  buildOutput(false)
 )

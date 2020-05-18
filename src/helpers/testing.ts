@@ -1,5 +1,3 @@
-import * as config from '../config'
-
 export interface TilExtraProps {
   '@til.links'?: string[]
 }
@@ -68,19 +66,8 @@ export const testMapper = (
   mapper: (input?: string) => any,
   buildInput: (iterations?: number) => any,
   buildOutput: (iterations?: number) => any,
-  empty: any = {},
-  globalConfig?: Partial<typeof config>
+  empty: any = {}
 ) => {
-  if (globalConfig != null) {
-    jest.mock('../config', () => {
-      const mockedConfig: typeof config = {
-        ...config,
-        ...globalConfig
-      }
-      return mockedConfig
-    })
-  }
-
   test(`${name} - Falsy request`, async () => {
     expect(JSON.parse(await mapper())).toEqual(empty)
     expect(JSON.parse(await mapper(null))).toEqual(empty)

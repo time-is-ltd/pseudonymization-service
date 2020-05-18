@@ -1,5 +1,4 @@
 import {
-  jsonMapper,
   TYPES,
   Schema
 } from '../../../helpers/mapper.helper'
@@ -31,13 +30,17 @@ import {
   Mention
 } from './interfaces'
 
-export const itemBody: Schema<ItemBody> = {
+export const itemBody: (
+  anonymizeCalendarDescription: boolean
+) => Schema<ItemBody> = (
+  anonymizeCalendarDescription: boolean
+) => ({
   contentType: TYPES.ContentType,
-  content: [
+  content: anonymizeCalendarDescription ? [
     TYPES.Private,
     TYPES.Text
-  ]
-}
+  ] :  TYPES.Text
+})
 
 export const dateTimeTimeZone: Schema<DateTimeTimeZone> = {
   dateTime: TYPES.Datetime,
@@ -179,12 +182,16 @@ export const extension: Schema<Extension> = {
   id: TYPES.String
 }
 
-export const calendar: Schema<Calendar> = {
+export const calendar: (
+  anonymizeCalendarSummary: boolean
+) => Schema<Calendar> = (
+  anonymizeCalendarSummary: boolean
+) => ({
   id: TYPES.String,
-  name: [
-    TYPES.Text,
+  name: anonymizeCalendarSummary ? [
+    TYPES.String,
     TYPES.Private
-  ],
+  ] : TYPES.String,
   color: TYPES.String,
   hexColor: TYPES.String,
   isDefaultCalendar: TYPES.Boolean,
@@ -202,19 +209,25 @@ export const calendar: Schema<Calendar> = {
   isTallyingResponses: TYPES.Boolean,
   isRemovable: TYPES.Boolean,
   owner: emailAddress
-}
+})
 
-export const event: Schema<Event> = {
+export const event: (
+  anonymizeCalendarSummary: boolean,
+  anonymizeCalendarDescription: boolean,
+) => Schema<Event> = (
+  anonymizeCalendarSummary: boolean,
+  anonymizeCalendarDescription: boolean,
+) => ({
   id: TYPES.String,
-  subject: [
+  subject: anonymizeCalendarSummary ? [
     TYPES.String,
     TYPES.Private
-  ],
-  bodyPreview: [
+  ] : TYPES.String,
+  bodyPreview: anonymizeCalendarDescription ? [
     TYPES.Text,
     TYPES.Private
-  ],
-  body: itemBody,
+  ]: TYPES.Text,
+  body: itemBody(anonymizeCalendarDescription),
   categories: [
     TYPES.String,
     TYPES.Array
@@ -267,11 +280,11 @@ export const event: Schema<Event> = {
   attachments: [
     attachment
   ],
-  calendar,
   extensions: [
     extension
-  ]
-}
+  ],
+  calendar: calendar(anonymizeCalendarSummary)
+})
 
 export const followUpFlag: Schema<FollowUpFlag> = {
   flagStatus: TYPES.String,
@@ -349,8 +362,8 @@ export const message: Schema<Message> = {
   mentionsPreview: {
     isMentioned: TYPES.Boolean
   },
-  body: itemBody,
-  uniqueBody: itemBody,
+  body: itemBody(true),
+  uniqueBody: itemBody(true),
   sender: recipient,
   from: recipient,
   toRecipients: [
