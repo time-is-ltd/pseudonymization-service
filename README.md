@@ -384,10 +384,12 @@ $ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' cert.pem
 | ----------------------------------- | -------------------- | ------------------------------------- | ------------- |------------
 | `API_TOKEN`                         | string               | 76xmfSGx26wmj4ty8UuGGDMhrPkwNkjk      |               | Authorization api token
 | `INTERNAL_DOMAIN_LIST`              | comma separated list | yourdomain.com,yourdomain.eu          |               | List of internal domains
-| `ANONYMIZE_EXTRENAL_EMAIL_DOMAIN`   | boolean              | true                                  | true          | Anononymize external domain in emails
-| `ANONYMIZE_EXTRENAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anononymize external username in emails
-| `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`   | boolean              | true                                  | false         | Anononymize internal domain in emails
-| `ANONYMIZE_INTERNAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anononymize internal username in emails
+| `ANONYMIZE_EXTRENAL_EMAIL_DOMAIN`   | boolean              | true                                  | true          | Anonymize external domain in emails
+| `ANONYMIZE_EXTRENAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anonymize external username in emails
+| `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`   | boolean              | true                                  | false         | Anonymize internal domain in emails
+| `ANONYMIZE_INTERNAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anonymize internal username in emails
+| `ANONYMIZE_CALENDAR_SUMMARY`        | boolean              | true                                  | true          | Anonymize `summary` field in calendar/event objects. This option will be applied to the `calendar.name`, `event.subject` properties in `Microsoft Graph` and to the `event.summary`, `event.items.summary`, `calendarList.items.summary` properties in `Google Api`.
+| `ANONYMIZE_CALENDAR_DESCRIPTION`    | boolean              | true                                  | true          | Anonymize `description` field in calendar/event objects. This option will be applied to the `calendar.name`, `event.bodyPreview`, `event.body.content` properties in `Microsoft Graph` and to the `event.items.description`, `calendarList.items.description` properties in `Google Api`.
 | `ANONYMIZATION_SALT`                | string               | yvUCixgSV6EMcE2FpZispWkju8N3LrWp      | true          | Salt that is used in data anonymization. Must be 32 characters long.
 | `HTTP_PORT`                         | number               | 80                                    |               | Http listening port
 | `HTTPS_PORT`                        | number               | 443                                   |               | Https listening port. You have to provide `SSL_KEY` and `SSL_CERT` enviromental variables
