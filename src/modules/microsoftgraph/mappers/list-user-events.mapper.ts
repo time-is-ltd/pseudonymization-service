@@ -29,4 +29,10 @@ const schema: (
 export default (
   anonymizeCalendarSummary: boolean,
   anonymizeCalendarDescription: boolean
-) => jsonMapper<typeof schema, UserEvents>(schema(anonymizeCalendarSummary, anonymizeCalendarDescription))
+) => jsonMapper<typeof schema, UserEvents>(
+  schema(anonymizeCalendarSummary, anonymizeCalendarDescription),
+  {
+    iterateOnKey: 'value',
+    enrichWith: ['links']
+  }
+)
