@@ -1,3 +1,9 @@
+import * as config from '../config'
+
+export interface TilExtraProps {
+  '@til.links'?: string[]
+}
+
 export const ANONYMIZED_EMAIL = 'anonymizedusername@anonymizeddomain.hash'
 export const ANONYMIZED_FILENAME = 'x.extension'
 
@@ -62,8 +68,19 @@ export const testMapper = (
   mapper: (input?: string) => any,
   buildInput: (iterations?: number) => any,
   buildOutput: (iterations?: number) => any,
-  empty: any = {}
+  empty: any = {},
+  globalConfig?: Partial<typeof config>
 ) => {
+  if (globalConfig != null) {
+    jest.mock('../config', () => {
+      const mockedConfig: typeof config = {
+        ...config,
+        ...globalConfig
+      }
+      return mockedConfig
+    })
+  }
+
   test(`${name} - Falsy request`, async () => {
     expect(JSON.parse(await mapper())).toEqual(empty)
     expect(JSON.parse(await mapper(null))).toEqual(empty)
@@ -74,6 +91,7 @@ export const testMapper = (
   test(`${name} - no iterations`, async () => {
     const input = buildInput()
     const output = buildOutput()
+
     await mapperEquals(mapper, input, output)
   })
 

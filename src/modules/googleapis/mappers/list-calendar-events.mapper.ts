@@ -3,6 +3,7 @@ import {
   Schema,
   TYPES
 } from '../../../helpers/mapper.helper'
+import { TilExtraProps } from '../../../helpers/testing'
 
 export interface EventDate {
   date: string
@@ -98,7 +99,7 @@ export interface EventItemConferenceData {
   gadget: EventItemGadget
 }
 
-export interface EventItem {
+export interface EventItem extends TilExtraProps {
   kind: string
   etag: string
   id: string

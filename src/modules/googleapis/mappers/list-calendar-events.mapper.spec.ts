@@ -8,6 +8,7 @@ import {
   PersonId,
   getEmail,
   getAnonymizedEmail,
+  TilExtraProps,
   testMapper
 } from '../../../helpers/testing'
 
@@ -197,6 +198,10 @@ const getOutputEvent = (anonymizeDescription = true, anonymizeSummary = true): E
   nextPageToken: 'nextPageToken',
   items: [
     {
+      '@til.links': [
+        '://www.google.com',
+        '://sample.com',
+      ],
       kind: 'calendar#event',
       etag: '\'e4e65354-5b2a-4981-b7c7-55c37481c29e\'',
       id: '3938f8be-9713-4330-9fda-bdab643d6843',
@@ -312,28 +317,28 @@ const getOutputEvent = (anonymizeDescription = true, anonymizeSummary = true): E
 })
 
 testMapper(
-  'Google apis: Calendar events mapper - anonymize summary and description',
+  'Google apis: List calendar events mapper - anonymize summary and description',
   listCalendarEventsMapperFactory(true, true),
   () => inputEvent,
   () => getOutputEvent(true, true)
 )
 
 testMapper(
-  'Google apis: Calendar events mapper - anonymize summary',
+  'Google apis: List calendar events mapper - anonymize summary',
   listCalendarEventsMapperFactory(false, true),
   () => inputEvent,
   () => getOutputEvent(false, true)
 )
 
 testMapper(
-  'Google apis: Calendar events mapper - anonymize description',
+  'Google apis: List calendar events mapper - anonymize description',
   listCalendarEventsMapperFactory(true, false),
   () => inputEvent,
   () => getOutputEvent(true, false)
 )
 
 testMapper(
-  'Google apis: Calendar events mapper - do not anonymize description and summary',
+  'Google apis: List calendar events mapper - do not anonymize description and summary',
   listCalendarEventsMapperFactory(false, false),
   () => inputEvent,
   () => getOutputEvent(false, false)

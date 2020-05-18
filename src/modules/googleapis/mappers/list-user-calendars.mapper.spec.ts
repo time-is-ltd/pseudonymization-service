@@ -123,28 +123,28 @@ const buildOutputMessage = (anonymizeDescription = true, anonymizeSummary = true
 }
 
 testMapper(
-  'Google apis: User messages mapper - anonymize summary and description',
+  'Google apis: List user calendars mapper - anonymize summary and description',
   userMessagesMapperFactory(true, true),
   buildInputMessage,
   buildOutputMessage(true, true)
 )
 
 testMapper(
-  'Google apis: User messages mapper - anonymize summary',
+  'Google apis: List user calendars - anonymize summary',
   userMessagesMapperFactory(false, true),
   buildInputMessage,
   buildOutputMessage(false, true)
 )
 
 testMapper(
-  'Google apis: User messages mapper - anonymize description',
+  'Google apis: List user calendars - anonymize description',
   userMessagesMapperFactory(true, false),
   buildInputMessage,
   buildOutputMessage(true, false)
 )
 
 testMapper(
-  'Google apis: User messages mapper - do not anonymize description and summary',
+  'Google apis: List user calendars - do not anonymize description and summary',
   userMessagesMapperFactory(false, false),
   buildInputMessage,
   buildOutputMessage(false, false)

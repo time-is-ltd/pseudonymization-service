@@ -251,13 +251,17 @@ const enrichObject = (obj: any, types: EnrichmentType[] = []) => {
   }
 
   const shouldHaveLinks = types.indexOf('links') > -1
-  const links = shouldHaveLinks
-    ? {
-      '@til.links': getLinks(obj)
+
+  let result = {}
+  if (shouldHaveLinks) {
+    const links = getLinks(obj)
+    if (links.length > 0) {
+      result['@til.links'] = [...new Set(links)]
     }
-    : {}
+  }
+
   return {
-    ...links
+    ...result
   }
 }
 

@@ -274,7 +274,7 @@ const messageOutput = {
 }
 
 testMapper(
-  'Google apis: User message mapper',
+  'Google apis: Get user message mapper',
   userMessageMapper,
   () => message,
   () => messageOutput
