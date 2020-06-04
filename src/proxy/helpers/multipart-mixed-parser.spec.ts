@@ -58,7 +58,7 @@ const buildParseTest = (iterations: number = 1, separator: string, header: strin
 
   const firstPart = parsedInput.parts[0]
 
-  expect(firstPart.headers).toBe(`${header}\r\n\r\n${header2}`)
+  expect(firstPart.headers).toBe(`${header.replace(/^(\r\n)+/, '')}\r\n\r\n${header2}`)
 
   if (content) {
     expect(firstPart.data).toBe(content)
@@ -79,6 +79,12 @@ const iterations = [1, 10, 100, 1000, 10000]
 test('Parse multipart/mixed request', () => {
   iterations.forEach((i) => {
     buildParseTest(i, REQUEST_SEPARATOR, REQUEST_HEADER, REQUEST_HEADER_2)
+  })
+})
+
+test('Parse multipart/mixed with newline in the header', () => {
+  iterations.forEach((i) => {
+    buildParseTest(i, REQUEST_SEPARATOR, '\r\n\r\n\r\n' + REQUEST_HEADER, REQUEST_HEADER_2)
   })
 })
 
