@@ -56,6 +56,7 @@ const parse = (data: string, containsData = false): MultipartMixedPartList => {
   const normalizedData = data
     .replace('\r\n', '\n')
     .replace('\n', '\r\n')
+    .replace(/^(\r\n)+/, '')
 
   // First line is the separator
   const separator = normalizedData
