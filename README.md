@@ -24,7 +24,7 @@ curl -X GET \
 
 - IP is the IP of the instance running the anonymization service
 - your_email@your_company.com your G Suite email address
-- Bearer is your API key (To clarify, the API key is your generated key (string, 32 chars)
+- Bearer is your API key (to clarify, the API key is your generated key - string, 32 chars)
 
 
 ## How it works
