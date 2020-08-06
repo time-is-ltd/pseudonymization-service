@@ -3,13 +3,28 @@
 ## Description
 A service that anonymizes google G Suite and Microsoft O365 API response objects.
 
-## quick start
+### quick start
 
 Use the latest docker image from the GCP docker repository
 
 ```docker pull eu.gcr.io/proxy-272310/proxy:v1.0.3```
 
 Or follow the **Installation** section in this readme file for local build and docker compose.
+
+### test
+
+Get anonymized G Suite email messages response from the anonymization service with cURL
+
+```
+curl -X GET \
+  https://IP/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \
+  -H 'Authorization: Bearer your_api_key' \
+  -H 'Cache-Control: no-cache' --insecure
+```
+
+- IP is the IP of the instance running the anonymization service
+- your_email@your_company.com your G Suite email address
+- Bearer is your API key (To clarify, the API key is your generated key (string, 32 chars)
 
 
 ## How it works
