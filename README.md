@@ -9,7 +9,7 @@ Use the latest docker image from the GCP docker repository
 
 ```docker pull eu.gcr.io/proxy-272310/proxy:v1.0.3```
 
-Or follow the **Installation** section in this readme file for local build and docker compose.
+And follow the [**Installation**](#installation) section in this readme file for local build and docker compose.
 
 ### test
 
