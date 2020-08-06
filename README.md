@@ -17,12 +17,12 @@ Get anonymized G Suite email messages response from the anonymization service wi
 
 ```
 curl -X GET \
-  https://IP/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \
+  https://your_IP/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \
   -H 'Authorization: Bearer your_api_key' \
   -H 'Cache-Control: no-cache' --insecure
 ```
 
-- IP is the IP of the instance running the anonymization service
+- your_IP is the IP of the instance running the anonymization service
 - your_email@your_company.com your G Suite email address
 - Bearer is your API key (to clarify, the API key is your generated key - string, 32 chars)
 
