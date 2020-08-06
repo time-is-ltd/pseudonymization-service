@@ -1,7 +1,15 @@
 # Anonymization Service by Time is Ltd.
 
 ## Description
-A service that anonymizes google/microsoft api response properties.
+A service that anonymizes google G Suite and Microsoft O365 API response objects.
+
+## quick start
+
+Use the latest docker image from the GCP docker repository
+
+```docker pull eu.gcr.io/proxy-272310/proxy:v1.0.3```
+
+Or follow the **Installation** section in this readme file for local build and docker compose.
 
 
 ## How it works
