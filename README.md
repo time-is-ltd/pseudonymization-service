@@ -3,6 +3,7 @@
 ## Description
 A service that anonymizes google/microsoft api response properties.
 
+
 ## How it works
 ### Authorization
 Every request to the anonymization service must be authorized by [bearer token in an authorization header](https://tools.ietf.org/html/rfc6750).
