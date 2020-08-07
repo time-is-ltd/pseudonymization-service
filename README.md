@@ -17,7 +17,7 @@ Read [how it works](#how-it-works)
   - edit [enviromental variables and secrets](#enviromental-variables)
 
 #### Test
-  - [test your setup with cURL and get anonymized data](#test-1)
+  - [use cURL to get anonymized data](#test-with-curl)
 
 ## How it works
 ### Authorization
