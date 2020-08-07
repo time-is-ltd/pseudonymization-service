@@ -17,7 +17,7 @@ Removing all sensitive and private textual and personal information from APIs:
   - O365 Docs (coming soon)
 
 
-### quick start
+## Quick start
 Read [how it works](#how-it-works)
 
 #### Install
