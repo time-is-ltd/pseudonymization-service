@@ -1,7 +1,21 @@
 # Anonymization Service by Time is Ltd.
 
 ## Description
-A backend service that anonymizes google G Suite and Microsoft O365 API response objects.
+A backend service to anonymize google G Suite and Microsoft O365 API response objects.
+Removing all sensitive and private textual and personal information from APIs:
+
+#### Google G Suite APIs:
+  - Google Calendar
+  - Gmail
+  - Google Meet (coming soon)
+  - Google Docs (coming soon)
+
+#### Microsoft APIs:
+  - O365 Calendar
+  - O365 Email
+  - MS Team (coming soon)
+  - O365 Docs (coming soon)
+
 
 ### quick start
 Read [how it works](#how-it-works)
