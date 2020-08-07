@@ -2,7 +2,7 @@
 
 ## Description
 A backend service to anonymize google G Suite and Microsoft O365 API response objects.
-Removing all sensitive and private textual and personal information from APIs:
+Removing all sensitive and private textual and personal information from the objects returned by the APIs.
 
 #### Google G Suite APIs:
   - Google Calendar
