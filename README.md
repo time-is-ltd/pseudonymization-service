@@ -1,4 +1,5 @@
-# Anonymization Service by Time is Ltd.
+# Anonymization Service for G Suite, Gmail and O365 API
+### Created and Open-sourced by [Time is Ltd.](https://www.timeisltd.com)
 
 ## Description
 A backend service to anonymize google G Suite and Microsoft O365 API response objects.
