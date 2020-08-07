@@ -1,30 +1,21 @@
 # Anonymization Service by Time is Ltd.
 
 ## Description
-A service that anonymizes google G Suite and Microsoft O365 API response objects.
+A backend service that anonymizes google G Suite and Microsoft O365 API response objects.
 
 ### quick start
+Read [how it works](#how-it-works)
 
-Use the latest docker image from the GCP docker repository
+#### Install
+  - use pre-build container (the easy way)
+  - run locally from source
+  - run with docker-compose
 
-```docker pull eu.gcr.io/proxy-272310/proxy:v1.0.3```
+#### Configure
+- get your G Suite / O365 service token
+- edit enviromental variables and secrets
 
-And follow the [**Installation**](#installation) section in this readme file for local build and docker compose.
-
-### test
-
-Get anonymized G Suite email messages response from the anonymization service with cURL
-
-```
-curl -X GET \
-  https://your_IP/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \
-  -H 'Authorization: Bearer your_api_key' \
-  -H 'Cache-Control: no-cache' --insecure
-```
-
-- your_IP is the IP of the instance running the anonymization service
-- your_email@your_company.com your G Suite email address
-- Bearer is your API key (to clarify, the API key is your generated key - string, 32 chars)
+#### Test
 
 
 ## How it works
@@ -320,6 +311,29 @@ Follow https://docs.microsoft.com/en-us/office/office-365-management-api/get-sta
 --->
 
 ## Installation
+
+### Run on GCP (2 minutes)
+
+1. Create new GCP instance based on this docker image eu.gcr.io/proxy-272310/proxy:v1.0.3, see [how to do it in GCP](https://cloud.google.com/compute/docs/instances/create-start-instance#from-container-image)
+
+2. Add/edit enviromental variables in the GCP instance editor UI
+
+3. Start and [test your instance with cURL](#test)
+
+### Run from docker container
+Use the latest docker image from the GCP docker repository
+
+1. ```docker pull eu.gcr.io/proxy-272310/proxy:v1.0.3```
+
+2. Create and edit file with [enviromental variables](#enviromental-variables)
+```shell
+$ cp .env.example .env
+$ vi .env
+```
+
+3. [enable SSL](#ssl)
+
+
 ### Run locally
 1. Clone repository
 ```shell
@@ -355,7 +369,7 @@ $ npm install pm2 -g
 $ pm2 start npm -- start
 ```
 
-### Using docker-compose
+### Run using docker-compose
 1. Clone repository
 ```shell
 $ git clone https://gitlab.com/time-is-ltd/anonymization-service.git
@@ -379,6 +393,7 @@ $ docker-compose build
 ```shell
 $ docker-compose up
 ```
+
 
 ## SSL
 1. Get SSL certificate from [certification authority](https://letsencrypt.org/) or create self signed certificate
@@ -423,6 +438,22 @@ $ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' cert.pem
 | `O365_TENANT_ID`                    | string               | 00000000-0000-0000-0000-000000000000  |               | Office 365 tenant ID. You can get tenant ID via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
 | `O365_CLIENT_ID`                    | string               | 00000000-0000-0000-0000-000000000000  |               | Office 365 client ID. You can get client ID via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
 | `O365_CLIENT_SECRET`                | string               |                                       |               | Office 365 client secret. You can get client secret via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
+
+## test
+
+Get anonymized G Suite email messages response from the anonymization service with cURL
+
+```
+curl -X GET \
+  https://your_IP/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \
+  -H 'Authorization: Bearer your_api_key' \
+  -H 'Cache-Control: no-cache' --insecure
+```
+
+- your_IP is the IP of the instance running the anonymization service
+- your_email@your_company.com your G Suite email address
+- Bearer is your API key (to clarify, the API key is your generated key - string, 32 chars)
+
 
 ## Future improvements
 1. Implement [OAuth 2.0 Client Credentials Grant Type](https://tools.ietf.org/html/rfc6749#section-4.4) to receive Bearer jwt authorization token and use it instead of `API_TOKEN`
