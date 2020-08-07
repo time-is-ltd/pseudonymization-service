@@ -8,8 +8,8 @@ Read [how it works](#how-it-works)
 
 #### Install
   - [run on GCP in 2 minutes with pre-beild docker](#run-on-gcp-2-minutes)
-  - [run pre-build container localy](#run-from-docker-container)
   - [run locally from source](#run-locally)
+  - [run pre-build container localy](#run-from-docker-container)
   - [run using docker-compose](#run-using-docker-compose)
 
 #### Configure
