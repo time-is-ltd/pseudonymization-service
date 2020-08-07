@@ -7,16 +7,17 @@ A backend service that anonymizes google G Suite and Microsoft O365 API response
 Read [how it works](#how-it-works)
 
 #### Install
-  - use pre-build container (the easy way)
-  - run locally from source
-  - run with docker-compose
+  - [run on GCP in 2 minutes with pre-beild docker](#run-on-gcp-2-minutes)
+  - [run pre-build container localy](#run-from-docker-container)
+  - [run locally from source](#run-locally)
+  - [run using docker-compose](#run-using-docker-compose)
 
 #### Configure
-- get your G Suite / O365 service token
-- edit enviromental variables and secrets
+  - get your [G Suite credentials](#how-to-get-google-api-credentials) / [O365 credential](#how-to-get-office-365-credentials)
+  - edit [enviromental variables and secrets](#enviromental-variables)
 
 #### Test
-
+  - [test your setup with cURL and get anonymized data](#test-1)
 
 ## How it works
 ### Authorization
@@ -439,7 +440,7 @@ $ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' cert.pem
 | `O365_CLIENT_ID`                    | string               | 00000000-0000-0000-0000-000000000000  |               | Office 365 client ID. You can get client ID via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
 | `O365_CLIENT_SECRET`                | string               |                                       |               | Office 365 client secret. You can get client secret via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
 
-## test
+## Test with cURL
 
 Get anonymized G Suite email messages response from the anonymization service with cURL
 
