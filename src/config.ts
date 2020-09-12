@@ -12,6 +12,8 @@ const httpPort: number = toNumber(process.env.HTTP_PORT)
 const httpsPort: number = toNumber(process.env.HTTPS_PORT)
 const sslKey: string = toPem(process.env.SSL_KEY)
 const sslCert: string = toPem(process.env.SSL_CERT)
+const rsaPrivateKey: string = toPem(process.env.RSA_PRIVATE_KEY)
+const rsaPublicKey: string = toPem(process.env.RSA_PUBLIC_KEY)
 
 export default {
   apiToken,
@@ -23,6 +25,8 @@ export default {
   anonymizationSalt,
   sslKey,
   sslCert,
+  rsaPrivateKey,
+  rsaPublicKey,
   httpPort,
   httpsPort
 }

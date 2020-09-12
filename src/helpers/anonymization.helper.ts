@@ -1,6 +1,5 @@
 import * as emailAddresses from 'email-addresses'
 import sha512 from './sha512'
-import rsa from './rsa'
 import config from '../config'
 
 export type AnonymizeEmailConfig = {
@@ -14,10 +13,6 @@ export type AnonymizeEmailConfig = {
 
 const hash = (str: string, salt: string, length = 16) => {
   return sha512(salt, str).substr(0, length)
-}
-
-const decrypt = (str: string, privateKey: string) => {
-  return rsa.rsa_decrypt(str, privateKey)
 }
 
 const getConfig = (params?: AnonymizeEmailConfig): AnonymizeEmailConfig => {

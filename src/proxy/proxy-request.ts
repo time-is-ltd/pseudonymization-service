@@ -1,6 +1,9 @@
 
 import axios from 'axios'
 import { pathToAbsUrl } from '../helpers/path.helper'
+import { findAndDecryptRSA } from '../helpers/rsa'
+import { Console } from 'console'
+import config from '../config'
 
 export type AuthorizationFactory = (path: string) => Promise<string>
 export type ProxyRequestDataMapper = (data: string, body?: string) => Promise<string>
@@ -12,6 +15,9 @@ const proxyReguest = (
   bodyMapper?: ProxyRequestBodyMapper,
   urlTransform: (url: string) => string = (url) => url
 ) => async (req, res, next) => {
+
+  // TODO: add real Key
+  req.url = findAndDecryptRSA(req.url, config.rsaPrivateKey)
   const path = urlTransform(req.url)
   const url = pathToAbsUrl(path)
 
