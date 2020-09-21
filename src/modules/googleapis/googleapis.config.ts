@@ -10,7 +10,8 @@ export const scopes: string[] = toArray(process.env.GSUITE_SCOPES)
 
 // Hosts
 export const hosts = [
-  'www.googleapis.com'
+  'www.googleapis.com',
+  'gmail.googleapis.com'
 ]
 
 // Router paths

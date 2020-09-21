@@ -17,7 +17,13 @@ export const generateKey = () => {
         }
       }, (err, publicKey, privateKey) => {
         // Handle errors and use the generated key pair.
-        console.log(publicKey, privateKey)
+        
+        privateKey = privateKey.replace(/\r/g, '').replace(/\n/g, '\\n');
+        console.log(privateKey)
+
+        publicKey = publicKey.replace(/\r/g, '').replace(/\n/g, '\\n');
+        console.log(publicKey)
+
       });
 }
 
