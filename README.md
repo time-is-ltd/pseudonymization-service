@@ -40,11 +40,13 @@ Every request to the anonymization service must be authorized by [bearer token i
 
 Bearer token is provided by [`API_TOKEN`](#enviromental-variables) enviromental variable. `API_TOKEN` variable will be replaced with OAuth 2.0 Client Credentials Grant Type flow in the [future](#future-improvements).
 
-### Anonymization
-- Data is anonymized by salted `sha512` ([src/helpers/sha512.ts](./src/helpers/sha512.ts)) hashing function
+### Pseudonimization
+- Input PII data (email address) is RSA encrypted string
+- Private and Public keys can be provided by [`RSA_PRIVATE_KEY and RSA_PUBLIC_KEY`](#enviromental-variables) enviromental variables
+- Output PII data (email address, names etc.) is anonymized by salted `sha512` ([src/helpers/sha512.ts](./src/helpers/sha512.ts)) hashing function and the result is shortened to 16 chars.
 - Salt can be provided by [`ANONYMIZATION_SALT`](#enviromental-variables) enviromental variable
 
-#### Email anonymization ([src/helpers/anonymization.helper.ts](./src/helpers/anonymization.helper.ts))
+#### Email Pseudonimization ([src/helpers/anonymization.helper.ts](./src/helpers/anonymization.helper.ts))
 - The service recognizes 2 types of domains:
   1. internal - owned or controlled by your organization
   2. external
