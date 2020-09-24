@@ -2,9 +2,6 @@
 import * as crypto from 'crypto'
 import * as path from 'path'
 import * as fs from 'fs'
-
-// TODO:
- // Tests + gen utilities for test
  
 export const url_encode = (toEncode: string): string => {
   return toEncode
