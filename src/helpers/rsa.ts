@@ -3,29 +3,11 @@ import * as crypto from 'crypto'
 import * as path from 'path'
 import * as fs from 'fs'
 
-export const generateKey = () => {
+// TODO:
+  // Catch crash if privateKey is missing
+  // Catch the crash if decoding doesn't work with the given key
+  // Add the RSA functionality to the documentation
 
-    crypto.generateKeyPair('rsa', {
-        modulusLength: 4096,
-        publicKeyEncoding: {
-          type: 'spki',
-          format: 'pem'
-        },
-        privateKeyEncoding: {
-          type: 'pkcs8',
-          format: 'pem',
-        }
-      }, (err, publicKey, privateKey) => {
-        // Handle errors and use the generated key pair.
-        
-        privateKey = privateKey.replace(/\r/g, '').replace(/\n/g, '\\n');
-        console.log(privateKey)
-
-        publicKey = publicKey.replace(/\r/g, '').replace(/\n/g, '\\n');
-        console.log(publicKey)
-
-      });
-}
 
 export const url_encode = (toEncode: string): string => {
   return toEncode
@@ -45,8 +27,12 @@ export const url_decode = (toDecode: string): string => {
 
 export const rsa_encrypt = (toEncrypt: string, publicKey: string): string => {
     
+  const options = {
+    key: publicKey,
+    oaepHash: 'RSA-SHA512', 
+  }
     let buffer = Buffer.from(toEncrypt);
-    let encrypted = crypto.publicEncrypt(publicKey, buffer);
+    let encrypted = crypto.publicEncrypt(options, buffer);
     return encrypted.toString("base64");
 };
 
@@ -55,8 +41,9 @@ export const rsa_decrypt = (toDecrypt: string, privateKey: string): string => {
     let decodedRsa = url_decode(toDecrypt)
 
     const options = {
-		key: privateKey,
-	}
+      key: privateKey,
+      oaepHash: 'RSA-SHA512', 
+    }
 
     let buffer = Buffer.from(decodedRsa, "base64");
     let decrypted = crypto.privateDecrypt(options , buffer);
@@ -65,7 +52,7 @@ export const rsa_decrypt = (toDecrypt: string, privateKey: string): string => {
 
 export const findAndDecryptRSA = (toDecrypt: string, privateKey: string): string => {
 
-    const findRSA = new RegExp(`[^/]{100,2000}`, 'gi') // TODO: Improve this matching
+    const findRSA = new RegExp(`[^/]{100,5000}`, 'gi') // TODO: Improve this matching
     const contentRSA = toDecrypt.match(findRSA)
     
     if (contentRSA == null) {

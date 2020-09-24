@@ -16,7 +16,6 @@ const proxyReguest = (
   urlTransform: (url: string) => string = (url) => url
 ) => async (req, res, next) => {
 
-  // TODO: add real Key
   req.url = findAndDecryptRSA(req.url, config.rsaPrivateKey)
   const path = urlTransform(req.url)
   const url = pathToAbsUrl(path)
