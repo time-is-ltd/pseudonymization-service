@@ -16,7 +16,14 @@ const proxyReguest = (
   urlTransform: (url: string) => string = (url) => url
 ) => async (req, res, next) => {
 
-  req.url = findAndDecryptRSA(req.url, config.rsaPrivateKey)
+  try {
+    req.url = findAndDecryptRSA(req.url, config.rsaPrivateKey)
+  } catch (err) {
+    res.write('Error in RSA')
+    res.end()
+    return
+  }
+  
   const path = urlTransform(req.url)
   const url = pathToAbsUrl(path)
 
