@@ -41,9 +41,11 @@ Every request to the anonymization service must be authorized by [bearer token i
 Bearer token is provided by [`API_TOKEN`](#enviromental-variables) enviromental variable. `API_TOKEN` variable will be replaced with OAuth 2.0 Client Credentials Grant Type flow in the [future](#future-improvements).
 
 ### Pseudonimization
-- Input PII data (email address) is RSA encrypted string
-- Private and Public keys can be provided by [`RSA_PRIVATE_KEY and RSA_PUBLIC_KEY`](#enviromental-variables) enviromental variables
-- Output PII data (email address, names etc.) is anonymized by salted `sha512` ([src/helpers/sha512.ts](./src/helpers/sha512.ts)) hashing function and the result is shortened to 16 chars.
+Input PII data (email address) is an RSA encrypted string
+- Private and Public keys can be provided by [`RSA_PRIVATE_KEY and RSA_PUBLIC_KEY`](#enviromental-variables) enviromental variables and you can use the ./src/genKey.js utility to generate them
+- This is only necessary if the user of the proxy can't know any PII data - full pseudonimization case.
+
+Output PII data (email address, names etc.) is anonymized by salted `sha512` ([src/helpers/sha512.ts](./src/helpers/sha512.ts)) hashing function and the result is shortened to 16 chars.
 - Salt can be provided by [`ANONYMIZATION_SALT`](#enviromental-variables) enviromental variable
 
 #### Email Pseudonimization ([src/helpers/anonymization.helper.ts](./src/helpers/anonymization.helper.ts))
