@@ -4,7 +4,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 // TODO:
- // Add the RSA functionality to the documentation
  // Tests + gen utilities for test
  
 export const url_encode = (toEncode: string): string => {
@@ -31,7 +30,7 @@ export const rsa_encrypt = (toEncrypt: string, publicKey: string): string => {
     }
       let buffer = Buffer.from(toEncrypt);
       let encrypted = crypto.publicEncrypt(options, buffer);
-      return encrypted.toString("base64");
+      return url_encode(encrypted.toString("base64"))
   
 };
 
@@ -65,5 +64,5 @@ export const findAndDecryptRSA = (toDecrypt: string, privateKey: string): string
 };
 
 export default {
-    findAndDecryptRSA
+    findAndDecryptRSA,
 }
