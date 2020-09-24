@@ -1,8 +1,7 @@
 
 import axios from 'axios'
 import { pathToAbsUrl } from '../helpers/path.helper'
-import { findAndDecryptRSA } from '../helpers/rsa'
-import { Console } from 'console'
+import { decryptEmail } from '../helpers/rsa'
 import config from '../config'
 
 export type AuthorizationFactory = (path: string) => Promise<string>
@@ -17,10 +16,10 @@ const proxyReguest = (
 ) => async (req, res, next) => {
 
   try {
-    req.url = findAndDecryptRSA(req.url, config.rsaPrivateKey)
+    req.url = decryptEmail(req.url, config.rsaPrivateKey)
   } catch (err) {
-    res.write('Error in RSA')
-    res.end()
+    res.writeHead(400, {"Content-Type": "application/json"});
+    res.end(JSON.stringify({error: 'Error in RSA' }))
     return
   }
   
