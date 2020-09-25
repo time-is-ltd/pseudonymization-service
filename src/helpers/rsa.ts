@@ -46,14 +46,13 @@ export const decryptEmail = (toDecrypt: string, privateKey: string): string => {
 
   if(!privateKey) return toDecrypt
 
-    //const findRSA = new RegExp(`[^/]{680,700}`, 'gi') // TODO: Improve this matching
-    const contentRSA = toDecrypt.match(/(RSA_ENCRYPTED_EMAIL_.*?(?=\/))/)
+    const contentRSA = toDecrypt.match(/(RSA_ENCRYPTED_EMAIL_([^/]*))/)
     
-    if (contentRSA === null && contentRSA.length === 4) {
+    if (contentRSA === null && contentRSA.length === 3) {
         // no encrypted content found
         return toDecrypt
     } else {
-        return toDecrypt.replace(contentRSA[2], rsaDecrypt(contentRSA[3], privateKey))
+        return toDecrypt.replace(contentRSA[1], rsaDecrypt(contentRSA[2], privateKey))
     }
 };
 
