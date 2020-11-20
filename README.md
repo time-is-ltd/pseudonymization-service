@@ -1,4 +1,4 @@
-# Anonymization Service for G Suite, Gmail and O365 API
+# Anonymization Service for Google Workspace and Microsoft 365 APIs
 ### Created and Open-sourced by [Time is Ltd.](https://www.timeisltd.com)
 
 ## Description
