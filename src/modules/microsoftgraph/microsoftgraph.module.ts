@@ -74,6 +74,12 @@ const listCalendarEventsRoute: Route = {
   handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper)
 }
 
+const listCalendarViewRoute: Route = {
+  hosts,
+  path: paths.listCalendarViewPath,
+  handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper)
+}
+
 const oauth2TokenRoute: Route = {
   hosts: [TOKEN_HOST],
   path: TOKEN_PATH,
@@ -97,6 +103,7 @@ export default () => {
       listUserCalendarsRoute,
       listUserEventsRoute,
       listCalendarEventsRoute,
+      listCalendarViewRoute,
       oauth2TokenRoute
     ]
   }
