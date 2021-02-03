@@ -1,4 +1,5 @@
-# Anonymization Service for Google Workspace and Microsoft 365 APIs
+# Pseudonymization Service for Google Workspace and Microsoft 365 APIs
+
 ### Created and Open-sourced by [Time is Ltd.](https://www.timeisltd.com)
 
 ## Description
