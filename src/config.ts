@@ -8,11 +8,13 @@ const anonymizeInternalEmailUsername = toBoolean(process.env.ANONYMIZE_INTERNAL_
 
 const apiToken: string | undefined = process.env.API_TOKEN
 const anonymizationSalt: string | undefined = process.env.ANONYMIZATION_SALT
+const rsaPrivateKey: string = toPem(process.env.RSA_PRIVATE_KEY)
+
 const httpPort: number = toNumber(process.env.HTTP_PORT)
 const httpsPort: number = toNumber(process.env.HTTPS_PORT)
 const sslKey: string = toPem(process.env.SSL_KEY)
 const sslCert: string = toPem(process.env.SSL_CERT)
-const rsaPrivateKey: string = toPem(process.env.RSA_PRIVATE_KEY)
+
 
 export default {
   apiToken,
