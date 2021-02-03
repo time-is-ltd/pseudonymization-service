@@ -2,10 +2,8 @@ import { getPathPartFactory } from '../../helpers/path.helper'
 import { toArray, toPem } from '../../helpers/config.helper'
 
 // Env variables
-export const clientEmail: string | undefined = 
-process.env.GSUITE_CLIENT_EMAIL
-export const privateKey: string = 
-toPem(process.env.GSUITE_PRIVATE_KEY || '')
+export const clientEmail: string | undefined = process.env.GSUITE_CLIENT_EMAIL
+export const privateKey: string = toPem(process.env.GSUITE_PRIVATE_KEY || '')
 export const scopes: string[] = toArray(process.env.GSUITE_SCOPES)
 
 // Hosts
