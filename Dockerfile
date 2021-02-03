@@ -1,4 +1,4 @@
-FROM node:10.16.0
+FROM node:14
 
 RUN groupadd -r app && useradd -r -g app app
 RUN mkdir -p /usr/src/app

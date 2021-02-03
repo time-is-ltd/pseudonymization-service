@@ -206,6 +206,7 @@ export const calendar: Schema<Calendar> = {
 
 export const event: Schema<Event> = {
   id: TYPES.String,
+  iCalUId: TYPES.String,
   subject: [
     TYPES.String,
     TYPES.Private

@@ -9,16 +9,18 @@ export const hosts = [
 ]
 
 // Router paths
-const listUserMessagesPath = '/beta/users/:userId/messages'
-const listUserCalendarsPath = '/beta/users/:userId/calendars'
-const listUserEventsPath = '/beta/users/:userId/events'
-const listCalendarEventsPath = '/beta/users/:userId/calendars/:calendarId/events'
+const listUserMessagesPath = '/v1.0/users/:userId/messages'
+const listUserCalendarsPath = '/v1.0/users/:userId/calendars'
+const listUserEventsPath = '/v1.0/users/:userId/events'
+const listCalendarEventsPath = '/v1.0/users/:userId/calendars/:calendarId/events'
+const listCalendarViewPath = '/v1.0/users/:userId/calendars/:calendarId/calendarview'
 
 export const paths = {
   listUserMessagesPath,
   listUserCalendarsPath,
   listUserEventsPath,
-  listCalendarEventsPath
+  listCalendarEventsPath,
+  listCalendarViewPath
 }
 
 export default {

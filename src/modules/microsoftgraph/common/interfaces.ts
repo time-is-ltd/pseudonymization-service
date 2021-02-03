@@ -162,7 +162,8 @@ export type Calendar = {
 }
 
 export type Event = {
-  id: string
+  id: string,
+  iCalUId: string,
   subject: string
   bodyPreview: string
   body: ItemBody

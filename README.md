@@ -1,4 +1,5 @@
-# Pseudonymization Service for G Suite, Gmail and O365 API
+# Pseudonymization Service for Google Workspace and Microsoft 365 APIs
+
 ### Created and Open-sourced by [Time is Ltd.](https://www.timeisltd.com)
 
 ## Description
@@ -40,11 +41,28 @@ Every request to the anonymization service must be authorized by [bearer token i
 
 Bearer token is provided by [`API_TOKEN`](#enviromental-variables) enviromental variable. `API_TOKEN` variable will be replaced with OAuth 2.0 Client Credentials Grant Type flow in the [future](#future-improvements).
 
-### Anonymization
-- Data is anonymized by salted `sha512` ([src/helpers/sha512.ts](./src/helpers/sha512.ts)) hashing function
+### Pseudonimization
+Definitions:
+- Pseudonimization:
+- Requesting service: It's the client requesting pseudonimized data from the G Suite, O365 etc. APIs.
+- Pseudonimization service: Is an instance of this service from this repository
+
+#### Input data Pseudonimization
+The following sections represent pseudonimization of data coming IN from the requesting service to the pseudonimization service. It's perfectly possible for the requesting service to request data about a user (specific email address) without knowing the email address. 
+
+#### Email address in the incoming API requests
+Input PII data (email address) in the API query is an RSA encrypted string
+- Private key can be provided by [`RSA_PRIVATE_KEY`](#enviromental-variables) enviromental variable and you can use the ./src/genKey.js utility to generate Private key and Public key
+- This is only necessary if the user of the proxy can't know any PII data - full pseudonimization case.
+- In this case, all the encrypted email addresses have to be in a format starting with the RSA_ENCRYPTED_EMAIL prefix, like this example: `RSA_ENCRYPTED_EMAIL_IIJRAIBADANBgkqhkiG9w0BA...` and the RSA encrypted string has to be url-encoded safe Base64 string. See the `./src/helpers/rsa.ts`, functions `urlEncode` and `rsaEncrypt` functions and use this implementation on your data requesting back-end.
+
+Output PII data (email address, names etc.) is anonymized by salted `sha512` ([src/helpers/sha512.ts](./src/helpers/sha512.ts)) hashing function and the result is shortened to 16 chars.
 - Salt can be provided by [`ANONYMIZATION_SALT`](#enviromental-variables) enviromental variable
 
-#### Email anonymization ([src/helpers/anonymization.helper.ts](./src/helpers/anonymization.helper.ts))
+#### Output data Pseudonimization
+The following sections represent the pseudonimization of data that are send back to the requesting service from the pseudonimization service.
+
+#### Email Pseudonimization ([src/helpers/anonymization.helper.ts](./src/helpers/anonymization.helper.ts))
 - The service recognizes 2 types of domains:
   1. internal - owned or controlled by your organization
   2. external
@@ -448,6 +466,7 @@ $ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' cert.pem
 | `HTTPS_PORT`                        | number               | 443                                   |               | Https listening port. You have to provide `SSL_KEY` and `SSL_CERT` enviromental variables
 | `SSL_KEY`                           | string               |                  |               | Converted file with private key (`key.pem`) to one-line PEM format. Follow [SSL guide](#ssl) to get SSL PEM files.
 | `SSL_CERT`                          | string               |                 |               | Converted file with certificate (`cert.pem`) to one-line PEM format. Follow [SSL guide](#ssl) to get SSL PEM files.
+| `RSA_PRIVATE_KEY`                          | string               |                 |               | Converted file with RSA Private Key to one-line PEM format. Use the ./src/genKey.js to generate it.
 | `GSUITE_CLIENT_EMAIL`        | string               |             |               | Value of `client_email` property located in google service account credentials.json file. You can get google service account credentials via [How to get Google api credentials guide](#how-to-get-google-api-credentials).
 | `GSUITE_PRIVATE_KEY`        | string               |             |               | Value of `private_key` property located in google service account credentials.json file. You can get google service account credentials via [How to get Google api credentials guide](#how-to-get-google-api-credentials).
 | `GSUITE_SCOPES`                     | string               | https://www.googleapis.com/auth/gmail.readonly, https://www.googleapis.com/auth/calendar.readonly |               | OAuth 2.0 Scopes for Google APIs
@@ -473,3 +492,14 @@ curl -X GET \
 
 ## Future improvements
 1. Implement [OAuth 2.0 Client Credentials Grant Type](https://tools.ietf.org/html/rfc6749#section-4.4) to receive Bearer jwt authorization token and use it instead of `API_TOKEN`
+
+
+## MIT License
+
+Copyright (c) 2020 Time is Ltd.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

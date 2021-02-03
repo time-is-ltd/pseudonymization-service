@@ -1,6 +1,8 @@
 
 import axios from 'axios'
 import { pathToAbsUrl } from '../helpers/path.helper'
+import { decryptEmail } from '../helpers/rsa'
+import config from '../config'
 
 export type AuthorizationFactory = (path: string) => Promise<string>
 export type ProxyRequestDataMapper = (data: string, body?: string) => Promise<string>
@@ -12,6 +14,15 @@ const proxyReguest = (
   bodyMapper?: ProxyRequestBodyMapper,
   urlTransform: (url: string) => string = (url) => url
 ) => async (req, res, next) => {
+
+  try {
+    req.url = decryptEmail(req.url, config.rsaPrivateKey)
+  } catch (err) {
+    res.writeHead(400, {"Content-Type": "application/json"});
+    res.end(JSON.stringify({error: 'Error in RSA' }))
+    return
+  }
+  
   const path = urlTransform(req.url)
   const url = pathToAbsUrl(path)
 
