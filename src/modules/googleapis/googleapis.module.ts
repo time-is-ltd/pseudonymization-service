@@ -10,12 +10,10 @@ import { Route } from '../../router/interfaces/router.interface'
 import { authorizationPathExtractorFactory } from './googleapis.service'
 
 import {
-  scopes,
+  googleApiEnabled,
   hosts,
   paths,
   pathTransforms,
-  clientEmail,
-  privateKey
 } from './googleapis.config'
 
 // Path userId extractor map
@@ -78,8 +76,7 @@ const gmailBatchRoute: Route = {
 }
 
 export default () => {
-  const enabled = !!(scopes && clientEmail && privateKey)
-
+  const enabled = !!(googleApiEnabled)
   return {
     enabled,
     routes: [

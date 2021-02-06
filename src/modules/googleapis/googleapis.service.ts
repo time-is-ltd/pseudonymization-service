@@ -2,10 +2,17 @@ import { google } from 'googleapis'
 import { Token } from './interfaces/token.interface'
 import { matchPath } from '../../helpers/path.helper'
 import { AuthorizationFactory } from '../../proxy/proxy-request'
-import { scopes, privateKey, clientEmail } from './googleapis.config'
 import tokenService from '../../token/token.service'
+import { getSecret } from '../../keyvault/keyvault.service'
+import { toArray, toPem } from '../../helpers/config.helper'
 
 export const refreshAccessToken = async (userId: string): Promise<Token> => {
+
+  // Get fresh Google Workspace secrets
+  const clientEmail: string | undefined = await getSecret("GSUITE-CLIENT-EMAIL")
+  const privateKey: string = toPem(await getSecret("GSUITE-PRIVATE-KEY") || '')
+  const scopes: string[] = toArray(await getSecret("GSUITE-SCOPES"))
+
   const auth = new google.auth.GoogleAuth({
     scopes,
     credentials: {

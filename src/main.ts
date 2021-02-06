@@ -5,10 +5,12 @@ import * as http from 'http'
 import * as https from 'https'
 
 import config from './config'
+import { getSecret } from './keyvault/keyvault.service'
 import extractToken from './helpers/extract-token'
 import googleapis from './modules/googleapis/googleapis.module'
 import microsoftgraph from './modules/microsoftgraph/microsoftgraph.module'
 import { Route } from './router/interfaces/router.interface'
+
 
 // Register modules
 type Module = {
@@ -41,6 +43,7 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
 }
 
 const bootstrap = () => {
+
   const app = express()
 
   // Register routes

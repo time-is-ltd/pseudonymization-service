@@ -1,16 +1,14 @@
 import { getPathPartFactory } from '../../helpers/path.helper'
-import { toArray, toPem } from '../../helpers/config.helper'
-
-// Env variables
-export const clientEmail: string | undefined = process.env.GSUITE_CLIENT_EMAIL
-export const privateKey: string = toPem(process.env.GSUITE_PRIVATE_KEY || '')
-export const scopes: string[] = toArray(process.env.GSUITE_SCOPES)
+import config from '../../config'
 
 // Hosts
 export const hosts = [
   'www.googleapis.com',
   'gmail.googleapis.com'
 ]
+
+// Config Env
+export const googleApiEnabled = config.googleApiEnabled
 
 // Router paths
 const listUserMessagesPath = '/gmail/v1/users/:userId/messages'
@@ -57,7 +55,8 @@ export const pathTransforms = {
 }
 
 export default {
-  scopes,
+  googleApiEnabled,
   hosts,
-  paths
+  paths,
+  pathTransforms
 }
