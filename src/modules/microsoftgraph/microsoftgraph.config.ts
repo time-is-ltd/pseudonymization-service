@@ -1,10 +1,9 @@
 
 import { getSecret } from '../../keyvault/keyvault.service'
+import config from '../../config'
 
-// Env variables
-export const tenantId: string | undefined = process.env.O365_TENANT_ID
-export const clientId: string | undefined = process.env.O365_CLIENT_ID
-export const clientSecret: string | undefined = process.env.O365_CLIENT_SECRET
+// Config Env
+export const microsoftApiEnabled = config.microsoftApiEnabled
 
 // Hosts
 export const hosts = [
@@ -27,9 +26,7 @@ export const paths = {
 }
 
 export default {
-  tenantId,
-  clientId,
-  clientSecret,
+  microsoftApiEnabled,
   hosts,
   paths
 }

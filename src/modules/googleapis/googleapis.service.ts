@@ -9,9 +9,9 @@ import { toArray, toPem } from '../../helpers/config.helper'
 export const refreshAccessToken = async (userId: string): Promise<Token> => {
 
   // Get fresh Google Workspace secrets
-  const clientEmail: string | undefined = await getSecret("GSUITE-CLIENT-EMAIL")
-  const privateKey: string = toPem(await getSecret("GSUITE-PRIVATE-KEY") || '')
-  const scopes: string[] = toArray(await getSecret("GSUITE-SCOPES"))
+  let clientEmail: string | undefined = await getSecret("GSUITE-CLIENT-EMAIL")
+  let privateKey: string = toPem(await getSecret("GSUITE-PRIVATE-KEY") || '')
+  let scopes: string[] = toArray(await getSecret("GSUITE-SCOPES"))
 
   const auth = new google.auth.GoogleAuth({
     scopes,
@@ -21,6 +21,9 @@ export const refreshAccessToken = async (userId: string): Promise<Token> => {
     },
     clientOptions: { subject: userId }
   })
+
+  // remove from memory for safety
+  privateKey = ""
 
   const authClient = await auth.getClient()
 

@@ -5,12 +5,12 @@ import * as http from 'http'
 import * as https from 'https'
 
 import config from './config'
-import { getSecret } from './keyvault/keyvault.service'
 import extractToken from './helpers/extract-token'
 import googleapis from './modules/googleapis/googleapis.module'
 import microsoftgraph from './modules/microsoftgraph/microsoftgraph.module'
 import { Route } from './router/interfaces/router.interface'
 
+const main = async () => {
 
 // Register modules
 type Module = {
@@ -18,8 +18,8 @@ type Module = {
   routes: Route[]
 }
 
-const microsoftgraphModule = microsoftgraph()
-const googleapisModule = googleapis()
+const microsoftgraphModule = await microsoftgraph()
+const googleapisModule = await googleapis()
 const modules: Module[] = [
   microsoftgraphModule,
   googleapisModule
@@ -90,3 +90,6 @@ const bootstrap = () => {
 }
 
 bootstrap()
+
+}
+main()

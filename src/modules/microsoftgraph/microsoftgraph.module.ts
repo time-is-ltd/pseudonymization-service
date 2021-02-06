@@ -6,30 +6,78 @@ import listUserCalendarsMapper from './mappers/list-user-calendars.mapper'
 import listUserEventsMapper from './mappers/list-user-events.mapper'
 
 import tokenService from '../../token/token.service'
+import { getSecret } from '../../keyvault/keyvault.service'
 
 import {
-  tenantId,
-  clientId,
-  clientSecret,
+  microsoftApiEnabled,
   hosts,
   paths
 } from './microsoftgraph.config'
 
+
 const MICROSOFTGRAPH_TOKEN_ID = 'microsoftgraph'
-const TOKEN_HOST = 'login.microsoftonline.com'
-const TOKEN_PATH = `/${tenantId}/oauth2/token`
-const TOKEN_URL = `https://${TOKEN_HOST}${TOKEN_PATH}`
-const oauth2Options = {
-  url: TOKEN_URL,
-  clientId,
-  clientSecret,
-  extra: {
-    resource: 'https://graph.microsoft.com'
+
+const getOauth2TokenRoute = async ():Promise<Route> => {
+
+  // secret variables
+  const tenantId: string | undefined = await getSecret("O365-TENANT-ID")
+  const clientId: string | undefined = await getSecret("O365-CLIENT-ID")
+  const clientSecret: string | undefined = await getSecret("O365-CLIENT-SECRET")
+
+  const TOKEN_HOST = 'login.microsoftonline.com'
+  const TOKEN_PATH = `/${tenantId}/oauth2/token`
+  const TOKEN_URL = `https://${TOKEN_HOST}${TOKEN_PATH}`
+  const oauth2Options = {
+    url: TOKEN_URL,
+    clientId,
+    clientSecret,
+    extra: {
+      resource: 'https://graph.microsoft.com'
+    }
   }
+
+  const oauth2TokenRoute: Route = {
+    hosts: [TOKEN_HOST],
+    path: TOKEN_PATH,
+    method: 'post',
+    requireAuth: false,
+    handler: oauth2TokenHandler(oauth2Options, (token) => {
+      tokenService.update({
+        id: MICROSOFTGRAPH_TOKEN_ID,
+        ...token
+      })
+    })
+  }
+
+  return oauth2TokenRoute
+  
 }
 
+const getOauth2Options = async () => {
+  // secret variables
+  const tenantId: string | undefined = await getSecret("O365-TENANT-ID")
+  const clientId: string | undefined = await getSecret("O365-CLIENT-ID")
+  const clientSecret: string | undefined = await getSecret("O365-CLIENT-SECRET")
+
+  const TOKEN_HOST = 'login.microsoftonline.com'
+  const TOKEN_PATH = `/${tenantId}/oauth2/token`
+  const TOKEN_URL = `https://${TOKEN_HOST}${TOKEN_PATH}`
+  const oauth2Options = {
+    url: TOKEN_URL,
+    clientId,
+    clientSecret,
+    extra: {
+      resource: 'https://graph.microsoft.com'
+    }
+  }
+
+  return oauth2Options
+}
+
+
 const refreshToken = async () => {
-  const response = await oauth2Request(oauth2Options)
+
+  const response = await oauth2Request(await getOauth2Options())
   const token = tokenService.update({
     id: MICROSOFTGRAPH_TOKEN_ID,
     ...response.data
@@ -49,6 +97,7 @@ const authorizationFactory = async () => {
 
   return `Bearer ${token.token}`
 }
+
 
 const listUserMessagesRoute: Route = {
   hosts,
@@ -80,22 +129,11 @@ const listCalendarViewRoute: Route = {
   handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper)
 }
 
-const oauth2TokenRoute: Route = {
-  hosts: [TOKEN_HOST],
-  path: TOKEN_PATH,
-  method: 'post',
-  requireAuth: false,
-  handler: oauth2TokenHandler(oauth2Options, (token) => {
-    tokenService.update({
-      id: MICROSOFTGRAPH_TOKEN_ID,
-      ...token
-    })
-  })
-}
+export const enabled = !!(microsoftApiEnabled)
 
-export const enabled = !!(tenantId && clientId && clientSecret)
+export default async () => {
 
-export default () => {
+  const oauth2TokenRoute = await getOauth2TokenRoute()
   return {
     enabled,
     routes: [
