@@ -21,20 +21,10 @@ const getOauth2TokenRoute = async ():Promise<Route> => {
 
   // secret variables
   const tenantId: string | undefined = await getSecret("O365-TENANT-ID")
-  const clientId: string | undefined = await getSecret("O365-CLIENT-ID")
-  const clientSecret: string | undefined = await getSecret("O365-CLIENT-SECRET")
 
   const TOKEN_HOST = 'login.microsoftonline.com'
   const TOKEN_PATH = `/${tenantId}/oauth2/token`
-  const TOKEN_URL = `https://${TOKEN_HOST}${TOKEN_PATH}`
-  const oauth2Options = {
-    url: TOKEN_URL,
-    clientId,
-    clientSecret,
-    extra: {
-      resource: 'https://graph.microsoft.com'
-    }
-  }
+  const oauth2Options = await getOauth2Options()
 
   const oauth2TokenRoute: Route = {
     hosts: [TOKEN_HOST],
@@ -58,7 +48,7 @@ const getOauth2Options = async () => {
   const tenantId: string | undefined = await getSecret("O365-TENANT-ID")
   const clientId: string | undefined = await getSecret("O365-CLIENT-ID")
   const clientSecret: string | undefined = await getSecret("O365-CLIENT-SECRET")
-
+  
   const TOKEN_HOST = 'login.microsoftonline.com'
   const TOKEN_PATH = `/${tenantId}/oauth2/token`
   const TOKEN_URL = `https://${TOKEN_HOST}${TOKEN_PATH}`
