@@ -17,31 +17,6 @@ import {
 
 const MICROSOFTGRAPH_TOKEN_ID = 'microsoftgraph'
 
-const getOauth2TokenRoute = async ():Promise<Route> => {
-
-  // secret variables
-  const tenantId: string | undefined = await getSecret("O365-TENANT-ID")
-
-  const TOKEN_HOST = 'login.microsoftonline.com'
-  const TOKEN_PATH = `/${tenantId}/oauth2/token`
-  const oauth2Options = await getOauth2Options()
-
-  const oauth2TokenRoute: Route = {
-    hosts: [TOKEN_HOST],
-    path: TOKEN_PATH,
-    method: 'post',
-    requireAuth: false,
-    handler: oauth2TokenHandler(oauth2Options, (token) => {
-      tokenService.update({
-        id: MICROSOFTGRAPH_TOKEN_ID,
-        ...token
-      })
-    })
-  }
-
-  return oauth2TokenRoute
-  
-}
 
 const getOauth2Options = async () => {
   // secret variables
@@ -117,6 +92,32 @@ const listCalendarViewRoute: Route = {
   hosts,
   path: paths.listCalendarViewPath,
   handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper)
+}
+
+const getOauth2TokenRoute = async ():Promise<Route> => {
+
+  // secret variables
+  const tenantId: string | undefined = await getSecret("O365-TENANT-ID")
+
+  const TOKEN_HOST = 'login.microsoftonline.com'
+  const TOKEN_PATH = `/${tenantId}/oauth2/token`
+  const oauth2Options = await getOauth2Options()
+
+  const oauth2TokenRoute: Route = {
+    hosts: [TOKEN_HOST],
+    path: TOKEN_PATH,
+    method: 'post',
+    requireAuth: false,
+    handler: oauth2TokenHandler(oauth2Options, (token) => {
+      tokenService.update({
+        id: MICROSOFTGRAPH_TOKEN_ID,
+        ...token
+      })
+    })
+  }
+
+  return oauth2TokenRoute
+  
 }
 
 export const enabled = !!(microsoftApiEnabled)
