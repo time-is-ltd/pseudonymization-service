@@ -25,8 +25,15 @@ export const getSecret = async (secretName: string): Promise<string> => {
     if(process.env[secretName] === undefined){
       const client = getKeyVaultClient(keyVaultName)
       const result = await client.getSecret(secretName)
+      console.log(result.value)
       return result.value
-    } else return process.env[secretName]
-  } catch(err){ return err}
+    } else {
+      console.log(secretName+" - Taking it from .env")
+      return process.env[secretName]
+    }
+  } catch(err){
+    console.log(err)
+    return ""
+  }
   
 }
