@@ -67,7 +67,7 @@ The following sections represent the pseudonimization of data that are send back
   1. internal - owned or controlled by your organization
   2. external
 - Internal domains can be set by providing comma separated list of values to [`INTERNAL_DOMAIN_LIST`](#enviromental-variables) enviromental variable
-- Email address (username@domain) anonymization depends on [`INTERNAL_DOMAIN_LIST`, `ANONYMIZE_INTERNAL_EMAIL_USERNAME`, `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`, `ANONYMIZE_EXTRENAL_EMAIL_USERNAME`, `ANONYMIZE_EXTRENAL_EMAIL_DOMAIN`](#enviromental-variables) enviromental variables
+- Email address (username@domain) anonymization depends on [`INTERNAL_DOMAIN_LIST`, `ANONYMIZE_INTERNAL_EMAIL_USERNAME`, `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`, `ANONYMIZE_EXTERNAL_EMAIL_USERNAME`, `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`](#enviromental-variables) enviromental variables
 - Every email address part is hashed by [`sha512`](#anonymization) function and truncated to the **first 16 characters**
 
 
@@ -80,7 +80,7 @@ The following sections represent the pseudonimization of data that are send back
 | user@internal.com | true                                | true                              | anonymized@anonymized.hash
 
 ##### Example: External domain anonymization
-| Email             | [`ANONYMIZE_EXTRENAL_EMAIL_USERNAME`](#enviromental-variables) | [`ANONYMIZE_EXTRENAL_EMAIL_DOMAIN`](#enviromental-variables) | Anonymized email
+| Email             | [`ANONYMIZE_EXTERNAL_EMAIL_USERNAME`](#enviromental-variables) | [`ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`](#enviromental-variables) | Anonymized email
 | ----------------- | ----------------------------------- | --------------------------------- | ------------------
 | user@external.com | false                               | false                             | user@external.com
 | user@external.com | false                               | true                              | user@anonymized.hash
@@ -457,8 +457,8 @@ $ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' cert.pem
 | ----------------------------------- | -------------------- | ------------------------------------- | ------------- |------------
 | `API_TOKEN`                         | string               | 76xmfSGx26wmj4ty8UuGGDMhrPkwNkjk      |               | Authorization api token
 | `INTERNAL_DOMAIN_LIST`              | comma separated list | yourdomain.com,yourdomain.eu          |               | List of internal domains
-| `ANONYMIZE_EXTRENAL_EMAIL_DOMAIN`   | boolean              | true                                  | true          | Anononymize external domain in emails
-| `ANONYMIZE_EXTRENAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anononymize external username in emails
+| `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`   | boolean              | true                                  | true          | Anononymize external domain in emails
+| `ANONYMIZE_EXTERNAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anononymize external username in emails
 | `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`   | boolean              | true                                  | false         | Anononymize internal domain in emails
 | `ANONYMIZE_INTERNAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anononymize internal username in emails
 | `ANONYMIZATION_SALT`                | string               | yvUCixgSV6EMcE2FpZispWkju8N3LrWp      | true          | Salt that is used in data anonymization. Must be 32 characters long.
