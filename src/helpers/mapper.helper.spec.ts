@@ -1,6 +1,7 @@
 import {
   TYPES,
-  buildMapper
+  buildMapper,
+  getValueMapper
 } from './mapper.helper'
 import {
   ANONYMIZED_FILENAME,
@@ -8,8 +9,9 @@ import {
 } from './testing'
 jest.mock('./anonymization.helper')
 
-test('Falsy values', () => {
-  const mapper = buildMapper({})
+test('Falsy values', async () => {
+  const valueMapper = await getValueMapper()
+  const mapper = buildMapper({}, valueMapper)
   expect(mapper(null)).toBe(undefined)
   expect(mapper(undefined)).toBe(undefined)
   expect(mapper()).toBe(undefined)
@@ -20,11 +22,12 @@ test('Falsy values', () => {
 const TEST_PROPERTY_NAME = 'test'
 const TEST_STRING_VALUE = 'TEsT value'
 
-const buildTest = (
+const buildTest = async (
   types: Array<symbol[]> | symbol[],
   inputValues: any[],
   outputValues: any[]
 ) => {
+  const valueMapper = await getValueMapper()
   types.forEach(type => {
     const schema = { test: type }
     inputValues.forEach((inputValue, i) => {
@@ -32,12 +35,11 @@ const buildTest = (
       const input = { [TEST_PROPERTY_NAME]: inputValue }
       const output = { [TEST_PROPERTY_NAME]: outputValue }
 
-      const mapper = buildMapper<typeof schema, typeof input>(schema)
+      const mapper = buildMapper<typeof schema, typeof input>(schema, valueMapper)
       expect(mapper(input)).toMatchObject(output)
     })
   })
 }
-
 
 const inputValues = [
   TEST_STRING_VALUE,
@@ -280,7 +282,8 @@ test('Map private array property', () => {
   buildTest(types, inputValues, outputValues)
 })
 
-test('Complex schema', () => {
+test('Complex schema', async () => {
+  
   const baseSchema = {
     string: TYPES.String,
     id: TYPES.Id,
@@ -415,6 +418,7 @@ test('Complex schema', () => {
   const input = build(baseInput)
   const output = build(baseOutput)
 
-  const mapper = buildMapper<typeof schema, typeof input>(schema)
+  const valueMapper = await getValueMapper()
+  const mapper = buildMapper<typeof schema, typeof input>(schema, valueMapper)
   expect(mapper(input)).toMatchObject(output)
 })

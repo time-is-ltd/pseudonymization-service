@@ -4,7 +4,7 @@ import * as helmet from 'helmet'
 import * as http from 'http'
 import * as https from 'https'
 
-import config from './config'
+import config from './app.config'
 import extractToken from './helpers/extract-token'
 import googleapis from './modules/googleapis/googleapis.module'
 import microsoftgraph from './modules/microsoftgraph/microsoftgraph.module'
@@ -16,14 +16,7 @@ type Module = {
   routes: Route[]
 }
 
-const microsoftgraphModule = microsoftgraph()
-const googleapisModule = googleapis()
-const modules: Module[] = [
-  microsoftgraphModule,
-  googleapisModule
-]
-
-const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requireAuth: boolean) => (req, res, next) => {
+const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requireAuth: boolean) => async (req, res, next) => {
   if (!requireAuth) {
     return next()
   }
@@ -31,8 +24,9 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
   const authorization = req.headers.authorization
   if (authorization) {
     // Check proxy key
-    const apiToken = extractToken(authorization)
-    if (config.apiToken === apiToken) {
+    const apiTokenInAuthorizationHeader = extractToken(authorization)
+    const apiToken = await config.apiToken
+    if (apiToken === apiTokenInAuthorizationHeader) {
       return next()
     }
   }
@@ -40,10 +34,22 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
   res.sendStatus(403)
 }
 
-const bootstrap = () => {
+const bootstrap = async () => {
+  const microsoftgraphModule = await microsoftgraph()
+  const googleapisModule = await googleapis()
+  const modules: Module[] = [
+    microsoftgraphModule,
+    googleapisModule
+  ]
+
   const app = express()
   app.use(compression())
   app.use(helmet())
+
+  const httpPort = await config.httpPort
+  const httpsPort = await config.httpsPort
+  const sslKey = await config.sslKey
+  const sslCert = await config.sslCert
 
   // Register routes
   modules.forEach(({ enabled, routes }) => {
@@ -73,18 +79,18 @@ const bootstrap = () => {
       })
     })
   })
-
-  if (config.httpPort > 0) {
+  
+  if (httpPort > 0) {
     const httpServer = http.createServer(app)
-    httpServer.listen(config.httpPort)
+    httpServer.listen(httpPort)
   }
 
-  if (config.httpsPort > 0) {
+  if (httpsPort > 0) {
     const httpsServer = https.createServer({
-      key: config.sslKey,
-      cert: config.sslCert
+      key: sslKey,
+      cert: sslCert
     }, app)
-    httpsServer.listen(config.httpsPort)
+    httpsServer.listen(httpsPort)
   }
 }
 

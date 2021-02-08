@@ -77,8 +77,13 @@ const gmailBatchRoute: Route = {
   })
 }
 
-export default () => {
-  const enabled = !!(scopes && clientEmail && privateKey)
+export default async () => {
+  const enabledPromiseAll = await Promise.all([scopes, clientEmail, privateKey])
+
+  const enabled = enabledPromiseAll
+    .reduce((result, item) => {
+      return result && Boolean(item)
+    }, true)
 
   return {
     enabled,

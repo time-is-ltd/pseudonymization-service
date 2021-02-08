@@ -1,9 +1,10 @@
 
 import { pathToAbsUrl } from '../helpers/path.helper'
 import { decryptEmail } from '../helpers/rsa'
-import config from '../config'
+import config from '../app.config'
 import { request, RequestError, RequestOptions } from '../request'
 import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http'
+
 
 export type AuthorizationFactory = (path: string) => Promise<string>
 export type ProxyRequestDataMapper = (data: string, body?: string) => Promise<string>
@@ -51,9 +52,10 @@ const proxyReguest = (
   urlTransform: (url: string) => string = (url) => url
 ) => async (req: IncomingMessage, res: ServerResponse, _) => {
   const sendResponse = response(res)
+  const rsaPrivateKey = await config.rsaPrivateKey
 
   try {
-    req.url = decryptEmail(req.url, config.rsaPrivateKey)
+    req.url = decryptEmail(req.url, rsaPrivateKey)
   } catch (err) {
     sendResponse({
       statusCode: 400,
