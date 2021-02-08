@@ -57,8 +57,8 @@ const schema: Schema<UserCalendars> = {
   etag: TYPES.ETag,
   items: [
     {
-      id: TYPES.String,
-      kind: TYPES.String,
+      id: TYPES.Id,
+      kind: TYPES.Id,
       etag: TYPES.String,
       summary: [
         TYPES.Private,

@@ -1,5 +1,5 @@
 import * as emailAddresses from 'email-addresses'
-import sha512 from './sha512'
+import { sha512, rsa } from '../crypto'
 
 export type AnonymizeEmailConfig = {
   anonymizeInternalEmailUsername: boolean,
@@ -10,8 +10,11 @@ export type AnonymizeEmailConfig = {
   anonymizationSalt: string
 }
 
+const RSA_PREFIX = '@rsa:'
+const ID_PREFIX = '@id:'
+
 const hash = (str: string, salt: string, length = 16) => {
-  return sha512(salt, str).substr(0, length)
+  return sha512.createHash(salt, str).substr(0, length)
 }
 
 const anonymizeAddress = (username: string, domain: string, params: AnonymizeEmailConfig): string => {
@@ -55,7 +58,6 @@ const normalizeValue = (value = '') => {
 
 export const email = (email: string, config: AnonymizeEmailConfig): string => {
   const addressList: any[] = emailAddresses.parseAddressList(email) || []
-
   return addressList
     .map(address => {
       const normalizedUsername = normalizeValue(address.local)
@@ -64,6 +66,36 @@ export const email = (email: string, config: AnonymizeEmailConfig): string => {
       return anonymizeAddress(normalizedUsername, normalizedDomain, config)
     })
     .join(', ')
+}
+
+export interface AnonymizeIdConfig {
+  rsaPublicKey: string
+  anonymizationSalt: string
+}
+
+export const id = (value: string, config: AnonymizeIdConfig) => {
+  const { rsaPublicKey, anonymizationSalt }  = config
+  if (!rsaPublicKey) {
+    return value
+  }
+
+  const addressList = emailAddresses.parseAddressList(value) || []
+  const isEmail = addressList.length > 0
+  if (isEmail) {
+    const idPart: string[] = []
+
+    // Add hashed id
+    const hashedValue = hash(value, anonymizationSalt, 40)
+    idPart.push(`${ID_PREFIX}${hashedValue}`)
+
+    // Add encrypted value
+    const encryptedValue = encryptUrlComponent(value, rsaPublicKey)
+    idPart.push(encryptedValue)
+
+    return idPart.join('')
+  }
+
+  return value
 }
 
 export const filename = (filename = ''): string => {
@@ -82,7 +114,41 @@ export const filename = (filename = ''): string => {
   return `${anonymizedFilename}${extension}`
 }
 
+export const decryptUrl = (url: string, privateKey?: string): string => {
+  if(!privateKey) {
+    return url
+  }
+
+  const rsaContentRegExp = new RegExp(`((${RSA_PREFIX}|RSA_ENCRYPTED_EMAIL_)([^\/]+))`, 'i')
+  const valueRexExpMatchArray = url.match(rsaContentRegExp)
+  const shouldDecrypt = valueRexExpMatchArray?.length === 4
+
+  if (!shouldDecrypt) {
+    // no encrypted content found
+    return url
+  }
+
+  const decodedValue = decodeURIComponent(valueRexExpMatchArray[3])
+  const decryptedValue = rsa.decrypt(decodedValue, privateKey)
+
+  return url
+    .replace(valueRexExpMatchArray[1], decryptedValue)
+}
+
+export const encryptUrlComponent = (urlComponent: string, publicKey?: string): string => {
+  if(!publicKey) {
+    return urlComponent
+  }
+  const encryptedUrlComponent = rsa.encrypt(urlComponent, publicKey)
+  const encodedEncryptedUrlComponent = encodeURIComponent(encryptedUrlComponent)
+
+  return `${RSA_PREFIX}${encodedEncryptedUrlComponent}`
+}
+
 export default {
+  id,
   email,
-  filename
+  filename,
+  decryptUrl,
+  encryptUrlComponent
 }
