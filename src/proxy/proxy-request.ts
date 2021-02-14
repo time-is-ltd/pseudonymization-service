@@ -1,8 +1,8 @@
 
-import axios from 'axios'
 import { pathToAbsUrl } from '../helpers/path.helper'
 import { decryptEmail } from '../helpers/rsa'
 import config from '../config'
+import request from '../request'
 
 export type AuthorizationFactory = (path: string) => Promise<string>
 export type ProxyRequestDataMapper = (data: string, body?: string) => Promise<string>
@@ -45,13 +45,9 @@ const proxyReguest = (
       req.headers.authorization = authorization
     }
 
-    const options: any = {
+    const options: Record<string, unknown> = {
       method: req.method,
-      url,
-      transformResponse: [],
       headers: req.headers,
-      // Do not throw exception on error
-      validateStatus: (status: number) => true
     }
 
     // Append body
@@ -59,13 +55,13 @@ const proxyReguest = (
       options.data = mappedBody
     }
 
-    const response = await axios(options)
-    const { data, headers, status, statusText } = response
+    const response = await request(url, options)
+    const { data, headers, statusCode, statusMessage } = response
 
-    const isSuccess = status >= 200 && status < 300
+    const isSuccess = statusCode >= 200 && statusCode < 300
 
     if(!isSuccess) {
-      res.writeHead(status, statusText, headers)
+      res.writeHead(statusCode, statusMessage, headers)
       res.write(data)
       res.end()
       return
@@ -78,9 +74,9 @@ const proxyReguest = (
 
     const contentLength = Buffer.byteLength(mappedData)
 
-    headers['content-length'] = contentLength
+    headers['content-length'] = String(contentLength)
 
-    res.writeHead(status, statusText, headers)
+    res.writeHead(statusCode, statusMessage, headers)
 
     res.write(mappedData)
     res.end()
@@ -88,4 +84,3 @@ const proxyReguest = (
 }
 
 export default proxyReguest
-
