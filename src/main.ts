@@ -1,5 +1,3 @@
-require('dotenv').config()
-import * as fs from 'fs'
 import * as express from 'express'
 import * as http from 'http'
 import * as https from 'https'
