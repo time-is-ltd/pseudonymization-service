@@ -25,8 +25,10 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
+    "compression": "^1.7.4",
     "email-addresses": "^3.1.0",
     "express": "^4.17.1",
-    "googleapis": "^67.0.0"
+    "googleapis": "^67.0.0",
+    "helmet": "^4.4.1"
   }
 }
