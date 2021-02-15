@@ -3,6 +3,9 @@ import * as http from 'http'
 import * as zlib from 'zlib'
 import { IncomingMessage } from 'http'
 
+type Options = Pick<https.RequestOptions, 'method' | 'headers'> & { data: unknown }
+type Response = Pick<IncomingMessage, 'statusCode' | 'statusMessage' | 'headers'> & { data?: string }
+
 const decompressResponse = (response: IncomingMessage) => {
   switch (response.headers['content-encoding']) {
     case 'gzip':
@@ -14,8 +17,8 @@ const decompressResponse = (response: IncomingMessage) => {
   }
 }
 
-export const request = async (url: string, options: Partial<Pick<https.RequestOptions, 'method' | 'headers'> & { data: unknown }> = {}) => {
-  return new Promise<Pick<IncomingMessage, 'statusCode' | 'statusMessage' | 'headers'> & { data?: string }>((resolve, reject) => {
+export const request = async (url: string, options: Partial<Options> = {}) => {
+  return new Promise<Response>((resolve, reject) => {
     const { data, headers = {}, method = 'GET' } = options
     const { protocol, hostname, port, pathname, search } = new URL(url)
 
