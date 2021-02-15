@@ -45,6 +45,9 @@ const proxyReguest = (
       req.headers.authorization = authorization
     }
 
+    // Remove content length from the request
+    delete req.headers['content-length']
+
     const options: Record<string, unknown> = {
       method: req.method,
       headers: req.headers,
@@ -72,8 +75,12 @@ const proxyReguest = (
       mappedData = await dataMapper(data, body)
     }
 
-    const contentLength = Buffer.byteLength(mappedData)
+    // Modify headers
+    // Remove content encoding
+    delete headers['content-encoding']
 
+    // Set content length
+    const contentLength = Buffer.byteLength(mappedData)
     headers['content-length'] = String(contentLength)
 
     res.writeHead(statusCode, statusMessage, headers)
