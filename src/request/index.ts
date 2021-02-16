@@ -3,8 +3,18 @@ import * as http from 'http'
 import * as zlib from 'zlib'
 import { IncomingMessage } from 'http'
 
-type Options = Pick<https.RequestOptions, 'method' | 'headers'> & { data: unknown }
+export type RequestOptions = Partial<Pick<https.RequestOptions, 'method' | 'headers'> & { data: unknown }>
 type Response = Pick<IncomingMessage, 'statusCode' | 'statusMessage' | 'headers'> & { data?: string }
+
+export class RequestError<T extends unknown> extends Error {
+  constructor(
+    public statusCode: number,
+    public statusMessage?: string,
+    public response?: T
+  ) {
+    super(statusMessage)
+  }
+}
 
 const decompressResponse = (response: IncomingMessage) => {
   switch (response.headers['content-encoding']) {
@@ -17,7 +27,7 @@ const decompressResponse = (response: IncomingMessage) => {
   }
 }
 
-export const request = async (url: string, options: Partial<Options> = {}) => {
+export const request = async (url: string, options: RequestOptions = {}) => {
   return new Promise<Response>((resolve, reject) => {
     const { data, headers = {}, method = 'GET' } = options
     const { protocol, hostname, port, pathname, search } = new URL(url)
@@ -39,6 +49,12 @@ export const request = async (url: string, options: Partial<Options> = {}) => {
       decompressedResponse.on('data', (chunk) => data += chunk.toString())
       decompressedResponse.on('end', () => {
         const { headers, statusCode, statusMessage } = response
+        const isSuccess = statusCode >= 200 && statusCode < 300
+
+        if (!isSuccess) {
+          return reject(new RequestError(statusCode, statusMessage, response))
+        }
+
         resolve({ headers, statusCode, statusMessage, data })
       })
       decompressedResponse.on('error', err => reject(err))

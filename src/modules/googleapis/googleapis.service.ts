@@ -1,8 +1,10 @@
 import { google } from 'googleapis'
+import { GaxiosError } from 'gaxios'
+import { scopes, privateKey, clientEmail } from './googleapis.config'
 import { Token } from './interfaces/token.interface'
 import { matchPath } from '../../helpers/path.helper'
 import { AuthorizationFactory } from '../../proxy/proxy-request'
-import { scopes, privateKey, clientEmail } from './googleapis.config'
+import { RequestError } from '../../request'
 import tokenService from '../../token/token.service'
 
 export const refreshAccessToken = async (userId: string): Promise<Token> => {
@@ -20,7 +22,6 @@ export const refreshAccessToken = async (userId: string): Promise<Token> => {
   return new Promise((resolve, reject) => {
     authClient.refreshAccessToken((err) => {
       if (err) {
-        console.error(err)
         reject(err)
       }
     })
@@ -64,7 +65,13 @@ export const authorizationPathExtractorFactory: AuthorizationPathExtractorFactor
         ...result
       })
     } catch (err) {
-      return ''
+      if (err instanceof GaxiosError) {
+        if (err.response) {
+          const { status, statusText } = err.response
+          throw new RequestError(status, statusText, err.response)
+        }
+      }
+      throw err
     }
   }
 
