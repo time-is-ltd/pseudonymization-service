@@ -18,6 +18,10 @@ export const getPathPartFactory = (template: string, index: number) => (path: st
     return ''
   }
 
+  if(!res[index]) {
+    return ''
+  }
+
   return decodeURIComponent(res[index])
 }
 

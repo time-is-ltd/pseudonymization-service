@@ -1,6 +1,6 @@
-require('dotenv').config()
-import * as fs from 'fs'
 import * as express from 'express'
+import * as compression from 'compression'
+import * as helmet from 'helmet'
 import * as http from 'http'
 import * as https from 'https'
 
@@ -42,6 +42,8 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
 
 const bootstrap = () => {
   const app = express()
+  app.use(compression())
+  app.use(helmet())
 
   // Register routes
   modules.forEach(({ enabled, routes }) => {

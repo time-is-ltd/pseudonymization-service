@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
-import axios from 'axios'
 import * as qs from 'querystring'
+import request from '../../request'
 import config from '../../config'
 import { Token } from '../../token/interfaces/token.interface'
 
@@ -71,26 +71,27 @@ export const oauth2Request = async (options: TokenHandlerOptions): Promise<{
     ...extra
   }
 
-  const requestOptions: any = {
+  const requestOptions = {
     method: 'post',
-    url,
     data: qs.stringify(body)
   }
 
-  const response = await axios(requestOptions)
+  const response = await request(url, requestOptions)
   const {
-    status,
-    statusText,
+    statusCode,
+    statusMessage,
     data,
     headers
   } = response
 
-  const expiresAt = Date.now() + data.expires_in * 1000
+  const json = JSON.parse(data)
+
+  const expiresAt = Date.now() + json.expires_in * 1000
   return {
-    status,
-    statusText,
+    status: statusCode,
+    statusText: statusMessage,
     data: {
-      type: data.token_type,
+      type: json.token_type,
       expiresAt: expiresAt,
       token: data[accessTokenName]
     },
