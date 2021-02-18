@@ -68,6 +68,9 @@ export const authorizationPathExtractorFactory: AuthorizationPathExtractorFactor
       if (err instanceof GaxiosError) {
         if (err.response) {
           const { status, statusText } = err.response
+          if (status >= 400 && status < 500) {
+            throw new RequestError(403, undefined, err.response)
+          }
           throw new RequestError(status, statusText, err.response)
         }
       }
