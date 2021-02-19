@@ -1,7 +1,5 @@
-import { RequestHandler } from 'express'
 import * as qs from 'querystring'
 import request from '../../request'
-import config from '../../config'
 import { Token } from '../../token/interfaces/token.interface'
 
 type TokenHandlerExtraDict = { [key: string]: string | number }
@@ -15,8 +13,6 @@ type TokenHandlerOptions = {
   refreshTokenFieldName?: string,
   extra?: TokenHandlerExtraDict
 }
-
-type TokenHandler = (options: TokenHandlerOptions, onAccessToken: (token: Token) => void) => RequestHandler[]
 
 const getOptions = (options: TokenHandlerOptions) => {
   const {
@@ -98,62 +94,3 @@ export const oauth2Request = async (options: TokenHandlerOptions): Promise<{
     headers
   }
 }
-
-const tokenHandler: TokenHandler = (options: TokenHandlerOptions, onAccessToken) => [
-  async (req, res, next) => {
-    let body = ''
-    req.on('data', (chunk) => body += chunk.toString())
-
-    req.on('end', async () => {
-      const parsedBody = qs.parse(body)
-      // Compare refresh token with proxy api token
-      if (config.apiToken !== parsedBody.refresh_token) {
-        return res.sendStatus(403)
-      }
-
-      try {
-        const response = await oauth2Request(options)
-        const {
-          status,
-          statusText,
-          data,
-          headers
-        } = response
-
-        onAccessToken(data)
-
-        const {
-          accessTokenName,
-          refreshTokenName
-        } = getOptions(options)
-
-        const expiresIn = data.expiresAt > 0
-          ? (data.expiresAt - Date.now()) / 1000
-          : 3600
-
-        // Anonymize access and refresh token
-        const responseData = {
-          [accessTokenName]: config.apiToken,
-          [refreshTokenName]: config.apiToken,
-          expires_in: expiresIn,
-          token_type: data.type
-        }
-
-        const stringifiedResponseData = JSON.stringify(responseData)
-        const contentLength = Buffer.byteLength(stringifiedResponseData)
-
-        headers['content-length'] = contentLength
-
-        res.writeHead(status, statusText, headers)
-
-        res.write(stringifiedResponseData)
-        res.end()
-      } catch (err) {
-        console.log(err)
-        next(err)
-      }
-    })
-  }
-]
-
-export default tokenHandler

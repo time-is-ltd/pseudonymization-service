@@ -1,4 +1,5 @@
 import { email, filename } from './anonymization.helper'
+import config from '../app.config'
 
 /*
   Extracts primitive type
@@ -45,6 +46,8 @@ export type Schema<T> = {
     symbol | string | number | symbol[]
 }
 
+export type ValueMapper = (type: Symbol, value: any) => any
+
 const isStringOrNumber = value => typeof value === 'string' || typeof value === 'number'
 
 const normalizeIndexName = name => (name || '').toLocaleLowerCase()
@@ -52,7 +55,6 @@ const normalizeIndexName = name => (name || '').toLocaleLowerCase()
 const string = value => typeof value === 'string' ? String(value) : ''
 const boolean = value => typeof value === 'boolean' ? value : false
 const number = value => typeof value === 'number' ? value : 0
-const stringArray = value => (Array.isArray(value) ? value : []).map(value => string(value))
 
 export const TYPES = {
   // String values
@@ -88,36 +90,7 @@ const getTypePriority = (type: symbol) => {
   return TYPE_PRIORITY_MAP[type.toString()] || 0
 }
 
-const getValue2 = (type: Symbol, value: any) => {
-  switch (type) {
-    case TYPES.Private:
-      return undefined
-    case TYPES.Array:
-      return Array.isArray(value) ? value : []
-    case TYPES.Text:
-    case TYPES.String:
-    case TYPES.Datetime:
-    case TYPES.Id:
-    case TYPES.ContentType:
-    case TYPES.ETag:
-    case TYPES.Url:
-    case TYPES.Username:
-      return string(value)
-    case TYPES.Number:
-      return number(value)
-      break
-    case TYPES.Boolean:
-      return boolean(value)
-    case TYPES.Email:
-      return email(value)
-    case TYPES.Filename:
-      return filename(value)
-  }
-
-  return undefined
-}
-
-const getValue = (types: symbol[], value: any) => {
+const getValue = (valueMapper: ValueMapper) => (types: symbol[], value: any) => {
   const sortedTypes = types.sort((a, b) => {
     const aPriority = getTypePriority(a)
     const bPriority = getTypePriority(b)
@@ -128,15 +101,15 @@ const getValue = (types: symbol[], value: any) => {
   return sortedTypes.reduce((value, type) => {
     if (isArray && type !== TYPES.Array) {
       return value
-        .map(val => getValue2(type, val))
+        .map(val => valueMapper(type, val))
         .filter(val => val !== undefined)
     } else {
-      return getValue2(type, value)
+      return valueMapper(type, value)
     }
   }, value)
 }
 
-export const buildMapper = <S extends Object, T extends Object>(schema: S) => (value?: T): any => {
+export const buildMapper = <S extends Object, T extends Object>(schema: S, valueMapper: ValueMapper) => (value?: T): any => {
   if (!value) {
     return
   }
@@ -176,12 +149,12 @@ export const buildMapper = <S extends Object, T extends Object>(schema: S) => (v
             return
           }
 
-          return buildMapper(indexedSchema)(item)
+          return buildMapper(indexedSchema, valueMapper)(item)
         })
         .filter(item => !!item)
     } else if (schema.length === 1) {
       // Apply schema to every item
-      return value.map(item => buildMapper(schema[0])(item))
+      return value.map(item => buildMapper(schema[0], valueMapper)(item))
     }
 
     return []
@@ -195,9 +168,9 @@ export const buildMapper = <S extends Object, T extends Object>(schema: S) => (v
 
         const schemaType = typeof schema[key]
         if (Array.isArray(schema[key]) && typeof schema[key][0] === 'symbol') {
-          obj[key] = getValue(schema[key], value[key])
+          obj[key] = getValue(valueMapper)(schema[key], value[key])
         } else if (schemaType === 'symbol') {
-          obj[key] = getValue2(schema[key], value[key])
+          obj[key] = valueMapper(schema[key], value[key])
         } else if (schemaType === 'string') {
           if (schema[key] === normalizeIndexName(value[key])) {
             obj[key] = value[key]
@@ -207,7 +180,7 @@ export const buildMapper = <S extends Object, T extends Object>(schema: S) => (v
         } else if (schemaType === 'number') {
           obj[key] = schema[key]
         } else if (value[key]) {
-          obj[key] = buildMapper(schema[key])((value[key]))
+          obj[key] = buildMapper(schema[key], valueMapper)((value[key]))
         }
         return obj
       }, {})
@@ -216,13 +189,60 @@ export const buildMapper = <S extends Object, T extends Object>(schema: S) => (v
   return Array.isArray(value) ? [] : {}
 }
 
+export const getValueMapper = async () => {
+  const anonymizeInternalEmailUsername = await config.anonymizeInternalEmailUsername
+  const anonymizeExternalEmailUsername = await config.anonymizeExternalEmailUsername
+  const anonymizeInternalEmailDomain = await config.anonymizeInternalEmailDomain
+  const anonymizeExternalEmailDomain = await config.anonymizeExternalEmailDomain
+  const internalDomainList = await config.internalDomainList
+  const anonymizationSalt = await config.anonymizationSalt
+
+  const emailConfig = {
+    anonymizeInternalEmailUsername,
+    anonymizeExternalEmailUsername,
+    anonymizeInternalEmailDomain,
+    anonymizeExternalEmailDomain,
+    internalDomainList,
+    anonymizationSalt
+  }
+
+  return (type: Symbol, value: any) => {
+    switch (type) {
+      case TYPES.Private:
+        return undefined
+      case TYPES.Array:
+        return Array.isArray(value) ? value : []
+      case TYPES.Text:
+      case TYPES.String:
+      case TYPES.Datetime:
+      case TYPES.Id:
+      case TYPES.ContentType:
+      case TYPES.ETag:
+      case TYPES.Url:
+      case TYPES.Username:
+        return string(value)
+      case TYPES.Number:
+        return number(value)
+      case TYPES.Boolean:
+        return boolean(value)
+      case TYPES.Email:
+        return email(value, emailConfig)
+      case TYPES.Filename:
+        return filename(value)
+    }
+  
+    return undefined
+  }
+}
+
 export const jsonMapper = <S, T>(schema: any) => async (data?: string): Promise<string> => {
   let json: Partial<T> = {}
   try {
     json = JSON.parse(data) || {}
   } catch (err) {}
 
-  const mapper = buildMapper<S, Partial<T>>(schema)
+  const valueMapper = await getValueMapper()
+  const mapper = buildMapper<S, Partial<T>>(schema, valueMapper)
 
   const result = mapper(json)
   return JSON.stringify(result)

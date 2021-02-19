@@ -1,12 +1,17 @@
 import { getPathPartFactory } from '../../helpers/path.helper'
-import { toArray, toPem } from '../../helpers/config.helper'
+import { configFactory, toString, toPem, toArray } from '../../config'
 
-// Env variables
-export const clientEmail: string | undefined = 
-process.env.GSUITE_CLIENT_EMAIL
-export const privateKey: string = 
-toPem(process.env.GSUITE_PRIVATE_KEY || '')
-export const scopes: string[] = toArray(process.env.GSUITE_SCOPES)
+const googleApisConfig = {
+  gsuiteClientEmail: toString(),
+  gsuitePrivateKey: toPem(),
+  gsuiteScopes: toArray()
+}
+
+const config = configFactory(googleApisConfig, [
+  'gsuiteClientEmail',
+  'gsuitePrivateKey',
+  'gsuiteScopes'
+])
 
 // Hosts
 export const hosts = [
@@ -58,7 +63,13 @@ export const pathTransforms = {
   }
 }
 
+export const clientEmail = config.gsuiteClientEmail
+export const privateKey = config.gsuitePrivateKey
+export const scopes = config.gsuiteScopes
+
 export default {
+  clientEmail,
+  privateKey,
   scopes,
   hosts,
   paths

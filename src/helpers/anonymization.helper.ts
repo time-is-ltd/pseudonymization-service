@@ -1,6 +1,5 @@
 import * as emailAddresses from 'email-addresses'
 import sha512 from './sha512'
-import config from '../config'
 
 export type AnonymizeEmailConfig = {
   anonymizeInternalEmailUsername: boolean,
@@ -15,27 +14,7 @@ const hash = (str: string, salt: string, length = 16) => {
   return sha512(salt, str).substr(0, length)
 }
 
-const getConfig = (params?: AnonymizeEmailConfig): AnonymizeEmailConfig => {
-  const {
-    anonymizeInternalEmailUsername = config.anonymizeInternalEmailUsername,
-    anonymizeExternalEmailUsername =  config.anonymizeExternalEmailUsername,
-    anonymizeInternalEmailDomain = config.anonymizeInternalEmailDomain,
-    anonymizeExternalEmailDomain = config.anonymizeExternalEmailDomain,
-    internalDomainList = config.internalDomainList,
-    anonymizationSalt = config.anonymizationSalt
-  } = (params || {})
-
-  return {
-    anonymizeInternalEmailUsername,
-    anonymizeExternalEmailUsername,
-    anonymizeInternalEmailDomain,
-    anonymizeExternalEmailDomain,
-    internalDomainList,
-    anonymizationSalt
-  }
-}
-
-const anonymizeAddress = (username: string, domain: string, params?: AnonymizeEmailConfig): string => {
+const anonymizeAddress = (username: string, domain: string, params: AnonymizeEmailConfig): string => {
   const {
     anonymizeInternalEmailUsername,
     anonymizeExternalEmailUsername,
@@ -43,7 +22,7 @@ const anonymizeAddress = (username: string, domain: string, params?: AnonymizeEm
     anonymizeExternalEmailDomain,
     internalDomainList,
     anonymizationSalt
-  } = getConfig(params)
+  } = params
 
   const isInternal = internalDomainList.indexOf(domain) > -1
 
@@ -74,7 +53,7 @@ const normalizeValue = (value = '') => {
   return value.trim().toLocaleLowerCase()
 }
 
-export const email = (email: string, config?: AnonymizeEmailConfig): string => {
+export const email = (email: string, config: AnonymizeEmailConfig): string => {
   const addressList: any[] = emailAddresses.parseAddressList(email) || []
 
   return addressList

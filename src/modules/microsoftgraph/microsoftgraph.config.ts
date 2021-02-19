@@ -1,7 +1,16 @@
-// Env variables
-export const tenantId: string | undefined = process.env.O365_TENANT_ID 
-export const clientId: string | undefined = process.env.O365_CLIENT_ID 
-export const clientSecret: string | undefined = process.env.O365_CLIENT_SECRET 
+import { configFactory, toArray, toBoolean, toNumber, toPem, toString } from '../../config'
+
+const googleApisConfig = {
+  o365TenantId: toString(),
+  o365ClientId: toString(),
+  o365ClientSecret: toString()
+}
+
+const config = configFactory(googleApisConfig, [
+  'o365TenantId',
+  'o365ClientId',
+  'o365ClientSecret'
+])
 
 // Hosts
 export const hosts = [
@@ -22,6 +31,10 @@ export const paths = {
   listCalendarEventsPath,
   listCalendarViewPath
 }
+
+export const tenantId = config.o365TenantId
+export const clientId = config.o365ClientId
+export const clientSecret = config.o365ClientSecret
 
 export default {
   tenantId,
