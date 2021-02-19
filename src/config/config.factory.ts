@@ -1,9 +1,9 @@
 import { TransformMap, Response, Provider, ProviderResult } from './types'
-import { configCacheFactory } from './config-cache.factory'
+import { cacheFactory } from '../cache'
 import { fromAzureKeyVault, fromCache, fromEnvVariable } from './providers'
 
 export const configFactory = <T extends TransformMap>(mapperMap: T, vaultKeysAllowlist: Array<keyof T> = []) => {
-  const cache = configCacheFactory<T>()
+  const cache = cacheFactory<T>()
 
   const get = async <K extends keyof T>(key: K): Promise<Response<T, K>> => {
     const functionOrObj = mapperMap[key as string]
@@ -49,7 +49,7 @@ export const configFactory = <T extends TransformMap>(mapperMap: T, vaultKeysAll
     const transformedValue = transform(value)
 
     // Always set to prolong the ttl, if variable in use
-    cache.set(key, transformedValue, ttl)
+    cache.set(key as string, transformedValue, ttl)
 
     return transformedValue
   }

@@ -61,7 +61,7 @@ const buildParseTest = (iterations: number = 1, separator: string, header: strin
   expect(firstPart.headers).toBe(`${header.replace(/^(\r\n)+/, '')}\r\n\r\n${header2}`)
 
   if (content) {
-    expect(firstPart.data).toBe(content)
+    expect(firstPart.body).toBe(content)
   }
 }
 

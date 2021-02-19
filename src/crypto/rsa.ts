@@ -15,7 +15,7 @@ export const encrypt = (str: string, publicKey: string): string => {
 export const decrypt = (toDecrypt: string, privateKey: string): string => {
   const options = {
     key: privateKey,
-    oaepHash: 'RSA-SHA512',
+    oaepHash: 'RSA-SHA512'
   }
 
   const buffer = Buffer.from(toDecrypt, 'base64')

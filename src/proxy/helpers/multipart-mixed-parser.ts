@@ -39,9 +39,11 @@
   --batch_randomString--
 */
 
+import { IncomingHttpHeaders } from "http"
+
 export type MultipartMixedPart = {
-  headers: string
-  data?: string
+  headers: IncomingHttpHeaders
+  body?: string
 }
 
 export type MultipartMixedPartList = {
@@ -50,12 +52,53 @@ export type MultipartMixedPartList = {
 }
 
 const newLine = '\r\n'
+
+const stringifyHeaders = (headers: IncomingHttpHeaders): string => {
+  return Object.keys(headers)
+    .map(key => {
+      const value = headers[key]
+      return `${key}: ${value}`
+    })
+    .join(newLine)
+}
+
+export const parseHeaders = (rawHeaders = ''): IncomingHttpHeaders => rawHeaders
+  .split(/(\n|\r\n)/)
+  .reduce((obj, str) => {
+    const headerParts = str.match((/([^:]*):(.*)/))
+    if (headerParts?.length >= 2) {
+      const name = headerParts[1].toLowerCase()
+      const value = headerParts[2].trim()
+      obj[name] = value
+    }
+    return obj
+  }, {})
+
+export const parsePart = (part: string): MultipartMixedPart => {
+  // Split content by 2 new lines (\r\n\r\n)
+  const contentParts = part
+    .split(/(\n\n|\r\n\r\n)/)
+    .filter(v => v && v.trim())
+
+  // Join headers
+  const headers = parseHeaders(contentParts[0])
+
+  const body = Object.keys(headers).length === 0
+    ? contentParts.join(newLine.repeat(2))
+    : contentParts.splice(1).join(newLine.repeat(2))
+
+  return {
+    headers,
+    body
+  }
+}
+
 // Multipart/mixed parser
-const parse = (data: string, containsData = false): MultipartMixedPartList => {
+const parse = (data: string): MultipartMixedPartList => {
   // Force \r\n for new lines
   const normalizedData = data
-    .replace('\r\n', '\n')
-    .replace('\n', '\r\n')
+    .replace(/\r\n/, '\n')
+    .replace(/\n/, '\r\n')
     .replace(/^(\r\n)+/, '')
 
   // First line is the separator
@@ -72,35 +115,9 @@ const parse = (data: string, containsData = false): MultipartMixedPartList => {
       part !== '--' // Remove -- from the end of the request (the end of the request is in `${separator}--` format)
     ))
 
-  const mappedParts = parts.map(part => {
-    // Split content by 2 new lines (\r\n\r\n)
-    const contentParts = part
-      .split(newLine.repeat(2))
-      .filter(value => !!value)
-
-    const length = contentParts.length
-    const headersLength = containsData ? length - 1 : length
-
-    // Join headers
-    const headers = [...contentParts] // create array copy
-      .splice(0, headersLength)
-      .join(newLine.repeat(2))
-
-    // Get last part as data
-    let data: string | undefined
-    if (containsData) {
-      data = contentParts[headersLength]
-    }
-
-    return {
-      data,
-      headers
-    }
-  })
-
   return {
     separator,
-    parts: mappedParts
+    parts: parts.map(parsePart)
   }
 }
 
@@ -111,14 +128,20 @@ const stringify = (partList: MultipartMixedPartList): string => {
   const mappedStr = parts.map((part) => {
     const {
       headers,
-      data
+      body
     } = part
     let output = (
-      separator + newLine +
-      headers + newLine.repeat(2)
+      separator + newLine
     )
-    if (data) {
-      output += data + newLine
+    if (Object.keys(headers).length > 0) {
+      output += stringifyHeaders(headers)
+      // Add body divider
+      if (body) {
+        output += newLine.repeat(2)
+      }
+    }
+    if (body) {
+      output += body + newLine
     }
 
     return output
@@ -128,30 +151,9 @@ const stringify = (partList: MultipartMixedPartList): string => {
   return mappedStr + '\r\n' + separator + '--'
 }
 
-const extractContentId = (str: string) => {
-  const contentIdParts = str.match((/Content\-ID: <([^>]+)>/))
-  if (contentIdParts == null || contentIdParts.length < 2) {
-    return ''
-  }
-
-  return contentIdParts[1]
-}
-
-const extractPath = (str: string) => {
-  const urlParts = str.match((/(GET|POST|PUT) ([^\s]*) (.*)/))
-  if (urlParts == null || urlParts.length < 3) {
-    return ''
-  }
-
-  return urlParts[2]
-}
-
-const compareContentId = (requestContentId: string, responseContentId: string) => `response-${requestContentId}` === responseContentId
-
 export default {
   parse,
-  stringify,
-  compareContentId,
-  extractContentId,
-  extractPath
+  parsePart,
+  parseHeaders,
+  stringify
 }

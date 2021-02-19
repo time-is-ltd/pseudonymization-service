@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
-    "lib": ["es6", "dom", "es2017", "esnext.array"],
+    "lib": ["es6", "dom", "es2020", "esnext.array", "ESNext.String"],
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

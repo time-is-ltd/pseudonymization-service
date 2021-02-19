@@ -3,7 +3,7 @@ import { GaxiosError } from 'gaxios'
 import config from './googleapis.config'
 import { Token } from './interfaces/token.interface'
 import { matchPath } from '../../helpers/path.helper'
-import { AuthorizationFactory } from '../../proxy/proxy-request'
+import { AuthorizationFactory } from '../../proxy/interfaces'
 import { RequestError } from '../../request'
 import tokenService from '../../token/token.service'
 

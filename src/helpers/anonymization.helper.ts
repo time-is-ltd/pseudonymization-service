@@ -1,4 +1,5 @@
 import * as emailAddresses from 'email-addresses'
+import { cacheFactory } from '../cache'
 import { sha512, rsa } from '../crypto'
 
 export type AnonymizeEmailConfig = {
@@ -10,8 +11,8 @@ export type AnonymizeEmailConfig = {
   anonymizationSalt: string
 }
 
-const RSA_PREFIX = '@rsa:'
-const ID_PREFIX = '@id:'
+const RSA_PREFIX = '__rsa__'
+const ID_PREFIX = '__id__'
 
 const hash = (str: string, salt: string, length = 16) => {
   return sha512.createHash(salt, str).substr(0, length)
@@ -114,25 +115,41 @@ export const filename = (filename = ''): string => {
   return `${anonymizedFilename}${extension}`
 }
 
+const cache = cacheFactory<string>()
+
 export const decryptUrl = (url: string, privateKey?: string): string => {
   if(!privateKey) {
     return url
   }
 
-  const rsaContentRegExp = new RegExp(`((${RSA_PREFIX}|RSA_ENCRYPTED_EMAIL_)([^\/]+))`, 'i')
-  const valueRexExpMatchArray = url.match(rsaContentRegExp)
-  const shouldDecrypt = valueRexExpMatchArray?.length === 4
+  const rsaContentRegExp = new RegExp(`((${RSA_PREFIX}|RSA_ENCRYPTED_EMAIL_)([^\/]+))`, 'gi')
+  const valueRexExpMatchIterator = url.matchAll(rsaContentRegExp)
+  const valueRexExpMatchArray = Array.from(valueRexExpMatchIterator)
+
+  const shouldDecrypt = valueRexExpMatchArray?.length > 0
 
   if (!shouldDecrypt) {
     // no encrypted content found
     return url
   }
 
-  const decodedValue = decodeURIComponent(valueRexExpMatchArray[3])
-  const decryptedValue = rsa.decrypt(decodedValue, privateKey)
+  let decryptedUrl = url
+  for (const match of valueRexExpMatchArray) {
+    const originalValue = match[1]
+    let decryptedValue
+    if (cache.has(originalValue)) {
+      decryptedValue = cache.get(originalValue).v
+    } else {
+      const decodedValue = decodeURIComponent(match[3])
+      decryptedValue = rsa.decrypt(decodedValue, privateKey)
+    }
 
-  return url
-    .replace(valueRexExpMatchArray[1], decryptedValue)
+    decryptedUrl = url.replace(new RegExp(originalValue, 'g'), decryptedValue)
+
+    cache.set(originalValue, decryptedValue, 60) // keep in cache for 1 minutes
+  }
+
+  return decryptedUrl
 }
 
 export const encryptUrlComponent = (urlComponent: string, publicKey?: string): string => {

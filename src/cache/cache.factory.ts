@@ -1,19 +1,17 @@
-import { TransformMap, Response } from './types'
-
-interface CacheItem {
+interface CacheItem<T> {
   ttl: number
   t: number
-  v: unknown
+  v: T
 }
 
-export interface ConfigCache<T extends TransformMap> {
-  has<K extends keyof T>(key: K): boolean
-  get<K extends keyof T>(key: K): CacheItem
-  set<K extends keyof T>(key: K, value: Response<T, K>, ttl: number): void
+export interface Cache<T> {
+  has(key: string): boolean
+  get(key: string): CacheItem<T>
+  set(key: string, value: T, ttl: number): void
 }
 
-export const configCacheFactory = <T extends TransformMap>(): ConfigCache<T> => {
-  const map: Record<string, CacheItem> = {}
+export const cacheFactory = <T>(): Cache<T> => {
+  const map: Record<string, CacheItem<T>> = {}
 
   const checkValidity = () => {
     Object.keys(map)
@@ -25,7 +23,7 @@ export const configCacheFactory = <T extends TransformMap>(): ConfigCache<T> => 
       })
   }
 
-  const isValid = (item: Pick<CacheItem, 't' | 'ttl'>) => {
+  const isValid = (item: Pick<CacheItem<T>, 't' | 'ttl'>) => {
     const { t, ttl } = item
     if (ttl === 0) {
       return true
@@ -38,7 +36,7 @@ export const configCacheFactory = <T extends TransformMap>(): ConfigCache<T> => 
     }
   }
 
-  const has = <K extends keyof T>(key: K): boolean => {
+  const has = (key: string): boolean => {
     const item = map[key as string]
     if (item) {
       return isValid(item)
@@ -47,14 +45,14 @@ export const configCacheFactory = <T extends TransformMap>(): ConfigCache<T> => 
     return false
   }
 
-  const get = <K extends keyof T>(key: K) => {
+  const get = (key: string): CacheItem<T> => {
     if (!has(key)) {
       throw new Error(`Key ${key} not found`)
     }
     return map[key as string]
   }
 
-  const set = <K extends keyof T>(key: K, value: Response<T, K>, ttl = 0) => {
+  const set = (key: string, value: T, ttl = 0) => {
     const t = Date.now()
     map[key as string] = {
       ttl,
@@ -64,7 +62,7 @@ export const configCacheFactory = <T extends TransformMap>(): ConfigCache<T> => 
   }
 
   // TTL ticker
-  setInterval(() => checkValidity(), 2 * 60 * 1000)
+  setInterval(() => checkValidity(), 60 * 1000)
 
   return {
     get,
