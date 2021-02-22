@@ -117,12 +117,28 @@ export const filename = (filename = ''): string => {
 
 const cache = cacheFactory<string>()
 
+const encodeRSA = (str = ''): string => {
+  return str
+    .replace(/\+/g, '-') // Convert '+' to '-'
+    .replace(/\//g, '_') // Convert '/' to '_'
+    .replace(/=+$/, '') // Remove ending '='
+}
+
+const decodeRSA = (str = ''): string => {
+  const tail = Array(5 - str.length % 4).join('=') // Add removed at end '='
+  const decodedStr = str
+    .replace(/\-/g, '+') // Convert '-' to '+'
+    .replace(/\_/g, '/') // Convert '_' to '/'
+
+  return `${decodedStr}${tail}`
+}
+
 export const decryptUrl = (url: string, privateKey?: string): string => {
   if(!privateKey) {
     return url
   }
 
-  const rsaContentRegExp = new RegExp(`((${RSA_PREFIX}|RSA_ENCRYPTED_EMAIL_)([^\/]+))`, 'gi')
+  const rsaContentRegExp = new RegExp(`\/((${RSA_PREFIX}|RSA_ENCRYPTED_EMAIL_)([^\/]+))`, 'gi')
   const valueRexExpMatchIterator = url.matchAll(rsaContentRegExp)
   const valueRexExpMatchArray = Array.from(valueRexExpMatchIterator)
 
@@ -140,7 +156,7 @@ export const decryptUrl = (url: string, privateKey?: string): string => {
     if (cache.has(originalValue)) {
       decryptedValue = cache.get(originalValue).v
     } else {
-      const decodedValue = decodeURIComponent(match[3])
+      const decodedValue = decodeRSA(match[3])
       decryptedValue = rsa.decrypt(decodedValue, privateKey)
     }
 
@@ -157,7 +173,7 @@ export const encryptUrlComponent = (urlComponent: string, publicKey?: string): s
     return urlComponent
   }
   const encryptedUrlComponent = rsa.encrypt(urlComponent, publicKey)
-  const encodedEncryptedUrlComponent = encodeURIComponent(encryptedUrlComponent)
+  const encodedEncryptedUrlComponent = encodeRSA(encryptedUrlComponent)
 
   return `${RSA_PREFIX}${encodedEncryptedUrlComponent}`
 }
