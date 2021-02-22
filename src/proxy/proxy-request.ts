@@ -111,7 +111,6 @@ const proxyReguest = (
       data: mappedData
     })
   } catch (err) {
-    console.error(err)
     if (err instanceof RequestError) {
       const { statusCode, statusMessage } = err
       return sendResponse({

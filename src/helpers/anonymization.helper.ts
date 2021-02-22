@@ -115,8 +115,6 @@ export const filename = (filename = ''): string => {
   return `${anonymizedFilename}${extension}`
 }
 
-const cache = cacheFactory<string>()
-
 const encodeRSA = (str = ''): string => {
   return str
     .replace(/\+/g, '-') // Convert '+' to '-'
@@ -133,6 +131,7 @@ const decodeRSA = (str = ''): string => {
   return `${decodedStr}${tail}`
 }
 
+const cache = cacheFactory<string>()
 export const decryptUrl = (url: string, privateKey?: string): string => {
   if(!privateKey) {
     return url
@@ -162,7 +161,7 @@ export const decryptUrl = (url: string, privateKey?: string): string => {
 
     decryptedUrl = url.replace(new RegExp(originalValue, 'g'), decryptedValue)
 
-    cache.set(originalValue, decryptedValue, 60) // keep in cache for 1 minutes
+    cache.set(originalValue, decryptedValue, 5 * 60) // keep in cache for 5 minutes
   }
 
   return decryptedUrl

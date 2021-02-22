@@ -83,20 +83,20 @@ const bodyMapper = async (body: string, authorizationFactory: (path: string) => 
       const { headers, body } = part
       const parsedBody = parseBody(body)
 
-      const all = await Promise
+      const request = await Promise
         .resolve({
           ...parsedBody,
           ...parseStatus(parsedBody.status)
         })
         .then(decryptUrlMiddleware())
-        .then(modifyHeadersMiddleware(authorizationFactory))
+        .then(modifyHeadersMiddleware(authorizationFactory, false))
 
-      const path = all.url
+      const path = request.url
       const host = extractHost(path)
 
-      const url = all.url.replace(new RegExp(`\/${host}`, 'gi'), '') // Remove path prefix (e.g. /www.googleapis.com)
-      const status = `${all.method} ${url} ${all.protocol}`
-      const bodyStr = stringifyBody({ status, headers: all.headers })
+      const url = request.url.replace(new RegExp(`\/${host}`, 'gi'), '') // Remove path prefix (e.g. /www.googleapis.com)
+      const status = `${request.method} ${url} ${request.protocol}`
+      const bodyStr = stringifyBody({ status, headers: request.headers })
 
       return {
         headers,
