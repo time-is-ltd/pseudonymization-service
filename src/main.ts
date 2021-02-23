@@ -51,6 +51,8 @@ const bootstrap = async () => {
   const sslKey = await config.sslKey
   const sslCert = await config.sslCert
 
+  app.get('/healthcheck', (_, res) => res.sendStatus(200))
+
   // Register routes
   modules.forEach(({ enabled, routes }) => {
     if (!enabled) {
