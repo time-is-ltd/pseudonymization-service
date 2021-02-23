@@ -1,13 +1,14 @@
 import { RequestHandler } from 'express'
-import proxyReguest, { AuthorizationFactory, ProxyRequestDataMapper } from '../proxy-request'
+import { AuthorizationFactory, DataMapper } from '../interfaces'
+import proxyReguest from '../proxy-request'
 
 type JsonRequestHandler = (
   authorizationFactory: AuthorizationFactory,
-  dataMapper?: ProxyRequestDataMapper,
+  dataMapper?: DataMapper,
   urlTransform?: (url: string) => string
 ) => RequestHandler
 
-const jsonRequestHandler: JsonRequestHandler = (authorizationFactory: AuthorizationFactory, dataMapper?: ProxyRequestDataMapper,
+const jsonRequestHandler: JsonRequestHandler = (authorizationFactory: AuthorizationFactory, dataMapper?: DataMapper,
   urlTransform?: (url: string) => string) => (req, res, next) => {
   proxyReguest(
     authorizationFactory,

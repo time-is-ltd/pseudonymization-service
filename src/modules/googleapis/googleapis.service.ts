@@ -3,44 +3,38 @@ import { GaxiosError } from 'gaxios'
 import config from './googleapis.config'
 import { Token } from './interfaces/token.interface'
 import { matchPath } from '../../helpers/path.helper'
-import { AuthorizationFactory } from '../../proxy/proxy-request'
+import { AuthorizationFactory } from '../../proxy/interfaces'
 import { RequestError } from '../../request'
 import tokenService from '../../token/token.service'
 
 export const refreshAccessToken = async (userId: string): Promise<Token> => {
-  try {
-    const [clientEmail, privateKey, scopes] = await Promise.all([config.clientEmail, config.privateKey, config.scopes])
+  const [clientEmail, privateKey, scopes] = await Promise.all([config.clientEmail, config.privateKey, config.scopes])
 
-    const auth = new google.auth.GoogleAuth({
-      scopes,
-      credentials: {
-        private_key: privateKey,
-        client_email: clientEmail
-      },
-      clientOptions: { subject: userId }
+  const auth = new google.auth.GoogleAuth({
+    scopes,
+    credentials: {
+      private_key: privateKey,
+      client_email: clientEmail
+    },
+    clientOptions: { subject: userId }
+  })
+
+  const authClient = await auth.getClient()
+
+  return new Promise((resolve, reject) => {
+    authClient.refreshAccessToken((err) => {
+      if (err) {
+        reject(err)
+      }
     })
-
-    const authClient = await auth.getClient()
-
-    return new Promise((resolve, reject) => {
-      authClient.refreshAccessToken((err) => {
-        if (err) {
-          console.error(err)
-          reject(err)
-        }
-      })
-      authClient.once('tokens', (result) => {
-        resolve({
-          token: result.access_token || '',
-          type: result.token_type || '',
-          expiresAt: result.expiry_date || 0
-        })
+    authClient.once('tokens', (result) => {
+      resolve({
+        token: result.access_token || '',
+        type: result.token_type || '',
+        expiresAt: result.expiry_date || 0
       })
     })
-  } catch(err) {
-    console.error(err)
-    throw err
-  }
+  })
 }
 
 type PathExtractorMap = {

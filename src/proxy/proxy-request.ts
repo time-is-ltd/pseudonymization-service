@@ -1,14 +1,8 @@
 
-import { pathToAbsUrl } from '../helpers/path.helper'
-import { decryptEmail } from '../helpers/rsa'
-import config from '../app.config'
-import { request, RequestError, RequestOptions } from '../request'
-import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http'
-
-
-export type AuthorizationFactory = (path: string) => Promise<string>
-export type ProxyRequestDataMapper = (data: string, body?: string) => Promise<string>
-export type ProxyRequestBodyMapper = (body: string, authorizationFactory: AuthorizationFactory) => Promise<string>
+import { decryptUrlMiddleware, mapBodyMiddleware, modifyHeadersMiddleware, transformUrlMiddleware } from './middlewares'
+import { AuthorizationFactory, DataMapper, BodyMapper, Request } from './interfaces'
+import { request as makeRequest, RequestError, RequestOptions } from '../request'
+import { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http'
 
 interface ResponseOptions {
   statusCode?: number
@@ -45,91 +39,92 @@ const response = (response: ServerResponse) => (options: ResponseOptions = {}) =
   response.end()
 }
 
+type Response = ServerResponse
+interface Data {
+  request: IncomingMessage & {
+    body?: string
+  }
+  response: Response
+}
+
+const receiveBody = () => async ({ request }: Data): Promise<Request> => {
+  return new Promise((resolve, reject) => {
+    let body = ''
+    request.on('data', (chunk) => body += chunk.toString())
+    request.on('end', async () => {
+      resolve({
+        url: request.url,
+        protocol: `HTTP/${request.httpVersion}`,
+        method: request.method,
+        headers: request.headers,
+        body
+      })
+    })
+
+    request.on('error', (err) => reject(err))
+  })
+}
+
 const proxyReguest = (
   authorizationFactory: AuthorizationFactory,
-  dataMapper?: ProxyRequestDataMapper,
-  bodyMapper?: ProxyRequestBodyMapper,
+  dataMapper?: DataMapper,
+  bodyMapper?: BodyMapper,
   urlTransform: (url: string) => string = (url) => url
 ) => async (req: IncomingMessage, res: ServerResponse, _) => {
   const sendResponse = response(res)
-  const rsaPrivateKey = await config.rsaPrivateKey
 
   try {
-    req.url = decryptEmail(req.url, rsaPrivateKey)
-  } catch (err) {
+    // Prepare request
+    const requestWithBody = await Promise
+      .resolve<Data>({ request: req, response: res })
+      .then(receiveBody())
+
+    const transformedRequest = await Promise
+      .resolve(requestWithBody)
+      .then(mapBodyMiddleware(authorizationFactory, bodyMapper))
+      .then(decryptUrlMiddleware())
+      .then(modifyHeadersMiddleware(authorizationFactory))
+      .then(transformUrlMiddleware(urlTransform))
+
+    const options: RequestOptions = {
+      method: transformedRequest.method,
+      headers: transformedRequest.headers
+    }
+
+    // Append body
+    if (transformedRequest.body) {
+      options.data = transformedRequest.body
+    }
+
+    const response = await makeRequest(transformedRequest.url, options)
+    const { data, headers, statusCode, statusMessage } = response
+
+    let mappedData = data
+    if (dataMapper) {
+      mappedData = await dataMapper(data, requestWithBody.body)
+    }
+
     sendResponse({
-      statusCode: 400,
-      data: JSON.stringify({ error: 'Error in RSA' })
+      headers,
+      statusCode,
+      statusMessage,
+      data: mappedData
     })
-    return
-  }
-
-  const path = urlTransform(req.url)
-  const url = pathToAbsUrl(path)
-
-  let body = ''
-  req.on('data', (chunk) => body += chunk.toString())
-  req.on('end', async () => {
-    try {
-      let mappedBody = body
-
-      if (body && bodyMapper) {
-        mappedBody = await bodyMapper(body, authorizationFactory)
-      }
-
-      // Remove host header
-      delete req.headers.host
-
-      // Append authorization header
-      const authorization = await authorizationFactory(req.url)
-      if (authorization) {
-        req.headers.authorization = authorization
-      }
-
-      // Remove content length from the request
-      delete req.headers['content-length']
-
-      const options: RequestOptions = {
-        method: req.method,
-        headers: req.headers
-      }
-
-      // Append body
-      if (mappedBody) {
-        options.data = mappedBody
-      }
-
-      const response = await request(url, options)
-      const { data, headers, statusCode, statusMessage } = response
-
-      let mappedData = data
-      if (dataMapper) {
-        mappedData = await dataMapper(data, body)
-      }
-
-      sendResponse({
-        headers,
+  } catch (err) {
+    if (err instanceof RequestError) {
+      const { statusCode, statusMessage } = err
+      return sendResponse({
         statusCode,
-        statusMessage,
-        data: mappedData
-      })
-    } catch (err) {
-      console.error(err)
-      if (err instanceof RequestError) {
-        const { statusCode, statusMessage } = err
-        return sendResponse({
-          statusCode,
-          statusMessage
-        })
-      }
-
-      // Unknown error
-      sendResponse({
-        statusCode: 500,
-        statusMessage: 'Unknown error'
+        statusMessage
       })
     }
-  })
+
+    // Unknown error
+    sendResponse({
+      statusCode: 500,
+      statusMessage: 'Unknown error'
+    })
+  }
 }
 
 export default proxyReguest

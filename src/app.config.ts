@@ -9,6 +9,7 @@ const appConfig = {
   anonymizeInternalEmailUsername: toBoolean(true),
   anonymizationSalt: toString(),
   rsaPrivateKey: toPem(),
+  rsaPublicKey: toPem(),
   sslKey: toPem(),
   sslCert: toPem(),
   httpPort: toNumber(),
@@ -19,6 +20,7 @@ const config = configFactory(appConfig, [
   'apiToken',
   'anonymizationSalt',
   'rsaPrivateKey',
+  'rsaPublicKey',
   'sslKey',
   'sslCert'
 ])

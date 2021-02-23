@@ -1,5 +1,6 @@
 export const ANONYMIZED_EMAIL = 'anonymizedusername@anonymizeddomain.hash'
 export const ANONYMIZED_FILENAME = 'x.extension'
+export const ANONYMIZED_ID = '__id__test__rsa__test'
 
 const people = {
   1: {

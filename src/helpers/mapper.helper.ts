@@ -1,4 +1,4 @@
-import { email, filename } from './anonymization.helper'
+import { email, filename, id } from './anonymization.helper'
 import config from '../app.config'
 
 /*
@@ -190,21 +190,23 @@ export const buildMapper = <S extends Object, T extends Object>(schema: S, value
 }
 
 export const getValueMapper = async () => {
-  const anonymizeInternalEmailUsername = await config.anonymizeInternalEmailUsername
-  const anonymizeExternalEmailUsername = await config.anonymizeExternalEmailUsername
-  const anonymizeInternalEmailDomain = await config.anonymizeInternalEmailDomain
-  const anonymizeExternalEmailDomain = await config.anonymizeExternalEmailDomain
-  const internalDomainList = await config.internalDomainList
-  const anonymizationSalt = await config.anonymizationSalt
-
-  const emailConfig = {
+  const [
     anonymizeInternalEmailUsername,
     anonymizeExternalEmailUsername,
     anonymizeInternalEmailDomain,
     anonymizeExternalEmailDomain,
     internalDomainList,
-    anonymizationSalt
-  }
+    anonymizationSalt,
+    rsaPublicKey
+  ] = await Promise.all([
+    config.anonymizeInternalEmailUsername,
+    config.anonymizeExternalEmailUsername,
+    config.anonymizeInternalEmailDomain,
+    config.anonymizeExternalEmailDomain,
+    config.internalDomainList,
+    config.anonymizationSalt,
+    config.rsaPublicKey
+  ])
 
   return (type: Symbol, value: any) => {
     switch (type) {
@@ -215,7 +217,6 @@ export const getValueMapper = async () => {
       case TYPES.Text:
       case TYPES.String:
       case TYPES.Datetime:
-      case TYPES.Id:
       case TYPES.ContentType:
       case TYPES.ETag:
       case TYPES.Url:
@@ -225,7 +226,23 @@ export const getValueMapper = async () => {
         return number(value)
       case TYPES.Boolean:
         return boolean(value)
+      case TYPES.Id:
+        const idConfig = {
+          rsaPublicKey,
+          anonymizationSalt
+        }
+
+        return id(value, idConfig)
       case TYPES.Email:
+        const emailConfig = {
+          anonymizeInternalEmailUsername,
+          anonymizeExternalEmailUsername,
+          anonymizeInternalEmailDomain,
+          anonymizeExternalEmailDomain,
+          internalDomainList,
+          anonymizationSalt
+        }
+
         return email(value, emailConfig)
       case TYPES.Filename:
         return filename(value)
