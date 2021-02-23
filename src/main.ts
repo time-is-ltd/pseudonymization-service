@@ -26,7 +26,10 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
     // Check proxy key
     const apiTokenInAuthorizationHeader = extractToken(authorization)
     const apiToken = await config.apiToken
-    if (apiToken === apiTokenInAuthorizationHeader) {
+
+    // Do not allow short apiToken
+    const isTokenValid = apiToken?.length >= 32
+    if (isTokenValid && apiToken === apiTokenInAuthorizationHeader) {
       return next()
     }
   }
