@@ -155,5 +155,6 @@ export default {
   parse,
   parsePart,
   parseHeaders,
-  stringify
+  stringify,
+  stringifyHeaders
 }
