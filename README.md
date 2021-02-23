@@ -455,7 +455,7 @@ $ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' cert.pem
 ## Enviromental variables
 | Variable name                       | Value                | Example                               | Default value | Description
 | ----------------------------------- | -------------------- | ------------------------------------- | ------------- |------------
-| `API_TOKEN`                         | string               | 76xmfSGx26wmj4ty8UuGGDMhrPkwNkjk      |               | Authorization api token
+| `API_TOKEN`                         | string               | 76xmfSGx26wmj4ty8UuGGDMhrPkwNkjk      |               | Authorization api token (must be at least 32 characters long)
 | `INTERNAL_DOMAIN_LIST`              | comma separated list | yourdomain.com,yourdomain.eu          |               | List of internal domains
 | `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`   | boolean              | true                                  | true          | Anononymize external domain in emails
 | `ANONYMIZE_EXTERNAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anononymize external username in emails
