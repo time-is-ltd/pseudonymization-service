@@ -67,9 +67,14 @@ export const oauth2Request = async (options: TokenHandlerOptions): Promise<{
     ...extra
   }
 
+  const urlEncodedBody = qs.stringify(body)
   const requestOptions = {
     method: 'post',
-    data: qs.stringify(body)
+    headers: {
+      'Content-Length': Buffer.byteLength(urlEncodedBody),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: urlEncodedBody
   }
 
   const response = await request(url, requestOptions)
@@ -89,7 +94,7 @@ export const oauth2Request = async (options: TokenHandlerOptions): Promise<{
     data: {
       type: json.token_type,
       expiresAt: expiresAt,
-      token: data[accessTokenName]
+      token: json[accessTokenName]
     },
     headers
   }
