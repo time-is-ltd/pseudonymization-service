@@ -1,4 +1,4 @@
-import { email, filename, id } from './anonymization.helper'
+import { email, filename, id, url } from './anonymization.helper'
 import config from '../app.config'
 
 /*
@@ -219,13 +219,14 @@ export const getValueMapper = async () => {
       case TYPES.Datetime:
       case TYPES.ContentType:
       case TYPES.ETag:
-      case TYPES.Url:
       case TYPES.Username:
         return string(value)
       case TYPES.Number:
         return number(value)
       case TYPES.Boolean:
         return boolean(value)
+      case TYPES.Url:
+        return url(value, rsaPublicKey)
       case TYPES.Id:
         const idConfig = {
           rsaPublicKey,

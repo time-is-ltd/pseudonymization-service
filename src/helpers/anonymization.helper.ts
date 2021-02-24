@@ -131,17 +131,20 @@ const decodeRSA = (str = ''): string => {
   return `${decodedStr}${tail}`
 }
 
-const cache = cacheFactory<string>()
+const matchAll = (regExp: RegExp, str = '') => {
+  const iterator = str.matchAll(regExp)
+  return Array.from(iterator)
+}
+
+const decryptUrlCache = cacheFactory<string>()
 export const decryptUrl = (url: string, privateKey?: string): string => {
   if(!privateKey) {
     return url
   }
 
   const rsaContentRegExp = new RegExp(`\/((${RSA_PREFIX}|RSA_ENCRYPTED_EMAIL_)([^\/]+))`, 'gi')
-  const valueRexExpMatchIterator = url.matchAll(rsaContentRegExp)
-  const valueRexExpMatchArray = Array.from(valueRexExpMatchIterator)
-
-  const shouldDecrypt = valueRexExpMatchArray?.length > 0
+  const encryptedParams = matchAll(rsaContentRegExp, url)
+  const shouldDecrypt = encryptedParams?.length > 0
 
   if (!shouldDecrypt) {
     // no encrypted content found
@@ -149,19 +152,19 @@ export const decryptUrl = (url: string, privateKey?: string): string => {
   }
 
   let decryptedUrl = url
-  for (const match of valueRexExpMatchArray) {
+  for (const match of encryptedParams) {
     const originalValue = match[1]
     let decryptedValue
-    if (cache.has(originalValue)) {
-      decryptedValue = cache.get(originalValue).v
+    if (decryptUrlCache.has(originalValue)) {
+      decryptedValue = decryptUrlCache.get(originalValue).v
     } else {
       const decodedValue = decodeRSA(match[3])
       decryptedValue = rsa.decrypt(decodedValue, privateKey)
     }
 
-    decryptedUrl = url.replace(new RegExp(originalValue, 'g'), decryptedValue)
+    decryptedUrl = decryptedUrl.replace(new RegExp(originalValue, 'g'), decryptedValue)
 
-    cache.set(originalValue, decryptedValue, 5 * 60) // keep in cache for 5 minutes
+    decryptUrlCache.set(originalValue, decryptedValue, 5 * 60) // keep in cache for 5 minutes
   }
 
   return decryptedUrl
@@ -177,10 +180,47 @@ export const encryptUrlComponent = (urlComponent: string, publicKey?: string): s
   return `${RSA_PREFIX}${encodedEncryptedUrlComponent}`
 }
 
+const encryptUrlCache = cacheFactory<string>()
+export const url = (url: string, publicKey?: string): string => {
+  if(!publicKey) {
+    return url
+  }
+
+  if (!url) {
+    return url
+  }
+
+  const emailRegExp = new RegExp(`([^\/]+@[^(\/|\?)]+)`, 'gi')
+  const emails = matchAll(emailRegExp, url)
+  const shouldEncrypt = emails?.length > 0
+
+  if (!shouldEncrypt) {
+    return url
+  }
+
+  let encryptedUrl = url
+  for (const match of emails) {
+    const email = match[1]
+    let encryptedValue
+    if (encryptUrlCache.has(email)) {
+      encryptedValue = encryptUrlCache.get(email).v
+    } else {
+      encryptedValue = encryptUrlComponent(email, publicKey)
+    }
+
+    encryptedUrl = encryptedUrl.replace(new RegExp(email, 'g'), encryptedValue)
+
+    encryptUrlCache.set(email, encryptedValue, 5 * 60) // keep in cache for 5 minutes
+  }
+
+  return encryptedUrl
+}
+
 export default {
   id,
   email,
   filename,
+  url,
+  encryptUrlComponent,
   decryptUrl,
-  encryptUrlComponent
 }

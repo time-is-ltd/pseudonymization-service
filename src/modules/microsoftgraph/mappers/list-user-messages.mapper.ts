@@ -13,7 +13,10 @@ export type UserMessages = {
 }
 
 const schema: Schema<UserMessages> = {
-  '@odata.context': TYPES.String,
+  '@odata.context': [
+    TYPES.Private,
+    TYPES.String
+  ],
   '@odata.nextLink': TYPES.Url,
   'value': [
     message
