@@ -1,16 +1,15 @@
 import { RequestHandler } from '../interfaces'
 import config from '../../app.config'
 import { RequestError } from '../../request'
-import { decryptUrl } from '../../helpers/anonymization.helper'
+import { decryptUrl } from '../../anonymizer'
 
 export const decryptUrlMiddleware = (): RequestHandler => async ({ url, ...rest }) => {
-  let decryptedUrl = url
   try {
     const rsaPrivateKey = await config.rsaPrivateKey
-    decryptedUrl = decryptUrl(url, rsaPrivateKey)
+    const decryptedUrl = decryptUrl(url, rsaPrivateKey)
+
+    return { ...rest, url: decryptedUrl }
   } catch (err) {
     throw new RequestError(400, undefined, JSON.stringify({ error: 'Error in RSA' }))
   }
-
-  return { ...rest, url: decryptedUrl }
 }

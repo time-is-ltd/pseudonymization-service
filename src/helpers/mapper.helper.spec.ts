@@ -7,7 +7,7 @@ import {
   ANONYMIZED_FILENAME,
   ANONYMIZED_EMAIL
 } from './testing'
-jest.mock('./anonymization.helper')
+jest.mock('../anonymizer')
 
 test('Falsy values', async () => {
   const valueMapper = await getValueMapper()

@@ -11,7 +11,7 @@ import {
   testMapper
 } from '../../../helpers/testing'
 
-jest.mock('../../../helpers/anonymization.helper')
+jest.mock('../../../anonymizer')
 
 const buildInputUser = (id: PersonId, self = false): EventUser => {
   const email = getEmail(id)

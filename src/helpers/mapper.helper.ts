@@ -1,4 +1,4 @@
-import { email, filename, id, url } from './anonymization.helper'
+import { email, filename, id, url } from '../anonymizer'
 import config from '../app.config'
 
 /*
