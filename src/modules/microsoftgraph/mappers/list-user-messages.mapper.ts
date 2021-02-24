@@ -17,7 +17,10 @@ const schema: Schema<UserMessages> = {
     TYPES.Private,
     TYPES.String
   ],
-  '@odata.nextLink': TYPES.Url,
+  '@odata.nextLink': [
+    TYPES.Url,
+    TYPES.Proxify
+  ],
   'value': [
     message
   ]

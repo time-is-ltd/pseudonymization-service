@@ -17,6 +17,10 @@ export const filename = (filename = ''): string => {
   return ANONYMIZED_FILENAME
 }
 
+export const proxify = (maybeUrl = ''): string => {
+  return typeof maybeUrl === 'string' ? String(maybeUrl) : ''
+}
+
 export default {
   email,
   filename

@@ -1,4 +1,4 @@
-import { email, filename, id, url } from '../anonymizer'
+import { email, filename, id, url, proxify } from '../anonymizer'
 import config from '../app.config'
 
 /*
@@ -67,6 +67,7 @@ export const TYPES = {
   ETag: Symbol('ETag'),
   Filename: Symbol('Filename'),
   Url: Symbol('Url'),
+  Proxify: Symbol('Profixy'),
   Username: Symbol('Username'),
 
   // Numeric values
@@ -197,7 +198,8 @@ export const getValueMapper = async () => {
     anonymizeExternalEmailDomain,
     internalDomainList,
     anonymizationSalt,
-    rsaPublicKey
+    rsaPublicKey,
+    baseUrl
   ] = await Promise.all([
     config.anonymizeInternalEmailUsername,
     config.anonymizeExternalEmailUsername,
@@ -205,7 +207,8 @@ export const getValueMapper = async () => {
     config.anonymizeExternalEmailDomain,
     config.internalDomainList,
     config.anonymizationSalt,
-    config.rsaPublicKey
+    config.rsaPublicKey,
+    config.baseUrl
   ])
 
   return (type: Symbol, value: any) => {
@@ -227,6 +230,8 @@ export const getValueMapper = async () => {
         return boolean(value)
       case TYPES.Url:
         return url(value, rsaPublicKey)
+      case TYPES.Proxify:
+        return proxify(value, baseUrl)
       case TYPES.Id:
         const idConfig = {
           rsaPublicKey,

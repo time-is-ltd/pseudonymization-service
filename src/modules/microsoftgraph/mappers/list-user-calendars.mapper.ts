@@ -17,7 +17,10 @@ const schema: Schema<UserCalendars> = {
     TYPES.Private,
     TYPES.String
   ],
-  '@odata.nextLink': TYPES.String,
+  '@odata.nextLink': [
+    TYPES.Url,
+    TYPES.Proxify
+  ],
   value: [
     calendar
   ]
