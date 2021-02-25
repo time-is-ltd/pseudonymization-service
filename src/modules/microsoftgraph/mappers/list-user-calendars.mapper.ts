@@ -13,8 +13,14 @@ export type UserCalendars = {
 }
 
 const schema: Schema<UserCalendars> = {
-  '@odata.context': TYPES.String,
-  '@odata.nextLink': TYPES.String,
+  '@odata.context': [
+    TYPES.Private,
+    TYPES.String
+  ],
+  '@odata.nextLink': [
+    TYPES.Url,
+    TYPES.Proxify
+  ],
   value: [
     calendar
   ]

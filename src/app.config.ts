@@ -2,6 +2,7 @@ import { configFactory, toArray, toBoolean, toNumber, toPem, toString, Transform
 
 const appConfig = {
   apiToken: toString(),
+  baseUrl: toString(),
   internalDomainList: toArray(),
   anonymizeExternalEmailDomain: toBoolean(true),
   anonymizeExternalEmailUsername: toBoolean(true),

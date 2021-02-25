@@ -6,7 +6,7 @@ import {
   testMapper
 } from '../../../helpers/testing'
 
-jest.mock('../../../helpers/anonymization.helper')
+jest.mock('../../../anonymizer')
 
 const buildInputOwner = (id: PersonId) => {
   const email = getEmail(id)
@@ -72,7 +72,7 @@ const buildInput = (messageCount: number = 0) => {
 
 const buildOutput = (messageCount: number = 0) => {
   return {
-    '@odata.context': `context`,
+    '@odata.context': ``,
     '@odata.nextLink': 'test',
     'value': Array.from(Array(messageCount)).map(() => calendarOutput)
   }

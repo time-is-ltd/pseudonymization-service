@@ -7,7 +7,7 @@ import {
   ANONYMIZED_EMAIL
 } from '../../../helpers/testing'
 
-jest.mock('../../../helpers/anonymization.helper')
+jest.mock('../../../anonymizer')
 
 const buildInputEmailAddress = (id: PersonId) => {
   const email = getEmail(id)
@@ -390,7 +390,7 @@ const buildInput = (messageCount: number = 0): UserMessages => {
 
 const buildOutput = (messageCount: number = 0): UserMessages => {
   return {
-    '@odata.context': `https://graph.microsoft.com/beta/$metadata#users('john.doe%40gmail.com')/messages`,
+    '@odata.context': ``,
     '@odata.nextLink': 'test',
     value: Array.from(Array(messageCount)).map(() => messageOutput)
   }

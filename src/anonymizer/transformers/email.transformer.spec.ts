@@ -1,8 +1,4 @@
-import {
-  email,
-  filename,
-  AnonymizeEmailConfig
-} from './anonymization.helper'
+import { email, AnonymizeEmailConfig } from './email.transformer'
 
 const configFactory = (internalUsername: boolean, internalDomain: boolean, externalUsername: boolean, externalDomain: boolean, internalDomainList: string[] = []): AnonymizeEmailConfig => {
   return  {
@@ -112,28 +108,5 @@ test('Anonymize external domain only', () => {
   emails.forEach((key: string, index: number) => {
     const value = results[index]
     expect(email(key, config)).toBe(value)
-  })
-})
-
-
-test('Anonymize filename', () => {
-  const filenames = [
-    'test.jpg',
-    '.env',
-    ` Asd "' _*a&23MJSkwe.png`,
-    'some.tar.gz',
-    'noextension'
-  ]
-  const results = [
-    'xxxx.jpg',
-    '.env',
-    'xxxxxxxxxxxxxxxxxxxx.png',
-    'xxxxxxxx.gz',
-    'xxxxxxxxxxx'
-  ]
-
-  filenames.forEach((key: string, index: number) => {
-    const value = results[index]
-    expect(filename(key)).toBe(value)
   })
 })
