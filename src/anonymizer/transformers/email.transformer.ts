@@ -1,4 +1,5 @@
 import * as emailAddresses from 'email-addresses'
+import { cacheFactory } from '../../cache'
 import { hash } from '../helpers'
 
 export interface AnonymizeEmailConfig {
@@ -49,9 +50,15 @@ const normalizeValue = (value = '') => {
   return value.trim().toLocaleLowerCase()
 }
 
+const cache = cacheFactory<string>()
 export const email = (email: string, config: AnonymizeEmailConfig): string => {
+  const normalizedEmail = normalizeValue(email)
+  if (cache.has(normalizedEmail)) {
+    return cache.get(normalizedEmail).v
+  }
+
   const addressList: any[] = emailAddresses.parseAddressList(email) || []
-  return addressList
+  const anonymizedEmail = addressList
     .map(address => {
       const normalizedUsername = normalizeValue(address.local)
       const normalizedDomain = normalizeValue(address.domain)
@@ -59,4 +66,8 @@ export const email = (email: string, config: AnonymizeEmailConfig): string => {
       return anonymizeAddress(normalizedUsername, normalizedDomain, config)
     })
     .join(', ')
+
+  cache.set(normalizedEmail, anonymizedEmail, 5 * 50) // keep in cache for 5 minutes
+
+  return anonymizedEmail
 }
