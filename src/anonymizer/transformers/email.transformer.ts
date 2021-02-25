@@ -8,7 +8,23 @@ export interface AnonymizeEmailConfig {
   anonymizeInternalEmailDomain: boolean,
   anonymizeExternalEmailDomain: boolean,
   internalDomainList: string[],
-  anonymizationSalt: string
+  anonymizationSalt: string,
+  enableInternalEmailPlusAddressing: boolean,
+  enableExternalEmailPlusAddressing: boolean
+}
+
+const normalizeValue = (value = '') => {
+  return value.trim().toLocaleLowerCase()
+}
+
+const splitUsername = (str = '') => {
+  const [username, ...tags] = str.split('+')
+
+  const result = [username]
+  if (tags.length > 0) {
+    result.push(tags.join('+'))
+  }
+  return result
 }
 
 const anonymizeAddress = (username: string, domain: string, params: AnonymizeEmailConfig): string => {
@@ -18,7 +34,9 @@ const anonymizeAddress = (username: string, domain: string, params: AnonymizeEma
     anonymizeInternalEmailDomain,
     anonymizeExternalEmailDomain,
     internalDomainList,
-    anonymizationSalt
+    anonymizationSalt,
+    enableInternalEmailPlusAddressing,
+    enableExternalEmailPlusAddressing
   } = params
 
   const isInternal = internalDomainList.indexOf(domain) > -1
@@ -35,19 +53,30 @@ const anonymizeAddress = (username: string, domain: string, params: AnonymizeEma
   && anonymizeExternalEmailDomain
   const anonymizeDomain = anonymizeInternalDomain || anonymizeExternalDomain
 
-  const finalUsername = anonymizeUsername
-    ? hash(username, anonymizationSalt)
-    : username
+  const isInternalPlusAddressingEnabled = isInternal && enableInternalEmailPlusAddressing
+  const isExternalPlusAddressingEnabled = !isInternal && enableExternalEmailPlusAddressing
+  const isPlusAddressingEnabled = isInternalPlusAddressingEnabled || isExternalPlusAddressingEnabled
 
+  const usernameParts = isPlusAddressingEnabled
+    ? splitUsername(username)
+    : [username]
+
+  const finalUsername = usernameParts
+    .map(normalizeValue)
+    .map(part => {
+      const normalizedPart = normalizeValue(part)
+      return anonymizeUsername
+        ? hash(normalizedPart, anonymizationSalt)
+        : normalizedPart
+    })
+    .join('+')
+
+  const normalizedDomain = normalizeValue(domain)
   const finalDomain = anonymizeDomain
-    ? `${hash(domain, anonymizationSalt)}.hash`
-    : domain
+    ? `${hash(normalizedDomain, anonymizationSalt)}.hash`
+    : normalizedDomain
 
   return `${finalUsername}@${finalDomain}`
-}
-
-const normalizeValue = (value = '') => {
-  return value.trim().toLocaleLowerCase()
 }
 
 const cache = cacheFactory<string>()
@@ -57,13 +86,10 @@ export const email = (email: string, config: AnonymizeEmailConfig): string => {
     return cache.get(normalizedEmail).v
   }
 
-  const addressList: any[] = emailAddresses.parseAddressList(email) || []
+  const addressList: any[] = emailAddresses.parseAddressList(normalizedEmail) || []
   const anonymizedEmail = addressList
     .map(address => {
-      const normalizedUsername = normalizeValue(address.local)
-      const normalizedDomain = normalizeValue(address.domain)
-
-      return anonymizeAddress(normalizedUsername, normalizedDomain, config)
+      return anonymizeAddress(address.local, address.domain, config)
     })
     .join(', ')
 

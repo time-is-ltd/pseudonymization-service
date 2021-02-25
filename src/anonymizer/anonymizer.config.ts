@@ -7,6 +7,8 @@ const anonymizerConfig = {
   anonymizeExternalEmailUsername: toBoolean(true),
   anonymizeInternalEmailDomain: toBoolean(false),
   anonymizeInternalEmailUsername: toBoolean(true),
+  enableInternalEmailPlusAddressing: toBoolean(true),
+  enableExternalEmailPlusAddressing: toBoolean(false),
   anonymizationSalt: toString(),
   rsaPrivateKey: toPem(),
   rsaPublicKey: toPem()
