@@ -1,5 +1,5 @@
 import { email, filename, id, url, proxify } from '../anonymizer'
-import config from '../app.config'
+import config from '../anonymizer/anonymizer.config'
 
 /*
   Extracts primitive type
