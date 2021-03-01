@@ -1,5 +1,5 @@
 import { email, filename, id, url, proxify } from '../anonymizer'
-import config from '../app.config'
+import config from '../anonymizer/anonymizer.config'
 
 /*
   Extracts primitive type
@@ -199,7 +199,9 @@ export const getValueMapper = async () => {
     internalDomainList,
     anonymizationSalt,
     rsaPublicKey,
-    baseUrl
+    baseUrl,
+    enableInternalEmailPlusAddressing,
+    enableExternalEmailPlusAddressing
   ] = await Promise.all([
     config.anonymizeInternalEmailUsername,
     config.anonymizeExternalEmailUsername,
@@ -208,7 +210,9 @@ export const getValueMapper = async () => {
     config.internalDomainList,
     config.anonymizationSalt,
     config.rsaPublicKey,
-    config.baseUrl
+    config.baseUrl,
+    config.enableInternalEmailPlusAddressing,
+    config.enableExternalEmailPlusAddressing
   ])
 
   return (type: Symbol, value: any) => {
@@ -246,7 +250,9 @@ export const getValueMapper = async () => {
           anonymizeInternalEmailDomain,
           anonymizeExternalEmailDomain,
           internalDomainList,
-          anonymizationSalt
+          anonymizationSalt,
+          enableExternalEmailPlusAddressing,
+          enableInternalEmailPlusAddressing
         }
 
         return email(value, emailConfig)

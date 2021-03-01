@@ -1,5 +1,5 @@
 import { RequestHandler } from '../interfaces'
-import config from '../../app.config'
+import config from '../../anonymizer/anonymizer.config'
 import { RequestError } from '../../request'
 import { decryptUrl } from '../../anonymizer'
 
