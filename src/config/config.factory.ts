@@ -2,29 +2,48 @@ import { TransformMap, Response, Provider, ProviderResult } from './types'
 import { cacheFactory } from '../cache'
 import { fromAzureKeyVault, fromCache, fromEnvVariable, fromGcpSecretManager } from './providers'
 
-export const configFactory = <T extends TransformMap>(mapperMap: T, vaultKeysAllowlist: Array<keyof T> = []) => {
+export const configFactory = <T extends TransformMap>(transformMap: T, vaultKeysAllowlist: Array<keyof T> = []) => {
   const cache = cacheFactory<T>()
 
-  const get = async <K extends keyof T>(key: K): Promise<Response<T, K>> => {
-    const functionOrObj = mapperMap[key as string]
-    const mapperItemObj = typeof functionOrObj === 'function'
-      ? { transform: functionOrObj }
-      : functionOrObj
+  // Setup cache provider
+  const cacheProvider = fromCache<T>(cache)
 
-    const { transform } = mapperItemObj
+  // Setup ENV variable provider
+  const envVariableProvider = fromEnvVariable<T>()
 
-    if (!transform) {
-      throw new Error('No transformer found')
+  // Setup GCP secret manager provider
+  const gcpSecretManagerProjectId = process.env.GCP_SECRET_MANAGER_PROJECT_ID
+  const gcpSecretManagerPrefix = process.env.GCP_SECRET_MANAGER_PREFIX
+  const isGcpSecretManagerEnabled = Boolean(gcpSecretManagerProjectId)
+  const gcpSecretManagerProvider = isGcpSecretManagerEnabled && fromGcpSecretManager<T>(gcpSecretManagerProjectId, gcpSecretManagerPrefix)
+
+  // Setup Azure key vaul provider
+  const azureKeyVaultName = process.env.AZURE_KEY_VAULT_NAME
+  const isAzureKeyVaultEnabled = Boolean(azureKeyVaultName)
+  const azureKeyVaultProvider = isAzureKeyVaultEnabled && fromAzureKeyVault<T>(azureKeyVaultName)
+
+  const getFactory = <K extends keyof T>(key: K) => {
+    const providers: Array<Provider<T, K>> = [
+      cacheProvider,
+      envVariableProvider
+    ]
+
+    // GCP
+    const isVaultKey = vaultKeysAllowlist.indexOf(key as string) > -1
+    if (isVaultKey) {
+      if (gcpSecretManagerProvider) {
+        providers.push(gcpSecretManagerProvider)
+      }
+
+      if (azureKeyVaultProvider) {
+        providers.push(azureKeyVaultProvider)
+      }
     }
 
-    const isVaultEnabled = <T extends TransformMap, K extends keyof T>(key: K, name?: string) => {
-      return name?.length > 0 && vaultKeysAllowlist.indexOf(key as string) > -1
-    }
-
-    const compose = (...fns: Array<Provider<T, K>>) => async (x: K): Promise<ProviderResult<string>> => {
+    const composeProviders = (...fns: Array<Provider<T, K>>) => async (x: K): Promise<ProviderResult<string>> => {
       const isObject = (o: unknown): o is ProviderResult => {
         return o === Object(o)
-      } 
+      }
       for (const fn of fns) {
         const result = await fn(x)
         if (result != null) {
@@ -38,30 +57,35 @@ export const configFactory = <T extends TransformMap>(mapperMap: T, vaultKeysAll
       return { v: undefined }
     }
 
-    const azureKeyVaultName = process.env.AZURE_KEY_VAULT_NAME
-    const gcpSecretManagerProjectId = process.env.GCP_SECRET_MANAGER_PROJECT_ID
-    const gcpSecretManagerPrefix = process.env.GCP_SECRET_MANAGER_PREFIX
-    const { defaultTtl = 0, v: value } = await compose(
-      fromCache<T>(cache),
-      fromEnvVariable<T>(),
-      fromGcpSecretManager<T>(isVaultEnabled<T, K>(key, gcpSecretManagerProjectId), gcpSecretManagerProjectId, gcpSecretManagerPrefix),
-      fromAzureKeyVault<T>(isVaultEnabled<T, K>(key, azureKeyVaultName), azureKeyVaultName)
-    )(key)
+    const getValue = composeProviders(...providers)
+    return async (): Promise<Response<T, K>> => {
+      const functionOrObj = transformMap[key as string]
+      const transformMapItem = typeof functionOrObj === 'function'
+        ? { transform: functionOrObj }
+        : functionOrObj
 
-    const { ttl = defaultTtl } = mapperItemObj
-    const transformedValue = transform(value)
+      const { transform } = transformMapItem
 
-    // Always set to prolong the ttl, if variable in use
-    cache.set(key as string, transformedValue, ttl)
+      if (!transform) {
+        throw new Error('No transformer found')
+      }
 
-    return transformedValue
+      const { defaultTtl = 0, v: value } = await getValue(key)
+
+      const { ttl = defaultTtl } = transformMapItem
+      const transformedValue = transform(value)
+
+      // Always set to prolong the ttl, if variable in use
+      cache.set(key as string, transformedValue, ttl)
+
+      return transformedValue
+    }
   }
 
-  return Object.keys(mapperMap)
+  return Object.keys(transformMap)
     .reduce((obj, key) => {
-      Object.defineProperty(obj, key, {
-        get: () => get(key)
-      })
+      const get = getFactory(key)
+      Object.defineProperty(obj, key, { get })
       return obj
     }, {}) as {
       [K in keyof T]: Promise<Response<T, K>>
