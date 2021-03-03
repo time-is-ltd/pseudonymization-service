@@ -1,6 +1,6 @@
 import { TransformMap, Response, Provider, ProviderResult } from './types'
 import { cacheFactory } from '../cache'
-import { fromAzureKeyVault, fromCache, fromEnvVariable } from './providers'
+import { fromAzureKeyVault, fromCache, fromEnvVariable, fromGcpSecretManager } from './providers'
 
 export const configFactory = <T extends TransformMap>(mapperMap: T, vaultKeysAllowlist: Array<keyof T> = []) => {
   const cache = cacheFactory<T>()
@@ -39,9 +39,12 @@ export const configFactory = <T extends TransformMap>(mapperMap: T, vaultKeysAll
     }
 
     const azureKeyVaultName = process.env.AZURE_KEY_VAULT_NAME
+    const gcpSecretManagerProjectId = process.env.GCP_SECRET_MANAGER_PROJECT_ID
+    const gcpSecretManagerPrefix = process.env.GCP_SECRET_MANAGER_PREFIX
     const { defaultTtl = 0, v: value } = await compose(
       fromCache<T>(cache),
       fromEnvVariable<T>(),
+      fromGcpSecretManager<T>(isVaultEnabled<T, K>(key, gcpSecretManagerProjectId), gcpSecretManagerProjectId, gcpSecretManagerPrefix),
       fromAzureKeyVault<T>(isVaultEnabled<T, K>(key, azureKeyVaultName), azureKeyVaultName)
     )(key)
 
