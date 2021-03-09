@@ -2,7 +2,7 @@
 
 **Created and Open-sourced by [Time is Ltd.](https://www.timeisltd.com)**
 
-A backend service to anonymize Google Workspace and Microsoft O365 API response objects.
+A backend service to anonymize Google Workspace and Microsoft Graph API response objects.
 Removing all sensitive and private textual and personal information from the objects returned by the APIs.
 
 ## Quick start
