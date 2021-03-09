@@ -1,378 +1,75 @@
-# Pseudonymization Service for Google Workspace and Microsoft 365 APIs
+# Pseudonymization Service for Google Workspace and Microsoft 365 APIs 
 
-### Created and Open-sourced by [Time is Ltd.](https://www.timeisltd.com)
+**Created and Open-sourced by [Time is Ltd.](https://www.timeisltd.com)**
 
-## Description
-A backend service to anonymize google G Suite and Microsoft O365 API response objects.
+A backend service to anonymize Google Workspace and Microsoft O365 API response objects.
 Removing all sensitive and private textual and personal information from the objects returned by the APIs.
 
-#### Google G Suite APIs:
-  - Google Calendar
-  - Gmail
-  - Google Meet (coming soon)
-  - Google Docs (coming soon)
-
-#### Microsoft APIs:
-  - O365 Calendar
-  - O365 Email
-  - MS Team (coming soon)
-  - O365 Docs (coming soon)
-
-
 ## Quick start
-Read [how it works](#how-it-works)
-
-#### Install
-  - [run on GCP or Azure in 2 minutes with pre-build docker image](#run-on-gcp-2-minutes)
-  - [run locally from source](#run-locally)
-  - [run pre-build container localy](#run-from-docker-container)
-  - [run using docker-compose](#run-using-docker-compose)
-
-#### Configure
-  - get your [G Suite credentials](#how-to-get-google-api-credentials) / [O365 credential](#how-to-get-office-365-credentials)
-  - edit [enviromental variables and secrets](#enviromental-variables)
-
-#### Test
-  - [use cURL to get anonymized data](#test-with-curl)
-
-## How it works
-### Authorization
-Every request to the anonymization service must be authorized by [bearer token in an authorization header](https://tools.ietf.org/html/rfc6750).
-
-Bearer token is provided by [`API_TOKEN`](#enviromental-variables) enviromental variable. `API_TOKEN` variable will be replaced with OAuth 2.0 Client Credentials Grant Type flow in the [future](#future-improvements).
-
-### Pseudonimization
-Definitions:
-- Pseudonimization:
-- Requesting service: It's the client requesting pseudonimized data from the G Suite, O365 etc. APIs.
-- Pseudonimization service: Is an instance of this service from this repository
-
-#### Input data Pseudonimization
-The following sections represent pseudonimization of data coming IN from the requesting service to the pseudonimization service. It's perfectly possible for the requesting service to request data about a user (specific email address) without knowing the email address. 
-
-#### Email address in the incoming API requests
-Input PII data (email address) in the API query is an RSA encrypted string
-- Private key can be provided by [`RSA_PRIVATE_KEY`](#enviromental-variables) enviromental variable and you can use the ./src/genKey.js utility to generate Private key and Public key
-- This is only necessary if the user of the proxy can't know any PII data - full pseudonimization case.
-- In this case, all the encrypted email addresses have to be in a format starting with the RSA_ENCRYPTED_EMAIL prefix, like this example: `RSA_ENCRYPTED_EMAIL_IIJRAIBADANBgkqhkiG9w0BA...` and the RSA encrypted string has to be url-encoded safe Base64 string. See the `./src/helpers/rsa.ts`, functions `urlEncode` and `rsaEncrypt` functions and use this implementation on your data requesting back-end.
-
-Output PII data (email address, names etc.) is anonymized by salted `sha512` ([src/helpers/sha512.ts](./src/helpers/sha512.ts)) hashing function and the result is shortened to 16 chars.
-- Salt can be provided by [`ANONYMIZATION_SALT`](#enviromental-variables) enviromental variable
-
-#### Output data Pseudonimization
-The following sections represent the pseudonimization of data that are send back to the requesting service from the pseudonimization service.
-
-#### Email Pseudonimization ([src/helpers/anonymization.helper.ts](./src/helpers/anonymization.helper.ts))
-- The service recognizes 2 types of domains:
-  1. internal - owned or controlled by your organization
-  2. external
-- Internal domains can be set by providing comma separated list of values to [`INTERNAL_DOMAIN_LIST`](#enviromental-variables) enviromental variable
-- Email address (username@domain) anonymization depends on [`INTERNAL_DOMAIN_LIST`, `ANONYMIZE_INTERNAL_EMAIL_USERNAME`, `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`, `ANONYMIZE_EXTERNAL_EMAIL_USERNAME`, `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`](#enviromental-variables) enviromental variables
-- Every email address part is hashed by [`sha512`](#anonymization) function and truncated to the **first 16 characters**
-
-
-##### Example: Internal domain anonymization
-| Email             | [`ANONYMIZE_INTERNAL_EMAIL_USERNAME`](#enviromental-variables) | [`ANONYMIZE_INTERNAL_EMAIL_DOMAIN`](#enviromental-variables) | Anonymized email
-| ----------------- | ----------------------------------- | --------------------------------- | ------------------
-| user@internal.com | false                               | false                             | user@internal.com
-| user@internal.com | false                               | true                              | user@anonymized.hash
-| user@internal.com | true                                | false                             | anonymized@internal.com
-| user@internal.com | true                                | true                              | anonymized@anonymized.hash
-
-##### Example: External domain anonymization
-| Email             | [`ANONYMIZE_EXTERNAL_EMAIL_USERNAME`](#enviromental-variables) | [`ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`](#enviromental-variables) | Anonymized email
-| ----------------- | ----------------------------------- | --------------------------------- | ------------------
-| user@external.com | false                               | false                             | user@external.com
-| user@external.com | false                               | true                              | user@anonymized.hash
-| user@external.com | true                                | false                             | anonymized@external.com
-| user@external.com | true                                | true                              | anonymized@anonymized.hash
-
-#### File name anonymization ([src/helpers/anonymization.helper.ts](./src/helpers/anonymization.helper.ts))
-- File name is replaced by character `'x'` (repeated `n times`) - `n` is the length of file name without extension
-- File extension is always preserved
-
-##### Example: File names anonymization
-| File name             | Anonymized file name
-| --------------------- | ---------------------
-| somefilename.jpg      | xxxxxxxxxxxx.jpg
-| .env                  | .env
-| filename              | xxxxxxxx
-
-#### Anonymization of private data in object properties
-
-Every private property value is removed from the response.
-
-##### Example: Anonymized private object properties
-| Field type        | Return value
-| ----------------- | -----------------------------------
-| username          | empty string                       
-| summary           | empty string                       
-| description       | empty string                       
-| subject           | empty string                       
-| password          | empty string                       
-| pin               | empty string                       
-| secret string     | empty string                       
-| secret boolean    | false
-| secret number     | 0
-| secret array      | empty array
-
-### Resource representation
-  Every endpoint has schema definition, that transforms api response.
-
-  Response transformation complies with the following rules:
-  1. Only properties defined in the schema are passed to the client
-  2. Properties marked as **not private** are passed to the client without modification
-  3. Properties marked as **private** are modified, their [return values](#confidential-fields-examples) are removed
-
-
-### How to get Google api credentials
-Follow https://developers.google.com/admin-sdk/directory/v1/guides/delegation guide to perform domain-wide delegation of authority with https://www.googleapis.com/auth/gmail.readonly and/or https://www.googleapis.com/auth/calendar.readonly API scopes.
-
-Use `client_email` and `private_key` from generated service account credentials file (`credentials.json`) as [`GSUITE_CLIENT_EMAIL`](#enviromental-variables) and [`GSUITE_PRIVATE_KEY`](#enviromental-variables) enviromental variables respectively.
-
-Populate `GSUITE_SCOPES` enviromental variable with comma separated scopes used in the service account creation guide.
-
-### How to get Office 365 credentials
-Follow https://docs.microsoft.com/en-us/office/office-365-management-api/get-started-with-office-365-management-apis to create Office 365 tenant ID, client ID and client Secret. Populate generated values to `O365_TENANT_ID`, `O365_CLIENT_ID`, `O365_CLIENT_SECRET` enviromental variables.
-
-## Supported endpoints
-### Google Gmail Api
-#### `GET /www.googleapis.com/gmail/v1/users/:userId/messages`
-  
-  Lists the messages in the user's mailbox.
-
-##### Request Headers
-  | Header name    | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | Authorization  | string    | Bearer {apiToken}. Required.     |
-
-##### Parameters
-  | Parameter name | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | userId         | string    | The user's email address         |
-
-##### Query parameters
-  See https://developers.google.com/gmail/api/v1/reference/users/messages/list#parameters
-
-##### Response
-  See https://developers.google.com/gmail/api/v1/reference/users/messages/list#response_1
-
-##### Schema definition
-  See [src/modules/googleapis/mappers/list-user-messages.mapper.ts](src/modules/googleapis/mappers/list-user-messages.mapper.ts)
-
-
-#### `GET /www.googleapis.com/gmail/v1/users/:userId/messages/:id`
-
-  Gets the message by `id`
-
-##### Request Headers
-  | Header name    | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | Authorization  | string    | Bearer {apiToken}. Required.     |
-
-##### Parameters
-  | Parameter name | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | userId         | string    | The user's email address         |
-  | id             | string    | The message ID                   |
-
-##### Query parameters
-  See https://developers.google.com/gmail/api/v1/reference/users/messages/get#parameters
-
-##### Response
-  See https://developers.google.com/gmail/api/v1/reference/users/messages/get#response_1
-
-##### Schema definition
-  See [src/modules/googleapis/mappers/get-user-message.mapper.ts](src/modules/googleapis/mappers/get-user-message.mapper.ts)
-
-#### `POST /www.googleapis.com/batch/gmail/v1`
-
-  Batch api supports only `GET /www.googleapis.com/gmail/v1/users/:userId/messages` and `GET /www.googleapis.com/gmail/v1/users/:userId/messages/:id` requests
-
-  See https://developers.google.com/gmail/api/guides/batch
-
-### Google Calendar Api
-#### `GET /www.googleapis.com/calendar/v3/users/:userId/calendarList`
-
-  Returns the calendars on the user's calendar list.
-
-##### Request Headers
-  | Header name    | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | Authorization  | string    | Bearer {apiToken}. Required.     |
-
-##### Parameters
-  | Parameter name | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | userId         | string    | The user's email address         |
-
-##### Query parameters
-  See https://developers.google.com/calendar/v3/reference/calendarList/list#parameters
-
-##### Response
-  See https://developers.google.com/calendar/v3/reference/calendarList/list#response_1
-
-##### Schema definition
-  See [src/modules/googleapis/mappers/list-user-calendars.mapper.ts](src/modules/googleapis/mappers/list-user-calendars.mapper.ts)
-
-#### `GET /www.googleapis.com/calendar/v3/users/:userId/calendars/:calendarId/events`
-
-  Returns events on the specified calendar.
-
-##### Request Headers
-  | Header name    | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | Authorization  | string    | Bearer {apiToken}. Required.     |
-
-##### Parameters
-  | Parameter name | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | userId         | string    | The user's email address         |
-  | calendarId     | string    | The calendar ID                  |
-
-##### Query parameters
-  See https://developers.google.com/calendar/v3/reference/events/list#parameters
-
-##### Response
-  See https://developers.google.com/calendar/v3/reference/events/list#response_1
-
-##### Schema definition
-  See [src/modules/googleapis/mappers/list-calendar-events.mapper.ts](src/modules/googleapis/mappers/list-calendar-events.mapper.ts)
-
-### Microsoft graph api
-#### `GET /graph.microsoft.com/beta/users/:userId/calendars`
-
-  Returns calendars of the specified user.
-
-##### Request Headers
-  | Header name    | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | Authorization  | string    | Bearer {apiToken}. Required.     |
-
-##### Parameters
-  | Parameter name | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | userId         | string    | The user's email address         |
-
-##### Query parameters
-  See https://docs.microsoft.com/en-us/graph/api/user-list-calendars?view=graph-rest-beta&tabs=http#optional-query-parameters
-
-##### Response
-  See https://docs.microsoft.com/en-us/graph/api/user-list-calendars?view=graph-rest-beta&tabs=http#response
-
-##### Schema definition
-  See [src/modules/googleapis/mappers/list-calendar-calendars.mapper.ts](src/modules/microsoftgraph/mappers/list-user-calendars.mapper.ts)
-
-#### `GET /graph.microsoft.com/beta/users/:userId/messages`
-
-  Returns messages of the specified user.
-
-##### Request Headers
-  | Header name    | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | Authorization  | string    | Bearer {apiToken}. Required.     |
-
-##### Parameters
-  | Parameter name | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | userId         | string    | The user's email address         |
-
-##### Query parameters
-  See https://docs.microsoft.com/en-us/graph/api/user-list-messages?view=graph-rest-beta&tabs=http#optional-query-parameters
-
-##### Response
-  See https://docs.microsoft.com/en-us/graph/api/user-list-messages?view=graph-rest-beta&tabs=http#response
-
-##### Schema definition
-  See [src/modules/googleapis/mappers/list-calendar-messages.mapper.ts](src/modules/microsoftgraph/mappers/list-user-messages.mapper.ts)
-
-#### `GET /graph.microsoft.com/beta/users/:userId/events`
-
-  Returns events of the specified user.
-
-##### Request Headers
-  | Header name    | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | Authorization  | string    | Bearer {apiToken}. Required.     |
-
-##### Parameters
-  | Parameter name | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | userId         | string    | The user's email address         |
-
-##### Query parameters
-  See https://docs.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-beta&tabs=http#optional-query-parameters
-
-##### Response
-  See https://docs.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-beta&tabs=http#response
-
-##### Schema definition
-  See [src/modules/googleapis/mappers/list-calendar-events.mapper.ts](src/modules/microsoftgraph/mappers/list-user-events.mapper.ts)
-
-#### `GET /graph.microsoft.com/beta/users/:userId/calendars/:calendarId/events`
-
-  Returns events of the specified user and the specified calendar.
-
-##### Request Headers
-  | Header name    | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | Authorization  | string    | Bearer {apiToken}. Required.     |
-
-##### Parameters
-  | Parameter name | Value     | Description                      |
-  | -------------- | --------- | -------------------------------- |
-  | userId         | string    | The user's email address         |
-  | calendarId     | string    | The calendar ID                  |
-
-##### Query parameters
-  See https://docs.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-beta&tabs=http#optional-query-parameters
-
-##### Response
-  See https://docs.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-beta&tabs=http#response
-
-##### Schema definition
-  See [src/modules/googleapis/mappers/list-user-events.mapper.ts](src/modules/microsoftgraph/mappers/list-user-events.mapper.ts)
-
-<!---
-##### Anonymized properties
-  | Parameter path                          | Value     | Return value                     |
-  | --------------------------------------- | --------- | -------------------------------- |
-  | subject                                 | string    | Empty string                     |
-  | bodyPreview                             | string    | Empty string                     |
-  | body.content                            | string    | Empty string                     |
-  | location.displayName                    | string    | Empty string                     |
-  | location.locationUri                    | string    | Empty string                     |
---->
+- Getting started
+  - [How it works](./docs/how-it-works.md)
+  - [Supported endpoints](./docs/endpoints.md)
+    - [Microsoft Graph Api](./docs/endpoints.md#microsoft-graph-api)
+    -  Google APIs
+       - [Calendar API](./docs/endpoints.md#google-calendar-api)
+       - [Gmail API](./docs/endpoints.md#google-gmail-api)
+
+- Usage
+  - Installation
+    - [run on GCP or Azure in 2 minutes with pre-build docker image](#run-on-gcp-2-minutes)
+    - [run locally from source](#run-locally)
+    - [run pre-build container localy](#run-from-docker-container)
+    - [run using docker-compose](#run-using-docker-compose)
+  - Configure
+    - get your [G Suite credentials](./docs/how-it-works.md#how-to-get-google-api-credentials) / [O365 credentials](./docs/how-it-works.md#how-to-get-office-365-credentials)
+    - edit [enviromental variables and secrets](#configuration)
+  - Healthcheck
+  - Test
+    - [use cURL to get anonymized data](#test-with-curl)
 
 ## Installation
 
 ### Run on GCP (2 minutes)
-
-1. Create new GCP instance based on this docker image eu.gcr.io/proxy-272310/proxy:v1.0.3, see [how to do it in GCP](https://cloud.google.com/compute/docs/instances/create-start-instance#from-container-image)
+1. Create new GCP instance based on this docker image eu.gcr.io/proxy-272310/proxy:v1.1.2, see [how to do it in GCP](https://cloud.google.com/compute/docs/instances/create-start-instance#from-container-image)
 
 2. Add/edit enviromental variables in the GCP instance editor UI
 
-3. Start and [test your instance with cURL](#test)
+3. Start and [test your instance with cURL](#test-with-curl)
 
 ### Run from docker container
+
+#### Prerequisites
+- [Docker](https://www.docker.com)
+  - Download Docker from https://www.docker.com (can be run on Linux, Windows or Mac)
+
 Use the latest docker image from the GCP docker repository
 
-1. ```docker pull eu.gcr.io/proxy-272310/proxy:v1.0.3```
+1. ```docker pull eu.gcr.io/proxy-272310/proxy:v1.1.2```
 
-2. Create and edit file with [enviromental variables](#enviromental-variables)
+2. Create and edit file with [enviromental variables](#configuration)
 ```shell
 $ cp .env.example .env
 $ vi .env
 ```
 
-3. [enable SSL](#ssl)
+3. Optional: [enable SSL](#ssl)
 
+4. Run docker image
+```shell
+$ docker run --env-file .env eu.gcr.io/proxy-272310/proxy:v1.1.2
+```
 
 ### Run locally
+#### Prerequisites
+- [Node](https://nodejs.org)
+  - Install Node JS (can be run on Linux, Windows or Mac)
+- [Git](https://www.git-scm.com/)
+  - Download git from https://www.git-scm.com/
+
 1. Clone repository
 ```shell
-$ git clone https://gitlab.com/time-is-ltd/anonymization-service.git
-$ cd anonymization-service
+$ git clone https://github.com/time-is-ltd/pseudonymization-service.git
+$ cd pseudonymization-service
 ```
 
 2. Install npm packages
@@ -380,7 +77,7 @@ $ cd anonymization-service
 $ npm i
 ```
 
-3. Create and edit file with [enviromental variables](#enviromental-variables)
+3. Create and edit [.env](#configuration) file
 ```shell
 $ cp .env.example .env
 $ vi .env
@@ -388,42 +85,44 @@ $ vi .env
 
 4. [Optional: enable SSL](#ssl)
 
-4. Optional: Run tests
+5. Optional: Run tests
 ```shell
 $ npm run test
 ```
 
-5. Install [pm2 process manager](https://pm2.keymetrics.io/)
+6. Run service
 ```shell
-$ npm install pm2 -g
-```
-
-1. Run service
-```shell
-$ pm2 start npm -- start
+$ npm start
 ```
 
 ### Run using docker-compose
+- [Git](https://www.git-scm.com)
+  - Download git from https://www.git-scm.com
+- [Docker](https://www.docker.com)
+  - Download Docker from https://www.docker.com (can be run on Linux, Windows or Mac)
+- [Docker Compose](https://docs.docker.com/compose)
+  - Install Compose on Linux systems https://docs.docker.com/compose/install/#install-compose-on-linux-systems
+
 1. Clone repository
 ```shell
-$ git clone https://gitlab.com/time-is-ltd/anonymization-service.git
-$ cd anonymization-service
+$ git clone https://github.com/time-is-ltd/pseudonymization-service.git
+$ cd pseudonymization-service
 ```
 
-2. Create and edit file with [enviromental variables](#enviromental-variables)
+2. Create and edit file with [enviromental variables](#configuration)
 ```shell
 $ cp .env.example .env
 $ vi .env
 ```
 
-4. [Optional: enable SSL](#ssl)
+3. [Optional: enable SSL](#ssl)
 
-5. Build image
+4. Build image
 ```shell
 $ docker-compose build
 ```
 
-6. Run image
+5. Run image
 ```shell
 $ docker-compose up
 ```
@@ -442,42 +141,55 @@ $ openssl req -nodes -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 
 $ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' key.pem
 ```
 
-3. Use printed value as [`SSL_KEY` enviromental variable](#enviromental-variables)
+1. Use printed value as [`SSL_KEY` enviromental variable or `SSL-KEY` vault secret](#configuration)
 
-4. Convert certificate file (`cert.pem`) to one-line PEM format
+2. Convert certificate file (`cert.pem`) to one-line PEM format
 ```bash
 $ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' cert.pem
 ```
 
-5. Use printed value as [`SSL_CERT` enviromental variable](#enviromental-variables)
+1. Use printed value as [`SSL_CERT` enviromental variable or `SSL-CERT` vault secret](#configuration)
 
+## Configuration
 
-## Enviromental variables
-| Variable name                       | Value                | Example                               | Default value | Description
-| ----------------------------------- | -------------------- | ------------------------------------- | ------------- |------------
-| `API_TOKEN`                         | string               | 76xmfSGx26wmj4ty8UuGGDMhrPkwNkjk      |               | Authorization api token (must be at least 32 characters long)
-| `INTERNAL_DOMAIN_LIST`              | comma separated list | yourdomain.com,yourdomain.eu          |               | List of internal domains
-| `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`   | boolean              | true                                  | true          | Anononymize external domain in emails
-| `ANONYMIZE_EXTERNAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anononymize external username in emails
-| `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`   | boolean              | true                                  | false         | Anononymize internal domain in emails
-| `ANONYMIZE_INTERNAL_EMAIL_USERNAME` | boolean              | true                                  | true          | Anononymize internal username in emails
-| `ANONYMIZATION_SALT`                | string               | yvUCixgSV6EMcE2FpZispWkju8N3LrWp      | true          | Salt that is used in data anonymization. Must be 32 characters long.
-| `HTTP_PORT`                         | number               | 80                                    |               | Http listening port
-| `HTTPS_PORT`                        | number               | 443                                   |               | Https listening port. You have to provide `SSL_KEY` and `SSL_CERT` enviromental variables
-| `SSL_KEY`                           | string               |                  |               | Converted file with private key (`key.pem`) to one-line PEM format. Follow [SSL guide](#ssl) to get SSL PEM files.
-| `SSL_CERT`                          | string               |                 |               | Converted file with certificate (`cert.pem`) to one-line PEM format. Follow [SSL guide](#ssl) to get SSL PEM files.
-| `RSA_PRIVATE_KEY`                          | string               |                 |               | Converted file with RSA Private Key to one-line PEM format. Use the ./src/genKey.js to generate it.
-| `GSUITE_CLIENT_EMAIL`        | string               |             |               | Value of `client_email` property located in google service account credentials.json file. You can get google service account credentials via [How to get Google api credentials guide](#how-to-get-google-api-credentials).
-| `GSUITE_PRIVATE_KEY`        | string               |             |               | Value of `private_key` property located in google service account credentials.json file. You can get google service account credentials via [How to get Google api credentials guide](#how-to-get-google-api-credentials).
-| `GSUITE_SCOPES`                     | string               | https://www.googleapis.com/auth/gmail.readonly, https://www.googleapis.com/auth/calendar.readonly |               | OAuth 2.0 Scopes for Google APIs
-| `O365_TENANT_ID`                    | string               | 00000000-0000-0000-0000-000000000000  |               | Office 365 tenant ID. You can get tenant ID via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
-| `O365_CLIENT_ID`                    | string               | 00000000-0000-0000-0000-000000000000  |               | Office 365 client ID. You can get client ID via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
-| `O365_CLIENT_SECRET`                | string               |                                       |               | Office 365 client secret. You can get client secret via [How to get Office 365 credentials guide](#how-to-get-office-365-credentials)
+There are 3 ways to provide config values
+- using enviromental variables
+- using Azure Key Vault (You have to provide `AZURE_KEY_VAULT_NAME` enviromental variable in order to enable Azure Key Vault)
+- using Google Secret Manager (You have to provide `GCP_SECRET_MANAGER_PROJECT_ID` enviromental variable in order to enable Google Secret Manager)
 
-## Test with cURL
+| Enviromental Variable<br />*name*   | Key Vault/Secret Manager<br />*secret name* | Value         | Description | Example                               | 
+| ----------------------------------- | ------------------------------------------- | --------------------------------- | ------------- | -------------------------------------
+| `API_TOKEN`                         | `API-TOKEN`                                 | string        | Authorization api token (must be at least 32 characters long) | 76xmfSGx26wmj4ty8UuGGDMhrPkwNkjk |
+| `ANONYMIZATION_SALT`                | `ANONYMIZATION-SALT`                        | string        | Salt that is used in data anonymization. Should be at least 32 characters long | yvUCixgSV6EMcE2FpZispWkju8N3LrWp
+| `BASE_URL`                          | `N/A`                                       | string               | Pseudonymization service base url | http://localhost       |               
+| `HTTP_PORT`                         | `N/A`                                       | number               | Optional. Http listening port. You should set at least one of `HTTP_PORT` or `HTTPS_PORT` env variables, otherwise the service will not listen on any port | 80
+| `HTTPS_PORT`                        | `N/A`                                       | number               | Optional. Https listening port. You have to provide `SSL_KEY` and `SSL_CERT` secrets | 443
+| `INTERNAL_DOMAIN_LIST`              | `N/A`                                       | comma separated list | Optional. List of internal domains | yourdomain.com,yourdomain.eu
+| `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`   | `N/A`                                       | boolean (default true) | Optional. Anononymize external domain in emails | true
+| `ANONYMIZE_EXTERNAL_EMAIL_USERNAME` | `N/A`                                       | boolean (default true) | Optional. Anononymize external username in emails              | true
+| `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`   | `N/A`                                       | boolean (default false) | Optional. Anononymize internal domain in emails | false
+| `ANONYMIZE_INTERNAL_EMAIL_USERNAME` | `N/A`                                       | boolean (default true) | Optional. Anononymize internal username in emails | true
+| `AZURE_KEY_VAULT_NAME`              | `N/A`                                       | string               | Optional. Set only if you want to use Azure Key Vault. Your Azure Key Vault name | test-kv 
+| `GCP_SECRET_MANAGER_PROJECT_ID`     | `N/A`                                       | string               | Optional. Set only if you want to use Google Secret Manager. GCP project id for which to manage secrets | test-project
+| `GCP_SECRET_MANAGER_PREFIX`         | `N/A`                                       | string               | Optional. Set only if you want to use Google Secret Manager. This option allows you to prefix secret names with a string value. (e.g. if you set prefix to `test`, `API-TOKEN` will become `TEST-API-TOKEN`) | test
+| `SSL_KEY`                           | `SSL-KEY`                                   | string        | Optional. Converted file with private key (`key.pem`) to one-line PEM format. Follow [SSL guide](#ssl) to get SSL PEM files.
+| `SSL_CERT`                          | `SSL-CERT`                                  | string        | Optional. Converted file with certificate (`cert.pem`) to one-line PEM format. Follow [SSL guide](#ssl) to get SSL PEM files.
+| `RSA_PRIVATE_KEY`                   | `RSA-PRIVATE-KEY`                           | string        | Optional. Converted file with RSA Private Key to one-line PEM format. Use the [src/helpers/genKey.js](./src/helpers/genKey.js) to generate it. Necessary for full pseudonimization case only.
+| `RSA_PUBLIC_KEY`                   | `RSA-PUBLIC-KEY`                             | string        | Optional. Necessary for full pseudonimization case only.
+| `GSUITE_CLIENT_EMAIL`               | `GSUITE-CLIENT-EMAIL`                       | string        | Optional. Value of `client_email` property located in google service account credentials.json file. You can get google service account credentials via [How to get Google api credentials guide](./docs/how-it-works.md#how-to-get-google-api-credentials).
+| `GSUITE_PRIVATE_KEY`                | `GSUITE-PRIVATE-KEY`                        | string        | Optional. Value of `private_key` property located in google service account credentials.json file. You can get google service account credentials via [How to get Google api credentials guide](./docs/how-it-works.md#how-to-get-google-api-credentials).
+| `GSUITE_SCOPES`                     | `GSUITE-SCOPES`                             | string        | https://www.googleapis.com/auth/gmail.readonly, https://www.googleapis.com/auth/calendar.readonly |               | OAuth 2.0 Scopes for Google APIs
+| `O365_TENANT_ID`                    | `O365-TENANT-ID`                            | string        | Optional. Office 365 tenant ID. You can get tenant ID via [How to get Office 365 credentials guide](./docs/how-it-works.md#how-to-get-office-365-credentials) | 00000000-0000-0000-0000-000000000000 
+| `O365_CLIENT_ID`                    | `O365-CLIENT-ID`                            | string        | Optional. Office 365 client ID. You can get client ID via [How to get Office 365 credentials guide](./docs/how-it-works.md#how-to-get-office-365-credentials) | 00000000-0000-0000-0000-000000000000 
+| `O365_CLIENT_SECRET`                | `O365-CLIENT-SECRET`                        | string        | Optional. Office 365 client secret. You can get client secret via [How to get Office 365 credentials guide](./docs/how-it-works.md#how-to-get-office-365-credentials)
 
-Get anonymized G Suite email messages response from the anonymization service with cURL
+## Test deployment with cURL
+Get anonymized email messages response from the anonymization service with cURL
+- `your_IP` is the IP of the instance running the anonymization service
+- `your_email@your_company.com` your Google Workspace email address
+- `your_api_key` is your API key (to clarify, the API key is your generated key - string, at least 32 chars)
 
+### Google Gmail Api
 ```
 curl -X GET \
   https://your_IP/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \
@@ -485,10 +197,13 @@ curl -X GET \
   -H 'Cache-Control: no-cache' --insecure
 ```
 
-- your_IP is the IP of the instance running the anonymization service
-- your_email@your_company.com your G Suite email address
-- Bearer is your API key (to clarify, the API key is your generated key - string, 32 chars)
-
+### Microsoft Graph API
+```
+curl -X GET \
+  https://your_IP/graph.microsoft.com/v1.0/users/your_email@your_company.com/messages \
+  -H 'Authorization: Bearer your_api_key' \
+  -H 'Cache-Control: no-cache' --insecure
+```
 
 ## Future improvements
 1. Implement [OAuth 2.0 Client Credentials Grant Type](https://tools.ietf.org/html/rfc6749#section-4.4) to receive Bearer jwt authorization token and use it instead of `API_TOKEN`
