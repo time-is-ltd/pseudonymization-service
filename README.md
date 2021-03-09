@@ -15,16 +15,15 @@ Removing all sensitive and private textual and personal information from the obj
        - [Gmail API](./docs/endpoints.md#google-gmail-api)
 
 - Usage
-  - Installation
+  - [Installation](#installation)
     - [run on GCP or Azure in 2 minutes with pre-build docker image](#run-on-gcp-2-minutes)
     - [run locally from source](#run-locally)
     - [run using docker](#run-using-docker)
     - [run using docker-compose](#run-using-docker-compose)
-  - Configure
+  - [Configure](#configuration)
     - get your [G Suite credentials](./docs/how-it-works.md#how-to-get-google-api-credentials) / [O365 credentials](./docs/how-it-works.md#how-to-get-office-365-credentials)
-    - edit [enviromental variables and secrets](#configuration)
-  - Test
-    - [use cURL to get pseudonymized data](#test-deployment-with-curl)
+    - edit [enviromental variables and vault secrets](#configuration)
+  - [Test deployment with cURL](#test-deployment-with-curl)
 
 ## Installation
 
