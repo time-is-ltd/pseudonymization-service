@@ -189,6 +189,13 @@ Get anonymized email messages response from the anonymization service with cURL
 - `your_email@your_company.com` your Google Workspace email address
 - `your_api_key` is your API key (to clarify, the API key is your generated key - string, at least 32 chars)
 
+### Health check
+```
+curl -X GET \
+  https://your_IP/healthcheck \
+  -H 'Cache-Control: no-cache' --insecure
+```
+
 ### Google Gmail Api
 ```
 curl -X GET \

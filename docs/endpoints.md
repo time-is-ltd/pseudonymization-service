@@ -7,7 +7,15 @@
   1. Only properties defined in the schema are passed to the client
   2. Properties marked as **not private** are passed to the client without modification
   3. Properties marked as **private** are modified, their [return values](./how-it-works.md#anonymization-of-private-data-in-object-properties) are removed
-   
+
+## Health check
+### `GET /healthcheck`
+
+Provides an indication about the health of the pseudonymization service
+
+#### Response
+  HTTP/1.1 200 OK
+
 ## Google Gmail API
 ### `GET /www.googleapis.com/gmail/v1/users/:userId/messages`
 
