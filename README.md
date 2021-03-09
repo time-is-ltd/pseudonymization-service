@@ -23,9 +23,8 @@ Removing all sensitive and private textual and personal information from the obj
   - Configure
     - get your [G Suite credentials](./docs/how-it-works.md#how-to-get-google-api-credentials) / [O365 credentials](./docs/how-it-works.md#how-to-get-office-365-credentials)
     - edit [enviromental variables and secrets](#configuration)
-  - Healthcheck
   - Test
-    - [use cURL to get anonymized data](#test-deployment-with-curl)
+    - [use cURL to get pseudonymized data](#test-deployment-with-curl)
 
 ## Installation
 
@@ -184,8 +183,8 @@ There are 3 ways to provide config values
 | `O365_CLIENT_SECRET`                | `O365-CLIENT-SECRET`                        | string        | Optional. Office 365 client secret. You can get client secret via [How to get Office 365 credentials guide](./docs/how-it-works.md#how-to-get-office-365-credentials)
 
 ## Test deployment with cURL
-Get anonymized email messages response from the anonymization service with cURL
-- `your_IP` is the IP of the instance running the anonymization service
+Get pseudonymized email messages response from the pseudonymized service with cURL
+- `your_IP` is the IP of the instance running the pseudonymized service
 - `your_email@your_company.com` your Google Workspace email address
 - `your_api_key` is your API key (to clarify, the API key is your generated key - string, at least 32 chars)
 
