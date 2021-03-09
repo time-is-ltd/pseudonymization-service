@@ -18,7 +18,7 @@ Removing all sensitive and private textual and personal information from the obj
   - Installation
     - [run on GCP or Azure in 2 minutes with pre-build docker image](#run-on-gcp-2-minutes)
     - [run locally from source](#run-locally)
-    - [run pre-build container localy](#run-from-docker-container)
+    - [run using docker](#run-using-docker)
     - [run using docker-compose](#run-using-docker-compose)
   - Configure
     - get your [G Suite credentials](./docs/how-it-works.md#how-to-get-google-api-credentials) / [O365 credentials](./docs/how-it-works.md#how-to-get-office-365-credentials)
