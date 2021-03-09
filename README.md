@@ -35,29 +35,6 @@ Removing all sensitive and private textual and personal information from the obj
 
 3. Start and [test your instance with cURL](#test-deployment-with-curl)
 
-### Run from docker container
-
-#### Prerequisites
-- [Docker](https://www.docker.com)
-  - Download Docker from https://www.docker.com (can be run on Linux, Windows or Mac)
-
-Use the latest docker image from the GCP docker repository
-
-1. ```docker pull eu.gcr.io/proxy-272310/proxy:v1.1.2```
-
-2. Create and edit file with [enviromental variables](#configuration)
-```shell
-$ cp .env.example .env
-$ vi .env
-```
-
-3. Optional: [enable SSL](#ssl)
-
-4. Run docker image
-```shell
-$ docker run --env-file .env eu.gcr.io/proxy-272310/proxy:v1.1.2
-```
-
 ### Run locally
 #### Prerequisites
 - [Node](https://nodejs.org)
@@ -92,6 +69,28 @@ $ npm run test
 6. Run service
 ```shell
 $ npm start
+```
+
+### Run using docker
+#### Prerequisites
+- [Docker](https://www.docker.com)
+  - Download Docker from https://www.docker.com (can be run on Linux, Windows or Mac)
+
+Use the latest docker image from the GCP docker repository
+
+1. ```docker pull eu.gcr.io/proxy-272310/proxy:v1.1.2```
+
+2. Create and edit file with [enviromental variables](#configuration)
+```shell
+$ cp .env.example .env
+$ vi .env
+```
+
+3. Optional: [enable SSL](#ssl)
+
+4. Run docker image
+```shell
+$ docker run --env-file .env eu.gcr.io/proxy-272310/proxy:v1.1.2
 ```
 
 ### Run using docker-compose
