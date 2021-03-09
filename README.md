@@ -25,7 +25,7 @@ Removing all sensitive and private textual and personal information from the obj
     - edit [enviromental variables and secrets](#configuration)
   - Healthcheck
   - Test
-    - [use cURL to get anonymized data](#test-with-curl)
+    - [use cURL to get anonymized data](#test-deployment-with-curl)
 
 ## Installation
 
@@ -34,7 +34,7 @@ Removing all sensitive and private textual and personal information from the obj
 
 2. Add/edit enviromental variables in the GCP instance editor UI
 
-3. Start and [test your instance with cURL](#test-with-curl)
+3. Start and [test your instance with cURL](#test-deployment-with-curl)
 
 ### Run from docker container
 
