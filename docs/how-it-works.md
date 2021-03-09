@@ -4,34 +4,34 @@ Every request to the anonymization service must be authorized by [bearer token i
 
 Bearer token is provided by [`API_TOKEN`](../README.md#configuration) enviromental variable. `API_TOKEN` variable will be replaced with OAuth 2.0 Client Credentials Grant Type flow in the [future](../README.md#future-improvements).
 
-## Pseudonimization
+## Pseudonymization
 Definitions:
-- Pseudonimization:
-- Requesting service: It's the client requesting pseudonimized data from the G Suite, O365 etc. APIs.
-- Pseudonimization service: Is an instance of this service from this repository
+- `PII`: Personally Identifiable Information (email address, names, etc.)
+- `Requesting service`: It's the client requesting pseudonimized data from the Google Workplace, O365 etc. APIs.
+- `Pseudonymization service`: Is an instance of this service from this repository
 
-### Input data Pseudonimization
-The following sections represent pseudonimization of data coming IN from the requesting service to the pseudonimization service. It's perfectly possible for the requesting service to request data about a user (specific email address) without knowing the email address. 
+## Input data pseudonymization
+The following sections represent pseudonymization of data coming IN from the requesting service to the pseudonymization service. It's perfectly possible for the requesting service to request data about a user (specific email address) without knowing the email address.
 
-### Email address in the incoming API requests
-Input PII data (email address) in the API query is an RSA encrypted string
-- Private key can be provided by [`RSA_PRIVATE_KEY`](../README.md#configuration) enviromental variable and you can use the [src/helpers/genKey.js](../src/helpers/genKey.js) utility to generate Private and Public key pair.
-- This is only necessary if the user of the proxy can't know any PII data - full pseudonimization case.
+### PII data in the incoming API requests
+It's possible to encrypt any PII data, if the requesting service can't know them. In that case any PII data in the request are pseudonymized as an RSA encrypted string.
+
+- Private key can be provided by [`RSA_PRIVATE_KEY`](../README.md#configuration) enviromental variable (or by [`RSA-PRIVATE-KEY`](../README.md#configuration) vault secret) and you can use the [src/helpers/genKey.js](../src/helpers/genKey.js) utility to generate Private and Public key pair.
 - In this case, all the encrypted email addresses have to be in a format starting with the `__rsa__` prefix, like this example: `__rsa__IIJRAIBADANBgkqhkiG9w0BA...` and the RSA encrypted string has to be url-encoded safe Base64 string. See the [src/anonymizer/helpers/encrypt-url-component.helper.ts](../src/anonymizer/helpers/encrypt-url-component.helper.ts) function and use this implementation on your data requesting back-end.
 
-Output PII data (email address, names etc.) is anonymized by salted `sha512` ([src/anonymizer/helpers/hash.helper.ts](../src/anonymizer/helpers/hash.helper.ts)) hashing function and the result is shortened to 16 chars.
-- Salt can be provided by [`ANONYMIZATION_SALT`](../README.md#configuration) enviromental variable
+Output PII data is anonymized by salted `sha512` ([src/anonymizer/helpers/hash.helper.ts](../src/anonymizer/helpers/hash.helper.ts)) hashing function and the result is shortened to **first 16 characters**.
+- Salt can be provided by [`ANONYMIZATION_SALT`](../README.md#configuration) enviromental variable (or by [`ANONYMIZATION-SALT`](../README.md#configuration) vault secret)
 
-### Output data Pseudonimization
-The following sections represent the pseudonimization of data that are send back to the requesting service from the pseudonimization service.
+## Output data pseudonymization
+The following sections represent the pseudonymization of data that are send back to the requesting service from the pseudonymization service.
 
-### Email Pseudonimization ([src/anonymizer/transformers/email.transformer.ts](../src/anonymizer/transformers/email.transformer.ts))
+### Email Pseudonymization ([src/anonymizer/transformers/email.transformer.ts](../src/anonymizer/transformers/email.transformer.ts))
 - The service recognizes 2 types of domains:
   1. internal - owned or controlled by your organization
   2. external
 - Internal domains can be set by providing comma separated list of values to [`INTERNAL_DOMAIN_LIST`](../README.md#configuration) enviromental variable
-- Email address (username@domain) anonymization depends on [`INTERNAL_DOMAIN_LIST`, `ANONYMIZE_INTERNAL_EMAIL_USERNAME`, `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`, `ANONYMIZE_EXTERNAL_EMAIL_USERNAME`, `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`](../README.md#configuration) enviromental variables
-- Every email address part is hashed by [`sha512`](#anonymization) function and truncated to the **first 16 characters**
+- Email address (username@domain.com) anonymization depends on [`INTERNAL_DOMAIN_LIST`, `ANONYMIZE_INTERNAL_EMAIL_USERNAME`, `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`, `ANONYMIZE_EXTERNAL_EMAIL_USERNAME`, `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`](../README.md#configuration) enviromental variables
+- Every email address part is hashed by salted `sha512` ([src/anonymizer/helpers/hash.helper.ts](../src/anonymizer/helpers/hash.helper.ts)) function and truncated to the **first 16 characters**
 
 
 #### Example: Internal domain anonymization
