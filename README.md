@@ -21,7 +21,7 @@ Removing all sensitive and private textual and personal information from the obj
     - [run using docker](#run-using-docker)
     - [run using docker-compose](#run-using-docker-compose)
   - [Configure](#configuration)
-    - get your [G Suite credentials](./docs/how-it-works.md#how-to-get-google-api-credentials) / [O365 credentials](./docs/how-it-works.md#how-to-get-office-365-credentials)
+    - get your [Google API credentials](./docs/how-it-works.md#how-to-get-google-api-credentials) / [O365 credentials](./docs/how-it-works.md#how-to-get-office-365-credentials)
     - edit [enviromental variables and vault secrets](#configuration)
   - [Test deployment with cURL](#test-deployment-with-curl)
 
