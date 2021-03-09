@@ -16,7 +16,7 @@ The following sections represent pseudonymization of data coming IN from the req
 #### PII data in the incoming API requests
 It's possible to encrypt any PII data, if the requesting service can't know them. In that case any PII data in the request are pseudonymized as an RSA encrypted string.
 
-- Private key can be provided by [`RSA_PRIVATE_KEY`](../README.md#configuration) enviromental variable (or by [`RSA-PRIVATE-KEY`](../README.md#configuration) vault secret) and you can use the [src/helpers/genKey.js](../src/helpers/genKey.js) utility to generate Private and Public key pair.
+- Private key can be provided by [`RSA_PRIVATE_KEY`](../README.md#configuration) enviromental variable (or by [`RSA-PRIVATE-KEY`](../README.md#configuration) vault secret). You can use the [src/helpers/genKey.js](../src/helpers/genKey.js) utility to generate Private and Public key pair.
 - In this case, all the encrypted email addresses have to be in a format starting with the `__rsa__` prefix, like this example: `__rsa__IIJRAIBADANBgkqhkiG9w0BA...` and the RSA encrypted string has to be url-encoded safe Base64 string. See the [src/anonymizer/helpers/encrypt-url-component.helper.ts](../src/anonymizer/helpers/encrypt-url-component.helper.ts) function and use this implementation on your data requesting back-end.
 
 Output PII data is anonymized by salted `sha512` ([src/anonymizer/helpers/hash.helper.ts](../src/anonymizer/helpers/hash.helper.ts)) hashing function and the result is shortened to **first 16 characters**.
@@ -25,7 +25,7 @@ Output PII data is anonymized by salted `sha512` ([src/anonymizer/helpers/hash.h
 ### Output data pseudonymization
 The following sections represent the pseudonymization of data that are send back to the requesting service from the pseudonymization service.
 
-#### Email Pseudonymization ([src/anonymizer/transformers/email.transformer.ts](../src/anonymizer/transformers/email.transformer.ts))
+#### Email pseudonymization ([src/anonymizer/transformers/email.transformer.ts](../src/anonymizer/transformers/email.transformer.ts))
 - The service recognizes 2 types of domains:
   1. internal - owned or controlled by your organization
   2. external
@@ -34,7 +34,7 @@ The following sections represent the pseudonymization of data that are send back
 - Every email address part is hashed by salted `sha512` ([src/anonymizer/helpers/hash.helper.ts](../src/anonymizer/helpers/hash.helper.ts)) function and truncated to the **first 16 characters**
 
 
-##### Example: Internal domain anonymization
+##### Example: Internal domain pseudonymization
 | Email             | [`ANONYMIZE_INTERNAL_EMAIL_USERNAME`](../README.md#configuration) | [`ANONYMIZE_INTERNAL_EMAIL_DOMAIN`](../README.md#configuration) | Anonymized email
 | ----------------- | ----------------------------------- | --------------------------------- | ------------------
 | user@internal.com | false                               | false                             | user@internal.com
@@ -42,7 +42,7 @@ The following sections represent the pseudonymization of data that are send back
 | user@internal.com | true                                | false                             | anonymized@internal.com
 | user@internal.com | true                                | true                              | anonymized@anonymized.hash
 
-##### Example: External domain anonymization
+##### Example: External domain pseudonymization
 | Email             | [`ANONYMIZE_EXTERNAL_EMAIL_USERNAME`](../README.md#configuration) | [`ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`](../README.md#configuration) | Anonymized email
 | ----------------- | ----------------------------------- | --------------------------------- | ------------------
 | user@external.com | false                               | false                             | user@external.com
@@ -50,22 +50,22 @@ The following sections represent the pseudonymization of data that are send back
 | user@external.com | true                                | false                             | anonymized@external.com
 | user@external.com | true                                | true                              | anonymized@anonymized.hash
 
-#### File name anonymization ([src/anonymizer/transformers/filename.transformer.ts](../src/anonymizer/transformers/filename.transformer.ts))
+#### File name pseudonymization ([src/anonymizer/transformers/filename.transformer.ts](../src/anonymizer/transformers/filename.transformer.ts))
 - File name is replaced by character `'x'` (repeated `n times`) - `n` is the length of file name without extension
 - File extension is always preserved
 
-##### Example: File names anonymization
+##### Example: File names pseudonymization
 | File name             | Anonymized file name
 | --------------------- | ---------------------
 | somefilename.jpg      | xxxxxxxxxxxx.jpg
 | .env                  | .env
 | filename              | xxxxxxxx
 
-#### Anonymization of private data in object properties
+#### Pseudonymization of private data in object properties
 
 Every private property value is removed from the response.
 
-##### Example: Anonymized private object properties
+##### Example: Pseudonymized private object properties
 | Field type        | Return value
 | ----------------- | -----------------------------------
 | username          | empty string                       
