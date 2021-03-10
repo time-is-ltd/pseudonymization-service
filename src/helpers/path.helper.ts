@@ -1,5 +1,5 @@
-import * as pathToRegexp from 'path-to-regexp'
-import * as urlModule from 'url'
+import { match, MatchResult } from 'path-to-regexp'
+import { URL } from 'url'
 
 export const pathToAbsUrl = (urlPath: string, protocol = 'https') => {
   const urlPathWithoutLeadingSlash = urlPath.replace(/^\//, '')
@@ -7,43 +7,38 @@ export const pathToAbsUrl = (urlPath: string, protocol = 'https') => {
   return `${protocol}://${urlPathWithoutLeadingSlash}`
 }
 
-export const getPathPartFactory = (template: string, index: number) => (path: string) => {
-  const normalizedPath = urlModule.parse(pathToAbsUrl(path)).pathname
+export const transformPath = <P extends Object>(template: string, transform: (params: MatchResult<P>) => string) => (path: string) => {
+  const normalizedPath = new URL(pathToAbsUrl(path)).pathname
 
-  const pathRegexp = pathToRegexp(template)
-  const res = normalizedPath.match(pathRegexp)
-  const hasId = !!(res && res.length >= index)
+  const fn = match<P>(template)
+  const result = fn(normalizedPath)
 
-  if (!hasId) {
-    return ''
+  if (!result) {
+    throw new Error('Template not matched')
   }
 
-  if(!res[index]) {
-    return ''
-  }
-
-  return decodeURIComponent(res[index])
+  return transform({
+    ...result,
+    path
+  })
 }
 
-export const matchPath = <T>(path: string, routeMap: { [key: string]: T }): T | undefined => {
-  const normalizedPath = urlModule.parse(pathToAbsUrl(path)).pathname
+export const findTemplateAndMatch = <P extends Object>(templates: string[]) => (path: string) => {
+  const normalizedPath = new URL(pathToAbsUrl(path)).pathname
 
-  const pathKey = Object
-    .keys(routeMap)
-    .sort((a, b) => b.length - a.length)
-    .find(path => {
-      return normalizedPath.search(pathToRegexp(path)) > -1
-    })
-
-  if (!pathKey) {
-    return
+  for (const template of templates) {
+    const result = match<P>(template)(normalizedPath)
+    if (result) {
+      return result
+    }
   }
 
-  return routeMap[pathKey]
+  return
 }
 
 export default {
-  getPathPartFactory,
+  transformPath,
+  findTemplateAndMatch,
   pathToAbsUrl
 }
 

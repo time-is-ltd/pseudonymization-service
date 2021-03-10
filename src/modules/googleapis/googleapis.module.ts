@@ -3,11 +3,10 @@ import listUserMessagesMapper from './mappers/list-user-messages.mapper'
 import getUserMessageMapper from './mappers/get-user-message.mapper'
 import listCalendarEventsMapper from './mappers/list-calendar-events.mapper'
 import listUserCalendars from './mappers/list-user-calendars.mapper'
+import { authorizationPathExtractorFactory } from './googleapis.service'
 import proxyJsonRequestHandler from '../../proxy/handlers/proxy-json-request.handler'
 import proxyBatchRequestHandler from '../../proxy/handlers/proxy-batch-request.handler'
-import { getPathPartFactory } from '../../helpers/path.helper'
 import { Route } from '../../router/interfaces/router.interface'
-import { authorizationPathExtractorFactory } from './googleapis.service'
 
 import {
   scopes,
@@ -18,16 +17,7 @@ import {
   privateKey
 } from './googleapis.config'
 
-// Path userId extractor map
-const pathExtractorMap = Object
-  .keys(paths)
-  .reduce((obj, key) => {
-    const path = paths[key]
-    obj[path] = getPathPartFactory(path, 1)
-    return obj
-  }, {})
-
-const authorizationFactory = authorizationPathExtractorFactory(pathExtractorMap)
+const authorizationFactory = authorizationPathExtractorFactory(Object.values(paths))
 
 const listUserMessagesRoute: Route = {
   hosts,
