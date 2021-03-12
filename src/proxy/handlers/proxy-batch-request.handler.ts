@@ -4,7 +4,7 @@ import { pathToRegexp } from 'path-to-regexp'
 import proxyReguest from '../proxy-request'
 import { AuthorizationFactory, DataMapper } from '../interfaces'
 import { decryptUrlMiddleware, modifyHeadersMiddleware } from '../middlewares'
-import multipart, { MultipartMixedPart, MultipartMixedPartList } from '../helpers/multipart-mixed-parser'
+import multipart, { MultipartMixedPart, MultipartMixedPartList } from '../parsers/multipart-mixed.parser'
 import { pathToAbsUrl }  from '../../helpers/path.helper'
 import { IncomingHttpHeaders } from 'http'
 
