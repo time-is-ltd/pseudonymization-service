@@ -1,8 +1,8 @@
 
 import { decryptUrlMiddleware, mapBodyMiddleware, modifyHeadersMiddleware, transformUrlMiddleware } from './middlewares'
-import { AuthorizationFactory, DataMapper, BodyMapper, Request } from './interfaces'
+import { AuthorizationFactory, DataMapper, BodyMapper, Request, RequestPayload } from './interfaces'
 import { request as makeRequest, RequestError, RequestOptions } from '../request'
-import { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http'
+import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http'
 
 interface ResponseOptions {
   statusCode?: number
@@ -52,12 +52,16 @@ const receiveBody = () => async ({ request }: Data): Promise<Request> => {
     let body = ''
     request.on('data', (chunk) => body += chunk.toString())
     request.on('end', async () => {
-      resolve({
+      const originalRequest: RequestPayload = {
         url: request.url,
         protocol: `HTTP/${request.httpVersion}`,
         method: request.method,
         headers: request.headers,
         body
+      }
+      resolve({
+        ...originalRequest,
+        originalRequest
       })
     })
 
@@ -72,59 +76,62 @@ const proxyReguest = (
   urlTransform: (url: string) => string = (url) => url
 ) => async (req: IncomingMessage, res: ServerResponse, _) => {
   const sendResponse = response(res)
+  Promise
+    .resolve<Data>({ request: req, response: res })
+    .then(receiveBody())
+    .then(mapBodyMiddleware(authorizationFactory, bodyMapper))
+    .then(decryptUrlMiddleware())
+    .then(modifyHeadersMiddleware(authorizationFactory))
+    .then(transformUrlMiddleware(urlTransform))
+    .then(async request => {
+      const { method, headers, body, originalRequest, url } = request
+      const options: RequestOptions = {
+        method,
+        headers
+      }
 
-  try {
-    // Prepare request
-    const requestWithBody = await Promise
-      .resolve<Data>({ request: req, response: res })
-      .then(receiveBody())
+      // Append body
+      if (body) {
+        options.data = body
+      }
 
-    const transformedRequest = await Promise
-      .resolve(requestWithBody)
-      .then(mapBodyMiddleware(authorizationFactory, bodyMapper))
-      .then(decryptUrlMiddleware())
-      .then(modifyHeadersMiddleware(authorizationFactory))
-      .then(transformUrlMiddleware(urlTransform))
+      const response = await makeRequest(url, options)
 
-    const options: RequestOptions = {
-      method: transformedRequest.method,
-      headers: transformedRequest.headers
-    }
-
-    // Append body
-    if (transformedRequest.body) {
-      options.data = transformedRequest.body
-    }
-
-    const response = await makeRequest(transformedRequest.url, options)
-    const { data, headers, statusCode, statusMessage } = response
-
-    let mappedData = data
-    if (dataMapper) {
-      mappedData = await dataMapper(data, requestWithBody.body)
-    }
-
-    sendResponse({
-      headers,
-      statusCode,
-      statusMessage,
-      data: mappedData
+      return {
+        request: originalRequest,
+        response
+      }
     })
-  } catch (err) {
-    if (err instanceof RequestError) {
-      const { statusCode, statusMessage } = err
-      return sendResponse({
+    .then(async ({ request, response }) => {
+      const { data, headers, statusCode, statusMessage } = response
+
+      const mappedData = dataMapper
+        ? await dataMapper(data, request.body)
+        : data
+
+      sendResponse({
+        headers,
         statusCode,
-        statusMessage
+        statusMessage,
+        data: mappedData
       })
-    }
-
-    // Unknown error
-    sendResponse({
-      statusCode: 500,
-      statusMessage: 'Unknown error'
     })
-  }
+    .catch(err => {
+      console.log(err)
+      if (err instanceof RequestError) {
+        const { statusCode, statusMessage } = err
+        return sendResponse({
+          statusCode,
+          statusMessage
+        })
+      }
+  
+      // Unknown error
+      sendResponse({
+        statusCode: 500,
+        statusMessage: 'Unknown error'
+      })
+    })
 }
 
 export default proxyReguest
