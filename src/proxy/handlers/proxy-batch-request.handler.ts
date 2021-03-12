@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
 import * as urlModule from 'url'
-import * as pathToRegexp from 'path-to-regexp'
+import { pathToRegexp } from 'path-to-regexp'
 import proxyReguest from '../proxy-request'
 import { AuthorizationFactory, DataMapper } from '../interfaces'
 import { decryptUrlMiddleware, modifyHeadersMiddleware } from '../middlewares'

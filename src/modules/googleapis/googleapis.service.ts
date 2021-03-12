@@ -2,7 +2,7 @@ import { google } from 'googleapis'
 import { GaxiosError } from 'gaxios'
 import config from './googleapis.config'
 import { Token } from './interfaces/token.interface'
-import { matchPath } from '../../helpers/path.helper'
+import { findTemplateAndMatch } from '../../helpers/path.helper'
 import { AuthorizationFactory } from '../../proxy/interfaces'
 import { RequestError } from '../../request'
 import tokenService from '../../token/token.service'
@@ -37,34 +37,30 @@ export const refreshAccessToken = async (userId: string): Promise<Token> => {
   })
 }
 
-type PathExtractorMap = {
-  [path: string]: (path: string) => string
-}
+const getBearerAuthorization = (token: Token): string => `${token.type} ${token.token}`
 
-type AuthorizationPathExtractorFactory = (pathExtractorMap: PathExtractorMap ) => AuthorizationFactory
-
-export const authorizationPathExtractorFactory: AuthorizationPathExtractorFactory =(pathExtractorMap: PathExtractorMap) => async (path: string): Promise<string> => {
-  const extractor = matchPath<(path: string) => string>(path, pathExtractorMap)
-
-  if (!extractor) {
+export const authorizationPathExtractorFactory = (templates: string[]): AuthorizationFactory => async (path: string): Promise<string> => {
+  const result = findTemplateAndMatch<{ userId: string }>(templates)(path)
+  if (!result?.params?.userId) {
     return ''
   }
 
-  const userId = extractor(path)
+  const { params } = result
+  const userId = decodeURIComponent(params.userId)
 
-  let token = tokenService.getById(userId)
+  const token = tokenService.getById(userId)
 
   const nowPlus10Minutes = Date.now() + 10 * 60 * 1000
 
   const shouldRefresh = !(token && token.expiresAt >= nowPlus10Minutes)
-
   if (shouldRefresh) {
     try {
       const result = await refreshAccessToken(userId)
-      token = tokenService.update({
+      const updatedToken = tokenService.update({
         id: userId,
         ...result
       })
+      return getBearerAuthorization(updatedToken)
     } catch (err) {
       if (err instanceof GaxiosError) {
         if (err.response) {
@@ -79,7 +75,7 @@ export const authorizationPathExtractorFactory: AuthorizationPathExtractorFactor
     }
   }
 
-  return `${token.type} ${token.token}`
+  return getBearerAuthorization(token)
 }
 
 export default {

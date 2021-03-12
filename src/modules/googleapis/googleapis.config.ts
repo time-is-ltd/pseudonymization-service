@@ -1,4 +1,4 @@
-import { getPathPartFactory } from '../../helpers/path.helper'
+import { transformPath } from '../../helpers/path.helper'
 import { configFactory, toString, toPem, toArray } from '../../config'
 
 const googleApisConfig = {
@@ -35,24 +35,15 @@ export const paths = {
   batchRequestPath
 }
 
-const listUserCalendarsPathUsernameFactory = getPathPartFactory(listUserCalendarsPath, 1)
-const listCalendarEventsPathUsernameFactory = getPathPartFactory(listCalendarEventsPath, 1)
-
 export const pathTransforms = {
-  listUserCalendarsPath: (path: string) => {
-    const username = listUserCalendarsPathUsernameFactory(path)
-    if (!username) {
-      return path
-    }
-    return path.replace(username, 'me')
-  },
-  listCalendarEventsPath: (path: string) => {
-    const username = listCalendarEventsPathUsernameFactory(path)
-    if (!username) {
-      return path
-    }
-    return path.replace(`/users/${username}`, '')
-  }
+  listUserCalendarsPath: transformPath<{ userId: string }>(
+    listUserCalendarsPath,
+    ({ path, params: { userId } }) => path.replace(userId, 'me')
+  ),
+  listCalendarEventsPath: transformPath<{ userId: string }>(
+    listCalendarEventsPath,
+    ({ path, params: { userId } }) => path.replace(`/users/${userId}`, '')
+  )
 }
 
 export const clientEmail = config.gsuiteClientEmail
