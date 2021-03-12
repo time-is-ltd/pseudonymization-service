@@ -4,7 +4,7 @@ import getUserMessageMapper from './mappers/get-user-message.mapper'
 import listCalendarEventsMapper from './mappers/list-calendar-events.mapper'
 import listUserCalendars from './mappers/list-user-calendars.mapper'
 import { authorizationPathExtractorFactory } from './googleapis.service'
-import proxyJsonRequestHandler from '../../proxy/handlers/proxy-json-request.handler'
+import { proxyFactory } from '../../proxy'
 import proxyBatchRequestHandler from '../../proxy/handlers/proxy-batch-request.handler'
 import { Route } from '../../router/interfaces/router.interface'
 
@@ -22,39 +22,39 @@ const authorizationFactory = authorizationPathExtractorFactory(Object.values(pat
 const listUserMessagesRoute: Route = {
   hosts,
   path: paths.listUserMessagesPath,
-  handler: proxyJsonRequestHandler(
+  handler: proxyFactory({
     authorizationFactory,
-    listUserMessagesMapper
-  )
+    dataMapper: listUserMessagesMapper
+  })
 }
 
 const getUserMessageRoute: Route = {
   hosts,
   path: paths.getUserMessagePath,
-  handler: proxyJsonRequestHandler(
+  handler: proxyFactory({
     authorizationFactory,
-    getUserMessageMapper
-  )
+    dataMapper: getUserMessageMapper
+  })
 }
 
 const listUserCalendarsRoute: Route = {
   hosts,
   path: paths.listUserCalendarsPath,
-  handler: proxyJsonRequestHandler(
+  handler: proxyFactory({
     authorizationFactory,
-    listUserCalendars,
-    pathTransforms.listUserCalendarsPath
-  )
+    dataMapper: listUserCalendars,
+    urlTransform: pathTransforms.listUserCalendarsPath
+  })
 }
 
 const listCalendarEventsRoute: Route = {
   hosts,
   path: paths.listCalendarEventsPath,
-  handler: proxyJsonRequestHandler(
+  handler: proxyFactory({
     authorizationFactory,
-    listCalendarEventsMapper,
-    pathTransforms.listCalendarEventsPath
-  )
+    dataMapper: listCalendarEventsMapper,
+    urlTransform: pathTransforms.listCalendarEventsPath
+  })
 }
 
 const gmailBatchRoute: Route = {

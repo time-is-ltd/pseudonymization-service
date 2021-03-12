@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express'
 import * as urlModule from 'url'
 import { pathToRegexp } from 'path-to-regexp'
-import proxyReguest from '../proxy-request'
+import { proxyFactory } from '../proxy.factory'
 import { AuthorizationFactory, DataMapper } from '../interfaces'
 import { decryptUrlMiddleware, modifyHeadersMiddleware } from '../middlewares'
 import multipart, { MultipartMixedPart, MultipartMixedPartList } from '../parsers/multipart-mixed.parser'
@@ -193,15 +193,15 @@ const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList,
 type BatchRequestHandler = (authorizationFactory: AuthorizationFactory, mapperList?: BatchRequestProxyMapperList) => RequestHandler
 
 const batchRequestHandler: BatchRequestHandler = (authorizationFactory: AuthorizationFactory, mapperList?: BatchRequestProxyMapperList) => (req, res, next) => {
-  proxyReguest(
+  proxyFactory({
     authorizationFactory,
-    async (data: string, body?: string) => dataMapper(
+    dataMapper: async (data: string, body?: string) => dataMapper(
       data,
       mapperList,
       body
     ),
     bodyMapper
-  )(req, res, next)
+  })(req, res, next)
 }
 
 export default batchRequestHandler

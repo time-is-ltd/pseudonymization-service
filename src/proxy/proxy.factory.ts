@@ -5,12 +5,21 @@ import { receiveBody } from './helpers'
 import { sendResponseFactory } from './helpers/send-response-factory.helper'
 import { request as makeRequest, RequestError, RequestOptions } from '../request'
 
-const proxyReguest = (
-  authorizationFactory: AuthorizationFactory,
-  dataMapper: DataMapper,
-  bodyMapper?: BodyMapper,
-  urlTransform: (url: string) => string = (url) => url
-) => async (req: IncomingMessage, res: ServerResponse, _) => {
+interface ProxyParams {
+  authorizationFactory: AuthorizationFactory
+  dataMapper: DataMapper
+  bodyMapper?: BodyMapper
+  urlTransform?: (url: string) => string
+}
+
+export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage, res: ServerResponse, _) => {
+  const {
+    authorizationFactory,
+    dataMapper,
+    bodyMapper,
+    urlTransform = url => url
+  } = params
+
   const sendResponse = sendResponseFactory(res)
   Promise
     .resolve(req)
@@ -62,5 +71,3 @@ const proxyReguest = (
       })
     })
 }
-
-export default proxyReguest
