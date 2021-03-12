@@ -1,13 +1,10 @@
-import * as fs from 'fs'
 import listUserMessagesMapper from './mappers/list-user-messages.mapper'
 import getUserMessageMapper from './mappers/get-user-message.mapper'
 import listCalendarEventsMapper from './mappers/list-calendar-events.mapper'
 import listUserCalendars from './mappers/list-user-calendars.mapper'
 import { authorizationPathExtractorFactory } from './googleapis.service'
 import { proxyFactory } from '../../proxy'
-import proxyBatchRequestHandler from '../../proxy/handlers/proxy-batch-request.handler'
 import { Route } from '../../router/interfaces/router.interface'
-
 import {
   scopes,
   hosts,
@@ -16,6 +13,7 @@ import {
   clientEmail,
   privateKey
 } from './googleapis.config'
+import batchHandler from './handlers/batch.handler'
 
 const authorizationFactory = authorizationPathExtractorFactory(Object.values(paths))
 
@@ -61,7 +59,7 @@ const gmailBatchRoute: Route = {
   hosts,
   path: paths.batchRequestPath,
   method: 'post',
-  handler: proxyBatchRequestHandler(authorizationFactory, {
+  handler: batchHandler(authorizationFactory, {
     [paths.listUserMessagesPath]: listUserMessagesMapper,
     [paths.getUserMessagePath]: getUserMessageMapper
   })
