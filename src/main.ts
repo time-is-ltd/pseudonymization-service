@@ -37,6 +37,10 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
   res.sendStatus(403)
 }
 
+const withKeepAliveTimeout = (server: http.Server, keepAliveTimeout = 620 * 1000) => {
+  server.keepAliveTimeout = keepAliveTimeout
+}
+
 const bootstrap = async () => {
   const microsoftgraphModule = await microsoftgraph()
   const googleapisModule = await googleapis()
@@ -54,6 +58,7 @@ const bootstrap = async () => {
   const sslKey = await config.sslKey
   const sslCert = await config.sslCert
 
+  // Healtcheck
   app.get('/healthcheck', (_, res) => res.sendStatus(200))
 
   // Register routes
@@ -87,6 +92,7 @@ const bootstrap = async () => {
   
   if (httpPort > 0) {
     const httpServer = http.createServer(app)
+    withKeepAliveTimeout(httpServer)
     httpServer.listen(httpPort)
   }
 
@@ -95,6 +101,7 @@ const bootstrap = async () => {
       key: sslKey,
       cert: sslCert
     }, app)
+    withKeepAliveTimeout(httpsServer)
     httpsServer.listen(httpsPort)
   }
 }
