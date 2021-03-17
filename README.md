@@ -193,7 +193,7 @@ curl -X GET \
   -H 'Cache-Control: no-cache' --insecure
 ```
 
-### Google Gmail Api
+### Google Gmail API
 ```
 curl -X GET \
   https://your_IP/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \

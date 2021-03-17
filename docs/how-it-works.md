@@ -79,7 +79,7 @@ Every private property value is removed from the response.
 | secret number     | 0
 | secret array      | empty array
 
-## How to get Google api credentials
+## How to get Google API credentials
 Follow https://developers.google.com/admin-sdk/directory/v1/guides/delegation guide to perform domain-wide delegation of authority with https://www.googleapis.com/auth/gmail.readonly and/or https://www.googleapis.com/auth/calendar.readonly API scopes.
 
 Use `client_email` and `private_key` from generated service account credentials file (`credentials.json`) as [`GSUITE_CLIENT_EMAIL`](../README.md../README.md#configuration) and [`GSUITE_PRIVATE_KEY`](../README.md../README.md#configuration) enviromental variables respectively.
