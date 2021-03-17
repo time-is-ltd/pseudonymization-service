@@ -1,4 +1,13 @@
-# Run on Azure
+# Run on Azure with pre-build docker image
+## Table of contents
+1. [Create resource group](#1-create-resource-group)
+2. [Create App service](#2-create-app-service)
+3. [Configure App service](#3-configure-app-service)
+4. [Create Key vault](#4-create-key-vault)
+5. [Configure Key vault](#5-configure-key-vault)
+6. [Configure Key vault in the App service](#6-configure-key-vault-in-the-app-service)
+7. [Test deployment with cURL](#7-test-deployment-with-curl)
+
 ## 1. Create resource group
 Go to https://portal.azure.com/#create/Microsoft.ResourceGroup
 
@@ -9,14 +18,14 @@ Go to https://portal.azure.com/#create/Microsoft.ResourceGroup
 ## 2. Create App service
 Go to https://portal.azure.com/#create/Microsoft.WebSite
 
-### 2.1. Go to Basics tab
+### 2.1. Setup Basics
 - Select `til-pseudonymization-service` in the `Resource group` field
 - Use `til-pseudonymization-service-app` as an `Instance name`
 - Select `Docker Container` publish option
 - Select `Linux` as an `Operating System`
 - Select `Europe West` (or your prefered region) as a `Region`
 
-### 2.2. Go to Docker tab
+### 2.2. Setup Docker
 - Select `Single Container` as an `Option`
 - Select `Private Registry` as an `Image Source`
 - Use `https://eu.gcr.io` as a `Server URL`

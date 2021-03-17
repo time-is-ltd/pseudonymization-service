@@ -16,7 +16,8 @@ Removing all sensitive and private textual and personal information from the obj
 
 - Usage
   - [Installation](#installation)
-    - [run on GCP or Azure in 2 minutes with pre-build docker image](#run-on-gcp-2-minutes)
+    - [run on GCP in 2 minutes with pre-build docker image](#run-on-gcp-2-minutes)
+    - [run on Azure with pre-build docker image](./docs/run-on-azure.md)
     - [run locally from source](#run-locally)
     - [run using docker](#run-using-docker)
     - [run using docker-compose](#run-using-docker-compose)
