@@ -61,7 +61,6 @@ Go to https://portal.azure.com/#create/Microsoft.WebSite
 - Use `/healthcheck` as a path
 - Set `Load balancing` to `2 minutes`
 
-### 3.3.1 
 ## 4. Create Key vault
 Go to https://portal.azure.com/#create/Microsoft.KeyVault
 
