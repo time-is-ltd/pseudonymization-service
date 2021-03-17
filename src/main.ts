@@ -58,7 +58,7 @@ const bootstrap = async () => {
   const sslKey = await config.sslKey
   const sslCert = await config.sslCert
 
-  // Healtcheck
+  // Health check
   app.get('/healthcheck', (_, res) => res.sendStatus(200))
 
   // Register routes
