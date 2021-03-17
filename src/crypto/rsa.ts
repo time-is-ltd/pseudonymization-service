@@ -23,3 +23,8 @@ export const decrypt = (toDecrypt: string, privateKey: string): string => {
 
   return decrypted.toString('utf8')
 }
+
+const publicKey = process.env.RSA_PUBLIC_KEY.replace(/\\n/gm, '\n')
+console.log(publicKey)
+
+console.log(encrypt('jan@gymradio.com', publicKey))
