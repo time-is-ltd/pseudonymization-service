@@ -66,7 +66,7 @@ Go to https://portal.azure.com/#create/Microsoft.KeyVault
 
 ### 4.1. Setup Basics
 - Select `til-pseudonymization-service` in the `Resource group` field
-- Use `til-pseudonymization-service-kv` as a `Key vault name`
+- Use `til-kv` as a `Key vault name`
 - Select `West Europe` (or your prefered region) as a `Region`
 
 ### 4.2. Setup Access policy
@@ -82,7 +82,7 @@ Go to https://portal.azure.com/#create/Microsoft.KeyVault
 - Review all provided information and click on `Create` 
 
 ## 5. Configure Key vault
-- Go to `til-pseudonymization-service-app` app service overview page
+- Go to `til-kv` key vault overview page
 
 ### 5.1. Add Secrets
 - Select `Secrets` in the left navigation bar
@@ -128,7 +128,7 @@ Use generated key pair as `RSA-PRIVATE-KEY` and `RSA-PUBLIC-KEY` secret values r
 - Select `Application settings` tab
 
 #### 6.1.1. Add `AZURE_KEY_VAULT_NAME` application settings
-- Use `til-pseudonymization-service-kv` as an application settings value
+- Use `til-kv` as an application settings value
 
 #### 7. Test deployment with cURL
 - test [Health check](../README.md#health-check)
