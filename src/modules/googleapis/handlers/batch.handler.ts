@@ -1,12 +1,16 @@
 import { RequestHandler } from 'express'
-import * as urlModule from 'url'
-import { pathToRegexp } from 'path-to-regexp'
-import proxyReguest from '../proxy-request'
-import { AuthorizationFactory, DataMapper } from '../interfaces'
-import { decryptUrlMiddleware, modifyHeadersMiddleware } from '../middlewares'
-import multipart, { MultipartMixedPart, MultipartMixedPartList } from '../helpers/multipart-mixed-parser'
-import { pathToAbsUrl }  from '../../helpers/path.helper'
+import { URL } from 'url'
 import { IncomingHttpHeaders } from 'http'
+import { pathToRegexp } from 'path-to-regexp'
+import {
+  proxyFactory,
+  pathToAbsUrl,
+  decryptUrlMiddleware,
+  modifyHeadersMiddleware,
+  AuthorizationFactory,
+  DataMapper
+} from '../../../proxy'
+import multipart, { MultipartMixedPart, MultipartMixedPartList } from '../../../proxy/parsers/multipart-mixed.parser'
 
 type BatchRequestProxyMapperList = { [key: string]: DataMapper }
 
@@ -131,7 +135,7 @@ const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList,
       const parsedStatus = parseStatus(parsedBody.status)
 
       const path = parsedStatus.url
-      const normalizedPath = urlModule.parse(pathToAbsUrl(path)).pathname
+      const normalizedPath = new URL(pathToAbsUrl(path)).pathname
       // Find mapper by path
       const pathKey = Object
         .keys(mapperList)
@@ -190,18 +194,18 @@ const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList,
   })
 }
 
-type BatchRequestHandler = (authorizationFactory: AuthorizationFactory, mapperList?: BatchRequestProxyMapperList) => RequestHandler
+type BatchHandler = (authorizationFactory: AuthorizationFactory, mapperList?: BatchRequestProxyMapperList) => RequestHandler
 
-const batchRequestHandler: BatchRequestHandler = (authorizationFactory: AuthorizationFactory, mapperList?: BatchRequestProxyMapperList) => (req, res, next) => {
-  proxyReguest(
+const batchHandler: BatchHandler = (authorizationFactory: AuthorizationFactory, mapperList?: BatchRequestProxyMapperList) => (req, res, next) => {
+  proxyFactory({
     authorizationFactory,
-    async (data: string, body?: string) => dataMapper(
+    dataMapper: async (data: string, body?: string) => dataMapper(
       data,
       mapperList,
       body
     ),
     bodyMapper
-  )(req, res, next)
+  })(req, res, next)
 }
 
-export default batchRequestHandler
+export default batchHandler

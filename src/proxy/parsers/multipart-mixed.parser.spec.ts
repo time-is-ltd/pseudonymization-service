@@ -1,4 +1,4 @@
-import multipart from './multipart-mixed-parser'
+import multipart from './multipart-mixed.parser'
 
 const normalizeNewLine = (str: string) => str.replace('\n', '\r\n')
 const REQUEST_SEPARATOR = `--===============111111111111111==`

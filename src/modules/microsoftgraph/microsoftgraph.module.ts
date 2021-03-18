@@ -1,4 +1,4 @@
-import proxyJsonRequestHandler from '../../proxy/handlers/proxy-json-request.handler'
+import { proxyFactory } from '../../proxy'
 import { oauth2Request } from '../../oauth2/handlers/oauth2-token.handler'
 import { Route } from '../../router/interfaces/router.interface'
 import listUserMessagesMapper from './mappers/list-user-messages.mapper'
@@ -53,31 +53,46 @@ const authorizationFactory = async () => {
 const listUserMessagesRoute: Route = {
   hosts,
   path: paths.listUserMessagesPath,
-  handler: proxyJsonRequestHandler(authorizationFactory, listUserMessagesMapper)
+  handler: proxyFactory({
+    authorizationFactory,
+    dataMapper: listUserMessagesMapper
+  })
 }
 
 const listUserCalendarsRoute: Route = {
   hosts,
   path: paths.listUserCalendarsPath,
-  handler: proxyJsonRequestHandler(authorizationFactory, listUserCalendarsMapper)
+  handler: proxyFactory({
+    authorizationFactory,
+    dataMapper: listUserCalendarsMapper
+  })
 }
 
 const listUserEventsRoute: Route = {
   hosts,
   path: paths.listUserEventsPath,
-  handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper)
+  handler: proxyFactory({
+    authorizationFactory,
+    dataMapper: listUserEventsMapper
+  })
 }
 
 const listCalendarEventsRoute: Route = {
   hosts,
   path: paths.listCalendarEventsPath,
-  handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper)
+  handler: proxyFactory({
+    authorizationFactory,
+    dataMapper: listUserEventsMapper
+  })
 }
 
 const listCalendarViewRoute: Route = {
   hosts,
   path: paths.listCalendarViewPath,
-  handler: proxyJsonRequestHandler(authorizationFactory, listUserEventsMapper)
+  handler: proxyFactory({
+    authorizationFactory,
+    dataMapper: listUserEventsMapper
+  })
 }
 
 export default async () => {

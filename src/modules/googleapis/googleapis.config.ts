@@ -1,4 +1,4 @@
-import { transformPath } from '../../helpers/path.helper'
+import { transformPath } from '../../proxy'
 import { configFactory, toString, toPem, toArray } from '../../config'
 
 const googleApisConfig = {
