@@ -9,7 +9,8 @@ interface ProxyParams {
   authorizationFactory: AuthorizationFactory
   dataMapper: DataMapper
   bodyMapper?: BodyMapper
-  urlTransform?: (url: string) => string
+  urlTransform?: (url: string) => string,
+  allowedHeaders?: string[]
 }
 
 export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage, res: ServerResponse, _) => {
@@ -17,7 +18,8 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
     authorizationFactory,
     dataMapper,
     bodyMapper,
-    urlTransform = url => url
+    urlTransform = url => url,
+    allowedHeaders
   } = params
 
   const sendResponse = sendResponseFactory(res)
@@ -51,7 +53,8 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
         headers,
         statusCode,
         statusMessage,
-        data
+        data,
+        allowedHeaders
       })
     })
     .catch(err => {
