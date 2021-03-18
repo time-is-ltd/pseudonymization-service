@@ -55,7 +55,6 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
       })
     })
     .catch(err => {
-      console.log(err)
       if (err instanceof RequestError) {
         const { statusCode, statusMessage } = err
         return sendResponse({
