@@ -34,5 +34,3 @@ export const url = (url: string, publicKey?: string): string => {
 
   return encryptedUrl
 }
-const publicKey = process.env.RSA_PUBLIC_KEY.replace(/\\n/gm, '\n')
-console.log(url('/jan@gymradio.com/', publicKey))
