@@ -16,7 +16,7 @@ content-id: <response-fde099ea-e992-42a9-8cc9-ddea517ebd0f + 1>`)
 const RESPONSE_PARSED_HEADER = {"content-id": "<response-fde099ea-e992-42a9-8cc9-ddea517ebd0f + 1>",  "content-type": "application/http"}
 const RESPONSE_BODY = `{}`
 
-const buildMultipart = (iterations: number = 1, separator: string, header: string, body: string) => {
+const buildMultipart = (iterations: number = 1, separator: string, header: string, body: string, newLine = '\r\n') => {
   if (iterations < 1) {
     throw new Error('Iterations param must be positive int')
   }
@@ -24,7 +24,7 @@ const buildMultipart = (iterations: number = 1, separator: string, header: strin
   let output = ''
 
   for (let i = 1; i <= iterations; i++) {
-    output += `${separator}\r\n${header}\r\n\r\n${body}\r\n\r\n`
+    output += `${separator}${newLine}${header}${newLine.repeat(2)}${body}${newLine.repeat(2)}`
   }
 
   output += `${separator}--`
@@ -32,8 +32,8 @@ const buildMultipart = (iterations: number = 1, separator: string, header: strin
   return output
 }
 
-const buildParseTest = (iterations: number = 1, separator: string, header: string, body: string, parsedHeader: Object) => {
-  const input = buildMultipart(iterations, separator, header, body)
+const buildParseTest = (iterations: number = 1, separator: string, header: string, body: string, parsedHeader: Object, newLine = '\r\n') => {
+  const input = buildMultipart(iterations, separator, header, body, newLine)
   const parsedInput = multipart.parse(input)
 
   expect(parsedInput.separator).toBe(separator)
@@ -62,6 +62,13 @@ test('Parse multipart/mixed request', () => {
     buildParseTest(i, REQUEST_SEPARATOR, REQUEST_HEADER, REQUEST_BODY, REQUEST_PARSED_HEADER)
   })
 })
+
+test('Parse multipart/mixed request with LF as a break line', () => {
+  iterations.forEach((i) => {
+    buildParseTest(i, REQUEST_SEPARATOR, REQUEST_HEADER, REQUEST_BODY, REQUEST_PARSED_HEADER, '\n')
+  })
+})
+
 
 test('Parse multipart/mixed without headers', () => {
   iterations.forEach((i) => {
