@@ -104,11 +104,11 @@ const parse = (data: string): MultipartMixedPartList => {
 
   // First line is the separator
   const separator = normalizedData
-    .split(newLine)[0]
-    .trim()
     // Limit boundary to 70 characters as stated in the RFC 2046
     // @link: https://tools.ietf.org/html/rfc2046#section-5.1.1
     .substr(0, 70)
+    .split(newLine)[0]
+    .trim()
 
   // Split data by a separator
   const parts = normalizedData
