@@ -3,13 +3,15 @@ import { configFactory, toArray, toBoolean, toNumber, toPem, toString } from '..
 const googleApisConfig = {
   o365TenantId: toString(),
   o365ClientId: toString(),
-  o365ClientSecret: toString()
+  o365ClientSecret: toString(),
+  o365RefreshToken: toString()
 }
 
 const config = configFactory(googleApisConfig, [
   'o365TenantId',
   'o365ClientId',
-  'o365ClientSecret'
+  'o365ClientSecret',
+  'o365RefreshToken'
 ])
 
 // Hosts
@@ -35,11 +37,13 @@ export const paths = {
 export const tenantId = config.o365TenantId
 export const clientId = config.o365ClientId
 export const clientSecret = config.o365ClientSecret
+export const refreshToken = config.o365RefreshToken
 
 export default {
   tenantId,
   clientId,
   clientSecret,
+  refreshToken,
   hosts,
   paths
 }

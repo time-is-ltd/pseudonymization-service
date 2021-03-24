@@ -16,7 +16,7 @@ const MICROSOFTGRAPH_TOKEN_ID = 'microsoftgraph'
 const TOKEN_HOST = 'login.microsoftonline.com'
 
 const refreshToken = async () => {
-  const [tenantId, clientId, clientSecret] = await Promise.all([config.tenantId, config.clientId, config.clientSecret])
+  const [tenantId, clientId, clientSecret, refreshToken] = await Promise.all([config.tenantId, config.clientId, config.clientSecret, config.refreshToken])
 
   const TOKEN_PATH = `/${tenantId}/oauth2/token`
   const TOKEN_URL = `https://${TOKEN_HOST}${TOKEN_PATH}`
@@ -24,6 +24,7 @@ const refreshToken = async () => {
     url: TOKEN_URL,
     clientId,
     clientSecret,
+    refreshToken,
     extra: {
       resource: 'https://graph.microsoft.com'
     }
