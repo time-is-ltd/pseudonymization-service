@@ -63,7 +63,7 @@ const stringifyHeaders = (headers: IncomingHttpHeaders): string => {
 }
 
 export const parseHeaders = (rawHeaders = ''): IncomingHttpHeaders => rawHeaders
-  .split(/(\n|\r\n)/)
+  .split(newLine)
   .reduce((obj, str) => {
     const headerParts = str.match((/([^:]*):(.*)/))
     if (headerParts?.length >= 2) {
@@ -75,9 +75,9 @@ export const parseHeaders = (rawHeaders = ''): IncomingHttpHeaders => rawHeaders
   }, {})
 
 export const parsePart = (part: string): MultipartMixedPart => {
-  // Split content by 2 new lines (\r\n\r\n)
+  // Split content by 2x CRLF
   const contentParts = part
-    .split(/(\n\n|\r\n\r\n)/)
+    .split(newLine.repeat(2))
     .filter(v => v && v.trim())
 
   // Join headers
@@ -95,18 +95,22 @@ export const parsePart = (part: string): MultipartMixedPart => {
 
 // Multipart/mixed parser
 const parse = (data: string): MultipartMixedPartList => {
-  // Force \r\n for new lines
+  // Force CRLF for new lines as stated in the RFC 1521
+  // @link: (https://tools.ietf.org/html/rfc7231#section-3.1.1.4
   const normalizedData = data
-    .replace(/\r\n/, '\n')
-    .replace(/\n/, '\r\n')
-    .replace(/^(\r\n)+/, '')
+    .replace(/\r\n/gi, '\n') // replace CRLF with LF
+    .replace(/\n/gi, '\r\n') // replace LF with CRLF
+    .replace(/^(\r\n)+/, '') // remove multiple CRLF on the beginning of the string
 
   // First line is the separator
   const separator = normalizedData
+    // Limit boundary to 70 characters as stated in the RFC 2046
+    // @link: https://tools.ietf.org/html/rfc2046#section-5.1.1
+    .substr(0, 70)
     .split(newLine)[0]
     .trim()
 
-  // Split data by separator
+  // Split data by a separator
   const parts = normalizedData
     .split(separator)
     .map(part => part.trim())
@@ -148,7 +152,7 @@ const stringify = (partList: MultipartMixedPartList): string => {
   }).join(newLine)
 
   // Add separator with -- the end of the response
-  return mappedStr + '\r\n' + separator + '--'
+  return mappedStr + newLine + separator + '--'
 }
 
 export default {
