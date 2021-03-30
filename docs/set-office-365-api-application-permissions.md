@@ -16,9 +16,13 @@ Go to the `til-pseudonymization-service-app-registration` app registration overv
 - Click on `Grant admin consent for {Your tenant name}` and confirm modal dialog by clicking on `Yes`
 
 ## Optional: 2. Restrict application access to specific members
-## 2.1. Connect Exchange Online as an administrator via PowerShell
+## 2.1. Connect to Exchange Online as an administrator
 ```powershell
 Install-Module ExchangeOnlineManagement -Force
+```
+
+```powershell
+Connect-ExchangeOnline
 ```
 
 ## 2.2. Create new security group
@@ -28,9 +32,11 @@ New-DistributionGroup -Name "TIL pseudonymization service access group" -Alias T
 
 ## 2.3. Add members to the newly created security group
 ```powershell
-Add-DistributionGroupMember -Identity "TIL pseudonymization service access group" -Member username@domain.com
+Add-DistributionGroupMember -Identity "TIL pseudonymization service access group" -Member your_email@your_company.com
 ```
-The command must be run for every member that will be accessed by the pseudonymization service
+- `your_email@your_company.com` members email address
+- The command must be run for every member that will be accessed by the pseudonymization service
+
 
 ## 2.4. Connect to the Azure Active Directory
 ```powershell
