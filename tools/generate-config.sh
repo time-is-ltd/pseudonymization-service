@@ -34,13 +34,10 @@ fi
 rsa_public_key=""
 rsa_private_key=""
 if [[ $full_anonymization == "y" ]]; then
-  # Gen Private key
-  openssl genrsa -out private.pem 4096
-  # Gen Public key
-  openssl rsa -in private.pem -pubout -outform PEM -out public.pem
+  $(./generate-rsa-keypair.sh)
 
-  rsa_public_key="$(awk -v ORS='\\n' '1' public.pem)"
-  rsa_private_key="$(awk -v ORS='\\n' '1' private.pem)"
+  rsa_public_key="$(./to-one-line-pem.sh public.pem)"
+  rsa_private_key="$(./to-one-line-pem.sh  private.pem)"
 
   rm private.pem
   rm public.pem
@@ -50,17 +47,17 @@ fi
 ssl_key=""
 ssl_cert=""
 if [[ $https == "y" ]]; then
-  openssl req -nodes -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
+  $(./generate-self-signed-cert.sh)
 
-  ssl_key="$(awk -v ORS='\\n' '1' key.pem)"
-  ssl_cert="$(awk -v ORS='\\n' '1' cert.pem)"
+  ssl_key="$(./to-one-line-pem.sh key.pem)"
+  ssl_cert="$(./to-one-line-pem.sh cert.pem)"
 
   rm key.pem
   rm cert.pem
 fi
 
 # Gen random api token
-api_token=$(openssl rand -hex 16)
+api_token=$(./generate-random-string.sh 16)
 
 # Google workspace
 gsuite_client_email="example@example.iam.gserviceaccount.com"
