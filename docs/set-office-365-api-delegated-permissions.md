@@ -34,12 +34,7 @@ New-Mailbox -Name "tilServiceAccount" -DisplayName "TIL service account" -micros
 - `your_service_account@your_company.com` newly created mailbox, that will be used as a service account
 - `your_password` password by your password policy
 
-## 2.2. Create new security group
-```powershell
-New-DistributionGroup -Name "TIL pseudonymization service access group" -Alias TILPseudonymizationServiceRestrictAccess -Type Security
-```
-
-## 2.3. Add fullaccess (mailbox, calendar) permission to the service account
+## 2.2. Add fullaccess (mailbox, calendar) permission to the service account
 ```powershell
 Add-MailboxPermission -Identity "your_email@your_company.com" -User "your_service_account@your_company.com" -AccessRights FullAccess
 ```
