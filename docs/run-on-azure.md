@@ -109,16 +109,18 @@ $ node src/helpers/genKey.js
 Use generated key pair as `RSA-PRIVATE-KEY` and `RSA-PUBLIC-KEY` secret values respectively
 
 #### Optional: 5.1.4. Enable Google Workspace
-1. Get [Google Workspace credentials](how-it-works.md#how-to-get-google-api-credentials)
-2. Create secret named `GSUITE-CLIENT-EMAIL` and use `client_email` from generated `credentials.json` as a secret value
-3. Create secret named `GSUITE-PRIVATE-KEY` and use `private_key` from generated `credentials.json` as a secret value
-4. Create secret named `GSUITE-SCOPES` and use `https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/calendar.readonly` as a secret value
+- Get [Google Workspace credentials](how-it-works.md#how-to-get-google-api-credentials)
+- Create secret named `GSUITE-CLIENT-EMAIL` and use `client_email` from generated `credentials.json` as a secret value
+- Create secret named `GSUITE-PRIVATE-KEY` and use `private_key` from generated `credentials.json` as a secret value
+- Create secret named `GSUITE-SCOPES` and use `https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/calendar.readonly` as a secret value
 
 #### Optional: 5.1.5. Enable Office 365
-1. Get [Office 365 credentials](how-it-works.md#how-to-get-office-365-credentials)
-2. Create secret named `O365_TENANT_ID` and use extracted `tid` from token as a secret value
-3. Create secret named `O365_CLIENT_ID` and use applications `client ID` as a secret value
-2. Create secret named `O365_CLIENT_SECRET` and use generated `client secret` as a secret value
+- Get [Office 365 app credentials](./how-to-get-office-365-app-credentials.md)
+- Set [API application permissions](./set-office-365-api-application-permissions.md) OR [API delegated permissions](./set-office-365-api-delegated-permissions.md)
+- Create secret named `O365-TENANT-ID` and use `Directory (tenant) ID` from the [app registration overview page](./how-to-get-office-365-app-credentials.md#2-get-tenant-id-and-client-id) as a secret value
+- Create secret named `O365-CLIENT-ID` and use `Application (client) ID` from the [app registration overview page](./how-to-get-office-365-app-credentials.md#2-get-tenant-id-and-client-id) as a secret value
+- Create secret named `O365-CLIENT-SECRET` and use [generated client secret](./how-to-get-office-365-app-credentials.md#3-get-client-secret) as a secret value
+- Optional (for delegated access only): Create secret named `O365-REFRESH-TOKEN` and use [refresh tolken](./set-office-365-api-delegated-permissions.md#3-4-show-refresh-token) as a secret value
 
 ## 6. Configure Key vault in the App service
 - Go to `til-pseudonymization-service-app` app service overview page
