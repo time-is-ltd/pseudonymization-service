@@ -14,4 +14,6 @@ COPY package.json package-lock.json /usr/src/app/
 RUN npm install --only=production
 COPY --from=builder /usr/src/app/dist/ dist/
 
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
 CMD node dist/main.js 
