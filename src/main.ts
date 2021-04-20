@@ -94,6 +94,7 @@ const bootstrap = async () => {
     const httpServer = http.createServer(app)
     withKeepAliveTimeout(httpServer)
     httpServer.listen(httpPort)
+    console.info(`[Server]: Listening on ${httpPort}`)
   }
 
   if (httpsPort > 0) {
@@ -103,6 +104,7 @@ const bootstrap = async () => {
     }, app)
     withKeepAliveTimeout(httpsServer)
     httpsServer.listen(httpsPort)
+    console.info(`[Server]: Listening on ${httpsPort}`)
   }
 }
 

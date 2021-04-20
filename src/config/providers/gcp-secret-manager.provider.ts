@@ -16,6 +16,7 @@ export const fromGcpSecretManager = <T extends TransformMap>(projectId: string, 
 
   return async <K extends keyof T>(key: K) => {
     try {
+      console.info(`[Config/Google Secret Manager]: Loading key ${key}`)
       const secretName = getGcpSecretVariableName(key as string, prefix)
       const name = `projects/${projectId}/secrets/${secretName}/versions/latest`
       const [secretVersion] = await client.accessSecretVersion({
@@ -24,8 +25,12 @@ export const fromGcpSecretManager = <T extends TransformMap>(projectId: string, 
 
       const value = secretVersion.payload.data.toString()
 
+      console.info(`[Config/Google Secret Manager]: ${key} loaded`)
+
       return { defaultTtl: 20 * 60, v: value }
-    } catch (err) { }
+    } catch (err) {
+      console.error('[Config/Google Secret Manager]: ', JSON.stringify(err, null, 2))
+    }
     return
   }
 }

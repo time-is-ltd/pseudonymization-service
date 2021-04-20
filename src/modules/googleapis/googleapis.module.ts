@@ -72,6 +72,8 @@ export default async () => {
     .reduce((result, item) => {
       return result && Boolean(item)
     }, true)
+  
+  console.info(`[Module/Google API]: ${enabled ? 'enabled' : 'disabled' }`)
 
   return {
     enabled,

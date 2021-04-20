@@ -104,6 +104,8 @@ export default async () => {
       return result && Boolean(item)
     }, true)
 
+    console.info(`[Module/Microsoft Graph]: ${enabled ? 'enabled' : 'disabled' }`)
+
   return {
     enabled,
     routes: [

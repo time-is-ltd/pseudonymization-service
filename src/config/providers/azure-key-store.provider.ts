@@ -14,11 +14,16 @@ export const fromAzureKeyVault = <T extends TransformMap>(vaultName: string) => 
 
   return async <K extends keyof T>(key: K) => {
     try {
+      console.info(`[Config/Azure Key Vault]: Loading key ${key}`)
       const azureKeyVaultSecretName = getAzureVaultVariableName<T,K>(key)
       const azureKeyVaultSecret = await client.getSecret(azureKeyVaultSecretName)
 
+      console.info(`[Config/Azure Key Vault]: ${key} loaded`)
+
       return { defaultTtl: 20 * 60, v: azureKeyVaultSecret.value }
-    } catch (err) { }
+    } catch (err) {
+      console.error('[Config/Azure Key Vault]: ', err?.statusCode, JSON.stringify(err?.details || err, null, 2))
+    }
     return
   }
 }
