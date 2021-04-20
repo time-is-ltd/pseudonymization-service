@@ -73,7 +73,7 @@ const bootstrap = async () => {
         const method = route.method || 'get'
         const requireAuth = route.requireAuth !== false
 
-        console.info(`Registering route [${method.toUpperCase()}] ${path}`)
+        console.info(`[Server]: Registering route [${method.toUpperCase()}] ${path}`)
 
         const handlers = []
         if (Array.isArray(route.handler)) {
