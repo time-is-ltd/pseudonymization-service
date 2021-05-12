@@ -119,7 +119,7 @@ Use generated key pair as `RSA-PRIVATE-KEY` and `RSA-PUBLIC-KEY` secret values r
 - Set [API application permissions](./set-office-365-api-application-permissions.md) OR [API delegated permissions](./set-office-365-api-delegated-permissions.md)
 - Create secret named `O365-TENANT-ID` and use `Directory (tenant) ID` from the [app registration overview page](./how-to-get-office-365-app-credentials.md#2-get-tenant-id-and-client-id) as a secret value
 - Create secret named `O365-CLIENT-ID` and use `Application (client) ID` from the [app registration overview page](./how-to-get-office-365-app-credentials.md#2-get-tenant-id-and-client-id) as a secret value
-- Create secret named `O365-CLIENT-SECRET` and use [generated client secret](./how-to-get-office-365-app-credentials.md#3-get-client-secret) as a secret value
+- Optional (for application access only): Create secret named `O365-CLIENT-SECRET` and use [generated client secret](./how-to-get-office-365-app-credentials.md#3-get-client-secret) as a secret value
 - Optional (for delegated access only): Create secret named `O365-REFRESH-TOKEN` and use [refresh tolken](./set-office-365-api-delegated-permissions.md#3-4-show-refresh-token) as a secret value
 
 ## 6. Configure Key vault in the App service
