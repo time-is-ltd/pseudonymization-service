@@ -3,11 +3,11 @@ import request from '../../request'
 import { Token } from '../../token/interfaces/token.interface'
 
 type TokenHandlerExtraDict = { [key: string]: string | number }
-type TokenHandlerOptions = {
+export interface TokenHandlerOptions {
   url: string,
   clientId: string,
-  clientSecret: string,
-  grantType?: 'client_credentials',
+  clientSecret?: string,
+  grantType?: 'client_credentials' | 'refresh_token',
   refreshToken?: string,
   accessTokenFieldName?: string,
   refreshTokenFieldName?: string,
@@ -59,10 +59,14 @@ export const oauth2Request = async (options: TokenHandlerOptions): Promise<{
     ? { [refreshTokenName]: refreshToken }
     : {}
 
+  const clientSecretObj = clientSecret
+    ? { client_secret: clientSecret }
+    : {}
+
   const body = {
     client_id: clientId,
-    client_secret: clientSecret,
     grant_type: grantType,
+    ...clientSecretObj,
     ...refreshTokenObj,
     ...extra
   }

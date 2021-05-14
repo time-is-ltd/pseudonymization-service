@@ -1,5 +1,5 @@
 import { proxyFactory } from '../../proxy'
-import { oauth2Request } from '../../oauth2/handlers/oauth2-token.handler'
+import { oauth2Request, TokenHandlerOptions } from '../../oauth2/handlers/oauth2-token.handler'
 import { Route } from '../../router/interfaces/router.interface'
 import listUserMessagesMapper from './mappers/list-user-messages.mapper'
 import listUserCalendarsMapper from './mappers/list-user-calendars.mapper'
@@ -17,17 +17,21 @@ const TOKEN_HOST = 'login.microsoftonline.com'
 
 const refreshToken = async () => {
   const [tenantId, clientId, clientSecret, refreshToken] = await Promise.all([config.tenantId, config.clientId, config.clientSecret, config.refreshToken])
+  const TOKEN_URL = `https://${TOKEN_HOST}/${tenantId}/oauth2/v2.0/token`
 
-  const TOKEN_PATH = `/${tenantId}/oauth2/token`
-  const TOKEN_URL = `https://${TOKEN_HOST}${TOKEN_PATH}`
-  const oauth2Options = {
+  const oauth2Options: TokenHandlerOptions = {
     url: TOKEN_URL,
     clientId,
-    clientSecret,
-    refreshToken,
     extra: {
-      resource: 'https://graph.microsoft.com'
+      scope: 'https://graph.microsoft.com/.default'
     }
+  }
+
+  if (refreshToken) {
+    oauth2Options.grantType = 'refresh_token'
+    oauth2Options.refreshToken = refreshToken
+  } else {
+    oauth2Options.clientSecret = clientSecret
   }
 
   const response = await oauth2Request(oauth2Options)
@@ -97,13 +101,24 @@ const listCalendarViewRoute: Route = {
 }
 
 export default async () => {
-  const enabledPromiseAll = await Promise.all([config.tenantId, config.clientId, config.clientSecret])
+  const applicationCredentials = await Promise.all([
+    config.tenantId,
+    config.clientId,
+    config.clientSecret
+  ])
 
-  const enabled = enabledPromiseAll
+  const delegatedCredentials = await Promise.all([
+    config.tenantId,
+    config.clientId,
+    config.refreshToken
+  ])
+
+  const hasAll = (secrets: string[]) => secrets
     .reduce((result, item) => {
       return result && Boolean(item)
     }, true)
 
+  const enabled = hasAll(applicationCredentials) || hasAll(delegatedCredentials)
   return {
     enabled,
     routes: [
