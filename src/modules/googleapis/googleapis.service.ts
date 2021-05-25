@@ -7,15 +7,15 @@ import { RequestError } from '../../request'
 import tokenService from '../../token/token.service'
 
 export const refreshAccessToken = async (userId: string): Promise<Token> => {
-  const [clientEmail, privateKey, scopes] = await Promise.all([config.clientEmail, config.privateKey, config.scopes])
+  const [clientEmail, privateKey, scopes, adminEmail] = await Promise.all([config.clientEmail, config.privateKey, config.scopes, config.adminEmail])
 
   const auth = new google.auth.GoogleAuth({
     scopes,
     credentials: {
       private_key: privateKey,
-      client_email: clientEmail
+      client_email: clientEmail,
     },
-    clientOptions: { subject: userId }
+    clientOptions: { subject: userId || adminEmail }
   })
 
   const authClient = await auth.getClient()
@@ -40,23 +40,20 @@ const getBearerAuthorization = (token: Token): string => `${token.type} ${token.
 
 export const authorizationPathExtractorFactory = (templates: string[]): AuthorizationFactory => async (path: string): Promise<string> => {
   const result = findTemplateAndMatch<{ userId: string }>(templates)(path)
-  if (!result?.params?.userId) {
-    return ''
-  }
 
-  const { params } = result
-  const userId = decodeURIComponent(params.userId)
+  const { params: { userId = '' } } = result
+  const decodedUserId = decodeURIComponent(userId)
 
-  const token = tokenService.getById(userId)
+  const token = tokenService.getById(decodedUserId)
 
   const nowPlus10Minutes = Date.now() + 10 * 60 * 1000
 
   const shouldRefresh = !(token && token.expiresAt >= nowPlus10Minutes)
   if (shouldRefresh) {
     try {
-      const result = await refreshAccessToken(userId)
+      const result = await refreshAccessToken(decodedUserId)
       const updatedToken = tokenService.update({
-        id: userId,
+        id: decodedUserId,
         ...result
       })
       return getBearerAuthorization(updatedToken)
