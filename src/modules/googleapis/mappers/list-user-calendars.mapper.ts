@@ -108,4 +108,4 @@ const schema: Schema<UserCalendars> = {
   resultSizeEstimate: TYPES.String
 }
 
-export default jsonMapper<typeof schema, UserCalendars>(schema)
+export const listUserCalendarsMapper = jsonMapper<typeof schema, UserCalendars>(schema)

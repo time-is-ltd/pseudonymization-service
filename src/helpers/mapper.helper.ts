@@ -43,7 +43,7 @@ export type Schema<T> = {
   [P in keyof T]:
     Unpacked<T[P]> extends (infer U)[] ? Schema<U>[] :
     Unpacked<T[P]> extends object ? Schema<T[P]> :
-    symbol | string | number | symbol[]
+    symbol | string | string[] | number | number[] | symbol[]
 }
 
 export type ValueMapper = (type: Symbol, value: any) => any

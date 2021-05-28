@@ -43,6 +43,7 @@ const listUserCalendarsPath = '/calendar/v3/users/:userId/calendarList'
 const listCalendarEventsPath = '/calendar/v3/users/:userId/calendars/:calendarId/events'
 
 const listMeetReports = '/admin/reports/v1/activity/users/all/applications/meet'
+const listDriveReports = '/admin/reports/v1/activity/users/all/applications/drive'
 
 export const paths = {
   listUserMessagesPath,
@@ -50,7 +51,8 @@ export const paths = {
   listUserCalendarsPath,
   listCalendarEventsPath,
   batchRequestPath,
-  listMeetReports
+  listMeetReports,
+  listDriveReports
 }
 
 export const pathTransforms = {
