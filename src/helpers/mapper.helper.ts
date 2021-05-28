@@ -1,4 +1,4 @@
-import { email, filename, id, url, proxify } from '../anonymizer'
+import { email, filename, id, url, proxify, hashed } from '../anonymizer'
 import config from '../anonymizer/anonymizer.config'
 
 /*
@@ -49,6 +49,9 @@ export type Schema<T> = {
 export type ValueMapper = (type: Symbol, value: any) => any
 
 const isStringOrNumber = value => typeof value === 'string' || typeof value === 'number'
+const isIndexable = value => isStringOrNumber(value) || (
+  Array.isArray(value) && value.reduce((b, i) => b && isStringOrNumber(i), true)
+)
 
 const normalizeIndexName = name => (name || '').toLocaleLowerCase()
 
@@ -77,6 +80,7 @@ export const TYPES = {
   Boolean: Symbol('Boolean'),
   
   // Other
+  Hashed: Symbol('Hashed'),
   Private: Symbol('Private'),
   Array: Symbol('Array'),
 }
@@ -84,6 +88,7 @@ export const TYPES = {
 
 const TYPE_PRIORITY_MAP = {
   [TYPES.Array.toString()]: 100,
+  [TYPES.Hashed.toString()]: 75,
   [TYPES.Private.toString()]: 50
 }
 
@@ -124,7 +129,7 @@ export const buildMapper = <S extends Object, T extends Object>(schema: S, value
       for (let key in firstSchemaItem) {
         if (firstSchemaItem.hasOwnProperty(key)) {
           const value = firstSchemaItem[key]
-          if (isStringOrNumber(value)) {
+          if (isIndexable(value)) {
             isIndexed = true
             indexedPropertyName = key
             break
@@ -136,8 +141,20 @@ export const buildMapper = <S extends Object, T extends Object>(schema: S, value
     if (isIndexed) {
       const indexMap: { [key: string]: S } = schema
         .reduce((indexMap, item)=> {
-          const indexName = normalizeIndexName(item[indexedPropertyName])
-          indexMap[indexName] = item
+          const indexNameOrArray = item[indexedPropertyName]
+          const indexNames = Array.isArray(indexNameOrArray)
+            ? indexNameOrArray
+            : [indexNameOrArray]
+
+          indexNames.forEach(indexName => {
+            const normalizedIndexName = normalizeIndexName(indexName)
+            indexMap[normalizedIndexName] = {
+              ...item,
+              // Replace array with indexed value
+              // e.g. replaces { name: ['view', 'edit'] } with { name: 'view' }
+              [indexedPropertyName]: indexName
+            }
+          })
           return indexMap
         }, {})
 
@@ -219,6 +236,8 @@ export const getValueMapper = async () => {
     switch (type) {
       case TYPES.Private:
         return undefined
+      case TYPES.Hashed:
+        return hashed(value, anonymizationSalt)
       case TYPES.Array:
         return Array.isArray(value) ? value : []
       case TYPES.Text:
