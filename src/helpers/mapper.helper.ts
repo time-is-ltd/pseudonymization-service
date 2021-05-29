@@ -80,6 +80,7 @@ export const TYPES = {
   Boolean: Symbol('Boolean'),
   
   // Other
+  Passthrough: Symbol('Passthrough'),
   Hashed: Symbol('Hashed'),
   Private: Symbol('Private'),
   Array: Symbol('Array'),
@@ -89,7 +90,8 @@ export const TYPES = {
 const TYPE_PRIORITY_MAP = {
   [TYPES.Array.toString()]: 100,
   [TYPES.Hashed.toString()]: 75,
-  [TYPES.Private.toString()]: 50
+  [TYPES.Private.toString()]: 50,
+  [TYPES.Passthrough.toString()]: 25
 }
 
 const getTypePriority = (type: symbol) => {
@@ -232,12 +234,14 @@ export const getValueMapper = async () => {
     config.enableExternalEmailPlusAddressing
   ])
 
-  return (type: Symbol, value: any) => {
+  return (type: Symbol, value: unknown) => {
     switch (type) {
       case TYPES.Private:
         return undefined
       case TYPES.Hashed:
-        return hashed(value, anonymizationSalt)
+        return hashed(string(value), anonymizationSalt)
+      case TYPES.Passthrough:
+        return value
       case TYPES.Array:
         return Array.isArray(value) ? value : []
       case TYPES.Text:
@@ -252,16 +256,16 @@ export const getValueMapper = async () => {
       case TYPES.Boolean:
         return boolean(value)
       case TYPES.Url:
-        return url(value, rsaPublicKey)
+        return url(string(value), rsaPublicKey)
       case TYPES.Proxify:
-        return proxify(value, baseUrl)
+        return proxify(string(value), baseUrl)
       case TYPES.Id:
         const idConfig = {
           rsaPublicKey,
           anonymizationSalt
         }
 
-        return id(value, idConfig)
+        return id(string(value), idConfig)
       case TYPES.Email:
         const emailConfig = {
           anonymizeInternalEmailUsername,
@@ -274,11 +278,11 @@ export const getValueMapper = async () => {
           enableInternalEmailPlusAddressing
         }
 
-        return email(value, emailConfig)
+        return email(string(value), emailConfig)
       case TYPES.Filename:
-        return filename(value)
+        return filename(string(value))
     }
-  
+
     return undefined
   }
 }
