@@ -1,6 +1,6 @@
 import { TYPES, Schema } from '../../../helpers/mapper.helper'
 
-export interface ReportItemEventNestedParameter {
+export interface ActivityReportItemEventNestedParameter {
   name: string
   value: string
   multiValue: string
@@ -10,73 +10,73 @@ export interface ReportItemEventNestedParameter {
   multiBoolValue: boolean[]
 }
 
-export interface ReportItemEventMessageValue {
-  parameter: ReportItemEventNestedParameter[]
+export interface ActivityReportItemEventMessageValue {
+  parameter: ActivityReportItemEventNestedParameter[]
 }
 
-export interface ReportItemEventParameter {
-  messageValue?: ReportItemEventMessageValue
+export interface ActivityReportItemEventParameter {
+  messageValue?: ActivityReportItemEventMessageValue
   name: string
   value?: string
   multiValue?: string[]
   intValue?: string
   multiIntValue?: string[]
   boolValue?: boolean
-  multiMessageValue?: ReportItemEventMessageValue[]
+  multiMessageValue?: ActivityReportItemEventMessageValue[]
 }
 
-export interface ReportItemEvent {
+export interface ActivityReportItemEvent {
   type: string
   name: string
-  parameters: ReportItemEventParameter[]
+  parameters: ActivityReportItemEventParameter[]
 }
 
-export interface ReportItemId {
+export interface ActivityReportItemId {
   time: string
   uniqueQualifier: string
   applicationName: string
   customerId: string
 }
 
-export interface ReportItemActor {
+export interface ActivityReportItemActor {
   profileId: string
   email: string
   callerType: string
   key: string
 }
 
-export interface ReportItem {
+export interface ActivityReportItem {
   kind: string
   etag: string
   ownerDomain: string
   ipAddress: string
-  events: ReportItemEvent[]
-  id: ReportItemId
-  actor: ReportItemActor
+  events: ActivityReportItemEvent[]
+  id: ActivityReportItemId
+  actor: ActivityReportItemActor
 }
 
-export interface Report {
+export interface ActivityReport {
   kind: string
   etag: string
-  items: ReportItem[]
+  items: ActivityReportItem[]
   nextPageToken: string
 }
 
-export const idSchema: Schema<ReportItemId> = {
+export const idSchema: Schema<ActivityReportItemId> = {
   time: TYPES.String,
   uniqueQualifier: TYPES.String,
   applicationName: TYPES.String,
   customerId: TYPES.String
 }
 
-export const actorSchema: Schema<ReportItemActor> = {
+export const actorSchema: Schema<ActivityReportItemActor> = {
   profileId: TYPES.String,
   email: TYPES.Email,
   callerType: TYPES.String,
   key: TYPES.String
 }
 
-export const itemSchemaWithoutEvents: Schema<Omit<ReportItem, 'events'>> = {
+export const itemSchemaWithoutEvents: Schema<Omit<ActivityReportItem, 'events'>> = {
   kind: TYPES.String,
   etag: TYPES.ETag,
   ownerDomain: [TYPES.Private, TYPES.String],

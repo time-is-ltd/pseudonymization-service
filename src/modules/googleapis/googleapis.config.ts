@@ -42,8 +42,9 @@ const batchRequestPath = '/batch/gmail/v1'
 const listUserCalendarsPath = '/calendar/v3/users/:userId/calendarList'
 const listCalendarEventsPath = '/calendar/v3/users/:userId/calendars/:calendarId/events'
 
-const listMeetReports = '/admin/reports/v1/activity/users/all/applications/meet'
-const listDriveReports = '/admin/reports/v1/activity/users/all/applications/drive'
+const listActivityReportsMeet = '/admin/reports/v1/activity/users/all/applications/meet'
+const listActivityReportsDrive = '/admin/reports/v1/activity/users/all/applications/drive'
+const listUsageReports = '/admin/reports/v1/usage/dates/:date'
 
 export const paths = {
   listUserMessagesPath,
@@ -51,8 +52,9 @@ export const paths = {
   listUserCalendarsPath,
   listCalendarEventsPath,
   batchRequestPath,
-  listMeetReports,
-  listDriveReports
+  listActivityReportsMeet,
+  listActivityReportsDrive,
+  listUsageReports
 }
 
 export const pathTransforms = {

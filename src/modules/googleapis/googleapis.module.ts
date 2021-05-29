@@ -3,8 +3,9 @@ import {
   getUserMessageMapper,
   listCalendarEventsMapper,
   listUserCalendarsMapper,
-  listMeetReportsMapper,
-  listDriveReportsMapper
+  listActivityReportsMeetMapper,
+  listActivityReportsDriveMapper,
+  listUsageReportsMapper
 } from './mappers'
 import { authorizationPathExtractorFactory } from './googleapis.service'
 import { proxyFactory } from '../../proxy'
@@ -69,21 +70,30 @@ const gmailBatchRoute: Route = {
   })
 }
 
-const listMeetReportsRoute: Route = {
+const listActivityReportsMeetRoute: Route = {
   hosts: hosts.admin,
-  path: paths.listMeetReports,
+  path: paths.listActivityReportsMeet,
   handler: proxyFactory({
     authorizationFactory,
-    dataMapper: listMeetReportsMapper
+    dataMapper: listActivityReportsMeetMapper
   })
 }
 
-const listDriveReportsRoute: Route = {
+const listActivityReportsDriveRoute: Route = {
   hosts: hosts.admin,
-  path: paths.listDriveReports,
+  path: paths.listActivityReportsDrive,
   handler: proxyFactory({
     authorizationFactory,
-    dataMapper: listDriveReportsMapper
+    dataMapper: listActivityReportsDriveMapper
+  })
+}
+
+const listUsageReportsRoute: Route = {
+  hosts: hosts.admin,
+  path: paths.listUsageReports,
+  handler: proxyFactory({
+    authorizationFactory,
+    dataMapper: listUsageReportsMapper
   })
 }
 
@@ -103,8 +113,9 @@ export default async () => {
       gmailBatchRoute,
       listUserCalendarsRoute,
       listCalendarEventsRoute,
-      listMeetReportsRoute,
-      listDriveReportsRoute
+      listActivityReportsMeetRoute,
+      listActivityReportsDriveRoute,
+      listUsageReportsRoute
     ]
   }
 }

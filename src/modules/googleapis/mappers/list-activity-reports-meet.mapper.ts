@@ -3,9 +3,9 @@ import {
   TYPES,
   Schema
 } from '../../../helpers/mapper.helper'
-import { itemSchemaWithoutEvents, Report } from './list-application-reports-mapper.helper'
+import { itemSchemaWithoutEvents, ActivityReport } from './list-activity-reports-mapper.helper'
 
-const schema: Schema<Report> = {
+const schema: Schema<ActivityReport> = {
   kind: TYPES.String,
   etag: TYPES.ETag,
   items: [
@@ -108,4 +108,4 @@ const schema: Schema<Report> = {
   nextPageToken: TYPES.String
 }
 
-export const listMeetReportsMapper = jsonMapper<typeof schema, Report>(schema)
+export const listActivityReportsMeetMapper = jsonMapper<typeof schema, ActivityReport>(schema)
