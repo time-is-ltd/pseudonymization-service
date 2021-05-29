@@ -2,7 +2,7 @@ import {
   jsonMapper,
   TYPES,
   Schema
-} from '../../../helpers/mapper.helper'
+} from '../../../mapper'
 import { ActivityReport, itemSchemaWithoutEvents } from './list-activity-reports-mapper.helper'
 
 const schema: Schema<ActivityReport> = {

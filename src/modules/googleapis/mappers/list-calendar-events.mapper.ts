@@ -2,7 +2,7 @@ import {
   jsonMapper,
   Schema,
   TYPES
-} from '../../../helpers/mapper.helper'
+} from '../../../mapper'
 
 export interface EventDate {
   date: string

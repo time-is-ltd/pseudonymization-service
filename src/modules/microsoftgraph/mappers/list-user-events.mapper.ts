@@ -2,7 +2,7 @@ import {
   jsonMapper,
   TYPES,
   Schema
-} from '../../../helpers/mapper.helper'
+} from '../../../mapper'
 import { Event } from '../common/interfaces'
 import { event } from '../common/schema'
 

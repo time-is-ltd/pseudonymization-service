@@ -1,17 +1,15 @@
-import {
-  TYPES,
-  buildMapper,
-  getValueMapper
-} from './mapper.helper'
+import { TYPES } from './constants'
+import { schemaMapper } from './schema.mapper'
+import { valueMapperFactory } from './value-mapper.factory'
 import {
   ANONYMIZED_FILENAME,
   ANONYMIZED_EMAIL
-} from './testing'
+} from '../helpers/testing'
 jest.mock('../anonymizer')
 
 test('Falsy values', async () => {
-  const valueMapper = await getValueMapper()
-  const mapper = buildMapper({}, valueMapper)
+  const valueMapper = await valueMapperFactory()
+  const mapper = schemaMapper({}, valueMapper)
   expect(mapper(null)).toBe(undefined)
   expect(mapper(undefined)).toBe(undefined)
   expect(mapper()).toBe(undefined)
@@ -27,7 +25,7 @@ const buildTest = async (
   inputValues: any[],
   outputValues: any[]
 ) => {
-  const valueMapper = await getValueMapper()
+  const valueMapper = await valueMapperFactory()
   types.forEach(type => {
     const schema = { test: type }
     inputValues.forEach((inputValue, i) => {
@@ -35,7 +33,7 @@ const buildTest = async (
       const input = { [TEST_PROPERTY_NAME]: inputValue }
       const output = { [TEST_PROPERTY_NAME]: outputValue }
 
-      const mapper = buildMapper<typeof schema, typeof input>(schema, valueMapper)
+      const mapper = schemaMapper<typeof schema, typeof input>(schema, valueMapper)
       expect(mapper(input)).toMatchObject(output)
     })
   })
@@ -418,7 +416,7 @@ test('Complex schema', async () => {
   const input = build(baseInput)
   const output = build(baseOutput)
 
-  const valueMapper = await getValueMapper()
-  const mapper = buildMapper<typeof schema, typeof input>(schema, valueMapper)
+  const valueMapper = await valueMapperFactory()
+  const mapper = schemaMapper<typeof schema, typeof input>(schema, valueMapper)
   expect(mapper(input)).toMatchObject(output)
 })

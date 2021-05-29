@@ -1,8 +1,7 @@
 import {
-  jsonMapper,
   TYPES,
   Schema
-} from '../../../helpers/mapper.helper'
+} from '../../../mapper'
 
 import {
   Attachment,
