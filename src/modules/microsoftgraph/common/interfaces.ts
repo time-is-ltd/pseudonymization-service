@@ -1,15 +1,15 @@
 
-export type ItemBody = {
-  contentType: string,
+export interface ItemBody {
+  contentType: string
   content: string
 }
 
-export type DateTimeTimeZone = {
-  dateTime: string,
+export interface DateTimeTimeZone {
+  dateTime: string
   timeZone: string
 }
 
-export type PhysicalAddress = {
+export interface PhysicalAddress {
   city: string
   countryOrRegion: string
   postalCode: string
@@ -19,7 +19,7 @@ export type PhysicalAddress = {
   type: string
 }
 
-export type OutlookGeoCoordinates = {
+export interface OutlookGeoCoordinates {
   accuracy: number
   altitude: number
   altitudeAccuracy: number
@@ -27,7 +27,7 @@ export type OutlookGeoCoordinates = {
   longitude: number
 }
 
-export type Location = {
+export interface Location {
   address: PhysicalAddress
   coordinates: OutlookGeoCoordinates
   displayName: string
@@ -38,38 +38,38 @@ export type Location = {
   uniqueIdType: string
 }
 
-export type EmailAddress = {
-  name: string,
+export interface EmailAddress {
+  name: string
   address: string
 }
 
-export type ResponseStatus = {
-  response: string,
+export interface ResponseStatus {
+  response: string
   time: string
 }
 
-export type TimeSlot = {
+export interface TimeSlot {
   start: DateTimeTimeZone
   end: DateTimeTimeZone
 }
 
-export type Attendee = {
+export interface Attendee {
   type: string
   status: ResponseStatus
   emailAddress: EmailAddress
   proposedNewTime: TimeSlot
 }
 
-export type Recipient = {
+export interface Recipient {
   emailAddress: EmailAddress
 }
 
-export type Phone = {
+export interface Phone {
   number: string
   type: string
 }
 
-export type OnlineMeeting = {
+export interface OnlineMeeting {
   conferenceId: string
   joinUrl: string
   phones: Phone[]
@@ -78,7 +78,7 @@ export type OnlineMeeting = {
   tollNumber: string
 }
 
-export type RecurrencePattern = {
+export interface RecurrencePattern {
   dayOfMonth: number
   daysOfWeek: string[]
   firstDayOfWeek: string
@@ -88,7 +88,7 @@ export type RecurrencePattern = {
   type: string
 }
 
-export type RecurrenceRange = {
+export interface RecurrenceRange {
   endDate: string
   numberOfOccurrences: number
   recurrenceTimeZone: string
@@ -96,23 +96,23 @@ export type RecurrenceRange = {
   type: string
 }
 
-export type PatternedRecurrence = {
+export interface PatternedRecurrence {
   pattern: RecurrencePattern
   range: RecurrenceRange
 }
 
-export type Extension = {
+export interface Extension {
   id: string
 }
 
-export type FollowUpFlag = {
+export interface FollowUpFlag {
   flagStatus: string
   completedDateTime: DateTimeTimeZone
   dueDateTime: DateTimeTimeZone
   startDateTime: DateTimeTimeZone
 }
 
-export type Attachment = {
+export interface Attachment {
   contentType: string
   id: string
   isInline: boolean
@@ -121,16 +121,16 @@ export type Attachment = {
   size: number
 }
 
-export type InternetMessageHeader = {
+export interface InternetMessageHeader {
   name: string
   value: string
 }
 
-export type MentionsPreview = {
+export interface MentionsPreview {
   isMentioned: boolean
 }
 
-export type Mention = {
+export interface Mention {
   application: string
   clientReference: string
   createdBy: EmailAddress
@@ -142,7 +142,7 @@ export type Mention = {
   serverCreatedDateTime: string
 }
 
-export type Calendar = {
+export interface Calendar {
   allowedOnlineMeetingProviders: string[]
   canEdit: boolean
   canShare: boolean
@@ -161,9 +161,9 @@ export type Calendar = {
   owner: EmailAddress
 }
 
-export type Event = {
-  id: string,
-  iCalUId: string,
+export interface Event {
+  id: string
+  iCalUId: string
   subject: string
   bodyPreview: string
   body: ItemBody
@@ -207,7 +207,7 @@ export type Event = {
   extensions: Extension[]
 }
 
-export type Message = {
+export interface Message {
   id: string
   createdDateTime: string
   lastModifiedDateTime: string
@@ -245,4 +245,35 @@ export type Message = {
   mentions: Mention[]
   replyTo: Recipient[]
   flag: FollowUpFlag
+}
+
+export interface Identity {
+  displayName: string
+  id: string
+  tenantId: string
+}
+
+export interface IdentitySet {
+  application: Identity
+  device: Identity
+  user: Identity
+}
+
+export interface CallRecordsEndpoint {
+  identity: IdentitySet
+}
+
+export interface CallRecordsFailureInfo {
+  reason: string
+  stage: string
+}
+
+export interface CallRecordSession {
+  id: string
+  caller: CallRecordsEndpoint
+  callee: CallRecordsEndpoint
+  failureInfo: CallRecordsFailureInfo
+  modalities: string[]
+  startDateTime: string
+  endDateTime: string
 }

@@ -1,4 +1,4 @@
-import { configFactory, toArray, toBoolean, toNumber, toPem, toString } from '../../config'
+import { configFactory, toString } from '../../config'
 
 const googleApisConfig = {
   o365TenantId: toString(),
@@ -19,6 +19,7 @@ export const hosts = [
   'graph.microsoft.com'
 ]
 
+
 // Router paths
 const listUserMessagesPath = '/v1.0/users/:userId/messages'
 const listUserCalendarsPath = '/v1.0/users/:userId/calendars'
@@ -26,12 +27,23 @@ const listUserEventsPath = '/v1.0/users/:userId/events'
 const listCalendarEventsPath = '/v1.0/users/:userId/calendars/:calendarId/events'
 const listCalendarViewPath = '/v1.0/users/:userId/calendars/:calendarId/calendarview'
 
+const subscriptionsPath = '/v1.0/subscriptions'
+const subscriptionsIdPath = '/v1.0/subscriptions/:id'
+const listComunicationsCallRecordsPath = '/v1.0/communications/callRecords/:id'
+const listComunicationsCallRecordsSessionsPath = '/v1.0/communications/callRecords/:id/sessions'
+const getUserIdPath = '/v1.0/users/:userId'
+
 export const paths = {
   listUserMessagesPath,
   listUserCalendarsPath,
   listUserEventsPath,
   listCalendarEventsPath,
-  listCalendarViewPath
+  listCalendarViewPath,
+  subscriptionsPath,
+  subscriptionsIdPath,
+  listComunicationsCallRecordsPath,
+  listComunicationsCallRecordsSessionsPath,
+  getUserIdPath
 }
 
 export const tenantId = config.o365TenantId

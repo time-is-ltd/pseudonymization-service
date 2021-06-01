@@ -26,4 +26,4 @@ const schema: Schema<UserCalendars> = {
   ]
 }
 
-export default jsonMapper<typeof schema, UserCalendars>(schema)
+export const listUserCalendarsMapper = jsonMapper<typeof schema, UserCalendars>(schema)

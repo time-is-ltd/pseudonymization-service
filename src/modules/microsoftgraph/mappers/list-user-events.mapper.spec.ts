@@ -1,4 +1,4 @@
-import listUserEventsMapper, { UserEvents } from './list-user-events.mapper'
+import { listUserEventsMapper, UserEvents } from './list-user-events.mapper'
 import {
   PersonId,
   getEmail,

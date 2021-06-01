@@ -5,5 +5,5 @@ export interface Route {
   path: string,
   handler: RequestHandler | RequestHandler[],
   requireAuth?: boolean,
-  method?: 'get' | 'post' | 'put'
+  method?: 'get' | 'post' | 'put' | 'patch'
 }

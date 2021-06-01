@@ -50,7 +50,6 @@ export const request = async (url: string, options: RequestOptions = {}) => {
       decompressedResponse.on('end', () => {
         const { headers, statusCode, statusMessage } = response
         const isSuccess = statusCode >= 200 && statusCode < 300
-
         if (!isSuccess) {
           return reject(new RequestError(statusCode, statusMessage, response))
         }
