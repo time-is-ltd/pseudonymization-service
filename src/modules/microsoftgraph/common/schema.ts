@@ -31,7 +31,8 @@ import {
   Identity,
   IdentitySet,
   CallRecordsEndpoint,
-  CallRecordSession
+  CallRecordSession,
+  MailFolder
 } from './interfaces'
 
 export const itemBody: Schema<ItemBody> = {
@@ -491,4 +492,14 @@ export const callRecordsSessionSchema: Schema<CallRecordSession> = {
   modalities: [TYPES.Array, TYPES.String],
   startDateTime: TYPES.String,
   endDateTime: TYPES.String
+}
+
+export const mailFolderSchema: Schema<MailFolder> = {
+  childFolderCount: TYPES.Number,
+  displayName: [TYPES.Private, TYPES.String],
+  id: TYPES.String,
+  isHidden: TYPES.Boolean,
+  parentFolderId: TYPES.String,
+  totalItemCount: [TYPES.Private, TYPES.Number],
+  unreadItemCount: [TYPES.Private, TYPES.Number]
 }

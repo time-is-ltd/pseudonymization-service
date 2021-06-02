@@ -7,7 +7,9 @@ import {
   listUserEventsMapper,
   createSubscriptionMapper,
   listCommunicationsCallRecordsMapper,
-  getUserIdMapper
+  getUserIdMapper,
+  listMailFoldersMapper,
+  getMailFolderMapper
 } from './mappers'
 
 import tokenService from '../../token/token.service'
@@ -184,6 +186,33 @@ const getUserIdRoute: Route = {
   })
 }
 
+const listMailFoldersRoute: Route = {
+  hosts,
+  path: paths.listMailFoldersPath,
+  handler: proxyFactory({
+    authorizationFactory: getAuthorizationFactory(),
+    dataMapper: listMailFoldersMapper
+  })
+}
+
+const getMailFolderRoute: Route = {
+  hosts,
+  path: paths.getMailFolderPath,
+  handler: proxyFactory({
+    authorizationFactory: getAuthorizationFactory(),
+    dataMapper: getMailFolderMapper
+  })
+}
+
+const listMailFolderMessagesRoute: Route = {
+  hosts,
+  path: paths.listMailFolderMessagesPath,
+  handler: proxyFactory({
+    authorizationFactory: getAuthorizationFactory(),
+    dataMapper: listUserMessagesMapper
+  })
+}
+
 export default async () => {
   const applicationCredentials = await Promise.all([
     config.tenantId,
@@ -216,7 +245,10 @@ export default async () => {
       updateSubscriptionRoute,
       listComunicationsCallRecordsRoute,
       listComunicationsCallRecordsSessionsRoute,
-      getUserIdRoute
+      getUserIdRoute,
+      listMailFoldersRoute,
+      getMailFolderRoute,
+      listMailFolderMessagesRoute
     ]
   }
 }

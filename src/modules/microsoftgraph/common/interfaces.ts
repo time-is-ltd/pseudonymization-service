@@ -277,3 +277,13 @@ export interface CallRecordSession {
   startDateTime: string
   endDateTime: string
 }
+
+export interface MailFolder {
+  childFolderCount: number
+  displayName: string
+  id: string
+  isHidden: boolean
+  parentFolderId: string
+  totalItemCount: number
+  unreadItemCount: number
+}

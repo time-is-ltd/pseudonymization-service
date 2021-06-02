@@ -32,6 +32,9 @@ const subscriptionsIdPath = '/v1.0/subscriptions/:id'
 const listComunicationsCallRecordsPath = '/v1.0/communications/callRecords/:id'
 const listComunicationsCallRecordsSessionsPath = '/v1.0/communications/callRecords/:id/sessions'
 const getUserIdPath = '/v1.0/users/:userId'
+const listMailFoldersPath = '/v1.0/users/:userId/mailFolders'
+const getMailFolderPath = '/v1.0/users/:userId/mailFolders/:id'
+const listMailFolderMessagesPath = '/v1.0/users/:userId/mailFolders/:id/messages'
 
 export const paths = {
   listUserMessagesPath,
@@ -43,7 +46,10 @@ export const paths = {
   subscriptionsIdPath,
   listComunicationsCallRecordsPath,
   listComunicationsCallRecordsSessionsPath,
-  getUserIdPath
+  getUserIdPath,
+  listMailFoldersPath,
+  getMailFolderPath,
+  listMailFolderMessagesPath
 }
 
 export const tenantId = config.o365TenantId
