@@ -459,7 +459,7 @@ export const message: Schema<Message> = {
     },
     {
       name: 'content-type',
-      value: TYPES.String
+      value: TYPES.ContentType
     }
   ],
   flag: followUpFlag

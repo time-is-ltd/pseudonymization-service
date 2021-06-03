@@ -142,7 +142,7 @@ const schema: Schema<UserMessage> = {
       },
       {
         name: 'content-type',
-        value: TYPES.String
+        value: TYPES.ContentType
       }
     ],
     body: {
@@ -161,7 +161,7 @@ const schema: Schema<UserMessage> = {
         headers: [
           {
             name: 'content-type',
-            value: TYPES.String
+            value: TYPES.ContentType
           }
         ],
         body: {

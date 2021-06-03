@@ -37,7 +37,7 @@ const schema: Schema<CreateSubscription> = {
   expirationDateTime: TYPES.String,
   creatorId: TYPES.String,
   latestSupportedTlsVersion: TYPES.String,
-  notificationContentType: TYPES.String,
+  notificationContentType: TYPES.ContentType,
   includeResourceData: TYPES.String,
   notificationQueryOptions: TYPES.String,
   encryptionCertificate: [
