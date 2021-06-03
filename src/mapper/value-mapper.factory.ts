@@ -1,4 +1,4 @@
-import { config, email, filename, id, url, proxify, hashed } from '../anonymizer'
+import { config, email, filename, id, url, proxify, hashed, contentType } from '../anonymizer'
 import { TYPES } from './constants'
 import { string, boolean, number } from './transformers'
 
@@ -37,6 +37,8 @@ export const valueMapperFactory = async () => {
         return value
       case TYPES.Array:
         return Array.isArray(value) ? value : []
+      case TYPES.ContentType:
+        return contentType(string(value))
       case TYPES.Text:
       case TYPES.String:
       case TYPES.Datetime:

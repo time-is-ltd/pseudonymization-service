@@ -5,6 +5,11 @@ export const email = (email: string, config?: AnonymizeEmailConfig): string => {
   return ANONYMIZED_EMAIL
 }
 
+export const contentType = (value: string): string => {
+  return typeof value === 'string' ? String(value) : ''
+}
+
+
 export const id = (value: string): string => {
   return typeof value === 'string' ? String(value) : ''
 }
