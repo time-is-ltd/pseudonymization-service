@@ -1,4 +1,5 @@
-import userMessagesMapper, {
+import {
+  listUserMessagesMapper,
   UserMessages
 } from './list-user-messages.mapper'
 
@@ -19,7 +20,7 @@ const buildMessage = (messageCount: number = 0): UserMessages => {
 
 testMapper(
   'Google apis: User messages mapper',
-  userMessagesMapper,
+  listUserMessagesMapper,
   buildMessage,
   buildMessage
 )

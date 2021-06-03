@@ -21,7 +21,5 @@ export const proxify = (maybeUrl = ''): string => {
   return typeof maybeUrl === 'string' ? String(maybeUrl) : ''
 }
 
-export default {
-  email,
-  filename
-}
+// Config is not mocked
+export { config } from '../anonymizer.config'

@@ -1,4 +1,5 @@
-import calendarEventsMapper, {
+import {
+  listCalendarEventsMapper,
   Event,
   EventAttendee,
   EventUser
@@ -313,7 +314,7 @@ const outputEvent: Event = {
 
 testMapper(
   'Google apis: Calendar events mapper',
-  calendarEventsMapper,
+  listCalendarEventsMapper,
   () => inputEvent,
   () => outputEvent
 )

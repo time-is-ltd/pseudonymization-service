@@ -1,7 +1,12 @@
-import listUserMessagesMapper from './mappers/list-user-messages.mapper'
-import getUserMessageMapper from './mappers/get-user-message.mapper'
-import listCalendarEventsMapper from './mappers/list-calendar-events.mapper'
-import listUserCalendars from './mappers/list-user-calendars.mapper'
+import {
+  listUserMessagesMapper,
+  getUserMessageMapper,
+  listCalendarEventsMapper,
+  listUserCalendarsMapper,
+  listActivityReportsMeetMapper,
+  listActivityReportsDriveMapper,
+  listUsageReportsMapper
+} from './mappers'
 import { authorizationPathExtractorFactory } from './googleapis.service'
 import { proxyFactory } from '../../proxy'
 import { Route } from '../../router/interfaces/router.interface'
@@ -18,7 +23,7 @@ import batchHandler from './handlers/batch.handler'
 const authorizationFactory = authorizationPathExtractorFactory(Object.values(paths))
 
 const listUserMessagesRoute: Route = {
-  hosts,
+  hosts: hosts.gmail,
   path: paths.listUserMessagesPath,
   handler: proxyFactory({
     authorizationFactory,
@@ -27,7 +32,7 @@ const listUserMessagesRoute: Route = {
 }
 
 const getUserMessageRoute: Route = {
-  hosts,
+  hosts: hosts.gmail,
   path: paths.getUserMessagePath,
   handler: proxyFactory({
     authorizationFactory,
@@ -36,17 +41,17 @@ const getUserMessageRoute: Route = {
 }
 
 const listUserCalendarsRoute: Route = {
-  hosts,
+  hosts: hosts.calendar,
   path: paths.listUserCalendarsPath,
   handler: proxyFactory({
     authorizationFactory,
-    dataMapper: listUserCalendars,
+    dataMapper: listUserCalendarsMapper,
     urlTransform: pathTransforms.listUserCalendarsPath
   })
 }
 
 const listCalendarEventsRoute: Route = {
-  hosts,
+  hosts: hosts.calendar,
   path: paths.listCalendarEventsPath,
   handler: proxyFactory({
     authorizationFactory,
@@ -56,12 +61,39 @@ const listCalendarEventsRoute: Route = {
 }
 
 const gmailBatchRoute: Route = {
-  hosts,
+  hosts: hosts.gmail,
   path: paths.batchRequestPath,
   method: 'post',
   handler: batchHandler(authorizationFactory, {
     [paths.listUserMessagesPath]: listUserMessagesMapper,
     [paths.getUserMessagePath]: getUserMessageMapper
+  })
+}
+
+const listActivityReportsMeetRoute: Route = {
+  hosts: hosts.admin,
+  path: paths.listActivityReportsMeet,
+  handler: proxyFactory({
+    authorizationFactory,
+    dataMapper: listActivityReportsMeetMapper
+  })
+}
+
+const listActivityReportsDriveRoute: Route = {
+  hosts: hosts.admin,
+  path: paths.listActivityReportsDrive,
+  handler: proxyFactory({
+    authorizationFactory,
+    dataMapper: listActivityReportsDriveMapper
+  })
+}
+
+const listUsageReportsRoute: Route = {
+  hosts: hosts.admin,
+  path: paths.listUsageReports,
+  handler: proxyFactory({
+    authorizationFactory,
+    dataMapper: listUsageReportsMapper
   })
 }
 
@@ -80,7 +112,10 @@ export default async () => {
       getUserMessageRoute,
       gmailBatchRoute,
       listUserCalendarsRoute,
-      listCalendarEventsRoute
+      listCalendarEventsRoute,
+      listActivityReportsMeetRoute,
+      listActivityReportsDriveRoute,
+      listUsageReportsRoute
     ]
   }
 }

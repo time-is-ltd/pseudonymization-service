@@ -2,15 +2,15 @@ import {
   jsonMapper,
   TYPES,
   Schema
-} from '../../../helpers/mapper.helper'
+} from '../../../mapper'
 
-export type UserMessage = {
+export type UserMessageItem = {
   id: string,
   threadId: string
 }
 
 export type UserMessages = {
-  messages: UserMessage[],
+  messages: UserMessageItem[],
   nextPageToken: string,
   resultSizeEstimate: string
 }
@@ -26,4 +26,4 @@ const schema: Schema<UserMessages> = {
   resultSizeEstimate: TYPES.String
 }
 
-export default jsonMapper<typeof schema, UserMessages>(schema)
+export const listUserMessagesMapper = jsonMapper<typeof schema, UserMessages>(schema)

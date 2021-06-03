@@ -2,7 +2,7 @@ import {
   jsonMapper,
   Schema,
   TYPES
-} from '../../../helpers/mapper.helper'
+} from '../../../mapper'
 
 export interface EventDate {
   date: string
@@ -372,4 +372,4 @@ const schema: Schema<Event> = {
   ]
 }
 
-export default jsonMapper<typeof schema, Event>(schema)
+export const listCalendarEventsMapper = jsonMapper<typeof schema, Event>(schema)

@@ -1,4 +1,4 @@
-import userMessageMapper from './get-user-message.mapper'
+import { getUserMessageMapper } from './get-user-message.mapper'
 import {
   PersonId,
   getEmail,
@@ -275,7 +275,7 @@ const messageOutput = {
 
 testMapper(
   'Google apis: User message mapper',
-  userMessageMapper,
+  getUserMessageMapper,
   () => message,
   () => messageOutput
 )

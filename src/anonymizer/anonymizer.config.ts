@@ -14,7 +14,7 @@ const anonymizerConfig = {
   rsaPublicKey: toPem()
 }
 
-const config = configFactory(anonymizerConfig, [
+export const config = configFactory(anonymizerConfig, [
   'anonymizationSalt',
   'rsaPrivateKey',
   'rsaPublicKey'

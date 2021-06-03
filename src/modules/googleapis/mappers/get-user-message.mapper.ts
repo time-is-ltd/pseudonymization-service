@@ -2,7 +2,7 @@ import {
   jsonMapper,
   TYPES,
   Schema
-} from '../../../helpers/mapper.helper'
+} from '../../../mapper'
 
 export type UserMessagePayloadHeader = {
   name: string,
@@ -178,4 +178,4 @@ const schema: Schema<UserMessage> = {
   sizeEstimate: TYPES.Number
 }
 
-export default jsonMapper<typeof schema, Partial<UserMessage>>(schema)
+export const getUserMessageMapper = jsonMapper<typeof schema, Partial<UserMessage>>(schema)
