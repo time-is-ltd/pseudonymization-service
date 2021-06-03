@@ -27,7 +27,12 @@ import {
   FollowUpFlag,
   InternetMessageHeader,
   MentionsPreview,
-  Mention
+  Mention,
+  Identity,
+  IdentitySet,
+  CallRecordsEndpoint,
+  CallRecordSession,
+  MailFolder
 } from './interfaces'
 
 export const itemBody: Schema<ItemBody> = {
@@ -458,4 +463,43 @@ export const message: Schema<Message> = {
     }
   ],
   flag: followUpFlag
+}
+
+export const identitySchema: Schema<Identity> = {
+  displayName: [TYPES.Private, TYPES.String],
+  id: TYPES.String,
+  tenantId: TYPES.String
+}
+
+export const identitySetSchema: Schema<IdentitySet> = {
+  user: identitySchema,
+  application: identitySchema,
+  device: identitySchema
+}
+
+export const callRecordsEndpointSchema: Schema<CallRecordsEndpoint> = {
+  identity: identitySetSchema
+}
+
+export const callRecordsSessionSchema: Schema<CallRecordSession> = {
+  id: TYPES.String,
+  caller: callRecordsEndpointSchema,
+  callee: callRecordsEndpointSchema,
+  failureInfo: {
+    reason: TYPES.String,
+    stage: TYPES.String
+  },
+  modalities: [TYPES.Array, TYPES.String],
+  startDateTime: TYPES.String,
+  endDateTime: TYPES.String
+}
+
+export const mailFolderSchema: Schema<MailFolder> = {
+  childFolderCount: TYPES.Number,
+  displayName: [TYPES.Private, TYPES.String],
+  id: TYPES.String,
+  isHidden: TYPES.Boolean,
+  parentFolderId: TYPES.String,
+  totalItemCount: [TYPES.Private, TYPES.Number],
+  unreadItemCount: [TYPES.Private, TYPES.Number]
 }

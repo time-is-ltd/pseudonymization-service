@@ -1,4 +1,4 @@
-import userCalendarsMapper from './list-user-calendars.mapper'
+import { listUserCalendarsMapper } from './list-user-calendars.mapper'
 import {
   PersonId,
   getEmail,
@@ -80,7 +80,7 @@ const buildOutput = (messageCount: number = 0) => {
 
 testMapper(
   'MicosoftGraph: List user calendars mapper',
-  userCalendarsMapper,
+  listUserCalendarsMapper,
   buildInput,
   buildOutput
 )

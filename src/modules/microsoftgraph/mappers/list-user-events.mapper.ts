@@ -26,4 +26,4 @@ const schema: Schema<UserEvents> = {
   ]
 }
 
-export default jsonMapper<typeof schema, UserEvents>(schema)
+export const listUserEventsMapper = jsonMapper<typeof schema, UserEvents>(schema)

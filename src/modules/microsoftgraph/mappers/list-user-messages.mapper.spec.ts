@@ -1,4 +1,4 @@
-import userMessageMapper, { UserMessages } from './list-user-messages.mapper'
+import { listUserMessagesMapper, UserMessages } from './list-user-messages.mapper'
 import {
   PersonId,
   getEmail,
@@ -398,7 +398,7 @@ const buildOutput = (messageCount: number = 0): UserMessages => {
 
 testMapper(
   'MicosoftGraph: List user messages mapper',
-  userMessageMapper,
+  listUserMessagesMapper,
   buildInput,
   buildOutput
 )
