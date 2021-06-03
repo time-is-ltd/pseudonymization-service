@@ -297,6 +297,10 @@ const messageOutput = {
       value: getAnonymizedEmail(3).address
     },
     {
+      name: 'References',
+      value: 'References value'
+    },
+    {
       name: 'From',
       value: getAnonymizedEmail(4).address
     },

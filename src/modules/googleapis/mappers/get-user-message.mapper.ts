@@ -65,6 +65,10 @@ const schema: Schema<UserMessage> = {
     // @see: https://tools.ietf.org/html/rfc2822
     headers: [
       {
+        name: 'references',
+        value: TYPES.String
+      },
+      {
         name: 'delivered-to',
         value: TYPES.Email
       },
