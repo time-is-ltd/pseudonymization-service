@@ -206,6 +206,10 @@ const messageOutput = {
         value: buildOutputEmail(3)
       },
       {
+        name: 'References',
+        value: 'References value'
+      },
+      {
         name: 'From',
         value: buildOutputEmail(4)
       },

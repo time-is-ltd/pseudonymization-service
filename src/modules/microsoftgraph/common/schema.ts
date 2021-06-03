@@ -382,6 +382,10 @@ export const message: Schema<Message> = {
   // @see: https://tools.ietf.org/html/rfc2822
   internetMessageHeaders: [
     {
+      name: 'references',
+      value: TYPES.String
+    },
+    {
       name: 'delivered-to',
       value: TYPES.Email
     },
