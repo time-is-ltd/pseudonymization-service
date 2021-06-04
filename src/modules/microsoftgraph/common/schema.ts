@@ -476,9 +476,20 @@ export const identitySchema: Schema<Identity> = {
 }
 
 export const identitySetSchema: Schema<IdentitySet> = {
-  user: identitySchema,
   application: identitySchema,
-  device: identitySchema
+  applicationInstance: identitySchema,
+  device: identitySchema,
+  user: identitySchema,
+  conversation: identitySchema,
+  conversationIdentityType: identitySchema,
+  encrypted: identitySchema,
+  guest: identitySchema,
+  phone: identitySchema,
+  acsUser: identitySchema,
+  spoolUser: identitySchema,
+  onPremises: identitySchema,
+  acsApplicationInstance: identitySchema,
+  spoolApplicationInstance: identitySchema
 }
 
 export const callRecordsEndpointSchema: Schema<CallRecordsEndpoint> = {

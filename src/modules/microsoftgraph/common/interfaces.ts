@@ -255,8 +255,19 @@ export interface Identity {
 
 export interface IdentitySet {
   application: Identity
+  applicationInstance: Identity
   device: Identity
   user: Identity
+  conversation: Identity
+  conversationIdentityType: Identity
+  encrypted: Identity
+  guest: Identity
+  phone: Identity
+  acsUser: Identity
+  spoolUser: Identity
+  onPremises: Identity
+  acsApplicationInstance: Identity
+  spoolApplicationInstance: Identity
 }
 
 export interface CallRecordsEndpoint {
