@@ -3,6 +3,7 @@ import * as compression from 'compression'
 import * as helmet from 'helmet'
 import * as http from 'http'
 import * as https from 'https'
+import * as morgan from 'morgan'
 
 import config from './app.config'
 import extractToken from './helpers/extract-token'
@@ -52,6 +53,9 @@ const bootstrap = async () => {
   const app = express()
   app.use(compression())
   app.use(helmet())
+  if (await config.verbosity >= 1) {
+    app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]'));
+  }
 
   const httpPort = await config.httpPort
   const httpsPort = await config.httpsPort
