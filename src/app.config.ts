@@ -1,4 +1,4 @@
-import {configFactory, toBoolean, toNumber, toPem, toString} from './config'
+import {configFactory, toNumber, toPem, toString} from './config'
 
 const appConfig = {
   apiToken: toString(),
