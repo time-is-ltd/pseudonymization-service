@@ -69,27 +69,29 @@ const bootstrap = async () => {
 
     routes.forEach((route) => {
       route.hosts.forEach(host => {
-        const path = `/${host}${route.path}`
-        const method = route.method || 'get'
-        const requireAuth = route.requireAuth !== false
+        const paths = Array.isArray(route.path)
+          ? route.path
+          : [route.path]
+        paths.forEach(routePath => {
+          const path = `/${host}${routePath}`
+          const method = route.method || 'get'
+          const requireAuth = route.requireAuth !== false
 
-        console.info(`Registering route [${method.toUpperCase()}] ${path}`)
+          console.info(`Registering route [${method.toUpperCase()}] ${path}`)
 
-        const handlers = []
-        if (Array.isArray(route.handler)) {
-          handlers.push(...route.handler)
-        } else {
-          handlers.push(route.handler)
-        }
-        app[method](
-          path,
-          authMiddleware(requireAuth),
-          ...handlers
-        )
+          const handlers = Array.isArray(route.handler)
+            ? route.handler
+            : [route.handler]
+          app[method](
+            path,
+            authMiddleware(requireAuth),
+            ...handlers
+          )
+        })
       })
     })
   })
-  
+
   if (httpPort > 0) {
     const httpServer = http.createServer(app)
     withKeepAliveTimeout(httpServer)
