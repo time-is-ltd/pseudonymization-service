@@ -69,23 +69,31 @@ const bootstrap = async () => {
 
     routes.forEach((route) => {
       route.hosts.forEach(host => {
-        const path = `/${host}${route.path}`
-        const method = route.method || 'get'
-        const requireAuth = route.requireAuth !== false
-
-        console.info(`Registering route [${method.toUpperCase()}] ${path}`)
-
-        const handlers = []
-        if (Array.isArray(route.handler)) {
-          handlers.push(...route.handler)
+        const paths = []
+        if (route.path instanceof Array) {
+          route.path.forEach((routePath) => paths.push(`/${host}${routePath}`))
         } else {
-          handlers.push(route.handler)
+          paths.push(`/${host}${route.path}`)
         }
-        app[method](
-          path,
-          authMiddleware(requireAuth),
-          ...handlers
-        )
+        console.log("PATHS " + paths)
+        for (let path of paths) {
+          const method = route.method || 'get'
+          const requireAuth = route.requireAuth !== false
+
+          console.info(`Registering route [${method.toUpperCase()}] ${path}`)
+
+          const handlers = []
+          if (Array.isArray(route.handler)) {
+            handlers.push(...route.handler)
+          } else {
+            handlers.push(route.handler)
+          }
+          app[method](
+              path,
+              authMiddleware(requireAuth),
+              ...handlers
+          )
+        }
       })
     })
   })
