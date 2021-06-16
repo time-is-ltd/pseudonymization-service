@@ -11,8 +11,8 @@ import microsoftgraph from './modules/microsoftgraph/microsoftgraph.module'
 import { Route } from './router/interfaces/router.interface'
 
 // Register modules
-type Module = {
-  enabled: boolean,
+interface Module {
+  enabled: boolean
   routes: Route[]
 }
 
@@ -75,7 +75,7 @@ const bootstrap = async () => {
         paths.forEach(routePath => {
           const path = `/${host}${routePath}`
           const method = route.method || 'get'
-          const requireAuth = route.requireAuth !== false
+          const requireAuth = route.requireAuth
 
           console.info(`Registering route [${method.toUpperCase()}] ${path}`)
 

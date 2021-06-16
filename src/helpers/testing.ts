@@ -4,7 +4,7 @@ export const ANONYMIZED_ID = '__id__test__rsa__test'
 
 const people = {
   1: {
-    name: 'John Doe', 
+    name: 'John Doe',
     address: 'john.doe@gmail.com'
   },
   2: {
@@ -12,7 +12,7 @@ const people = {
     address: 'john.doe@gmail.com'
   },
   3: {
-    name: 'Jane Doe', 
+    name: 'Jane Doe',
     address: 'jane.doe@domain.com'
   },
   4: {
@@ -71,7 +71,7 @@ export const testMapper = (
     expect(JSON.parse(await mapper(undefined))).toEqual(empty)
     expect(JSON.parse(await mapper(JSON.stringify({ test: 'test' })))).toEqual(empty)
   })
-  
+
   test(`${name} - no iterations`, async () => {
     const input = buildInput()
     const output = buildOutput()

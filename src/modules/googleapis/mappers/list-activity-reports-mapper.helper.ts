@@ -94,5 +94,3 @@ export const itemSchemaWithoutEvents: Schema<Omit<ActivityReportItem, 'events'>>
     key: TYPES.String
   }
 }
-
-

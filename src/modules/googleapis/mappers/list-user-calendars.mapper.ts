@@ -4,51 +4,51 @@ import {
   Schema
 } from '../../../mapper'
 
-export type UserCalendarDefaultReminder = {
-  method: string,
+export interface UserCalendarDefaultReminder {
+  method: string
   minutes: number
 }
 
-export type UserCalendarsNotification = {
-  type: string,
+export interface UserCalendarsNotification {
+  type: string
   method: string
 }
 
-export type UserCalendarsNotificationSettings = {
+export interface UserCalendarsNotificationSettings {
   notifications: UserCalendarsNotification[]
 }
 
-export type UserCalendarConferenceProperties = {
+export interface UserCalendarConferenceProperties {
   allowedConferenceSolutionTypes: string[]
 }
 
-export type UserCalendar = {
-  id: string,
-  kind: string,
-  etag: string,
-  summary: string,
-  description: string,
-  location: string,
-  timeZone: string,
-  summaryOverride: string,
-  colorId: string,
-  backgroundColor: string,
-  foregroundColor: string,
-  hidden: boolean,
-  selected: boolean,
-  accessRole: string,
-  defaultReminders: UserCalendarDefaultReminder[],
-  notificationSettings: UserCalendarsNotificationSettings,
-  primary: boolean,
-  deleted: boolean,
+export interface UserCalendar {
+  id: string
+  kind: string
+  etag: string
+  summary: string
+  description: string
+  location: string
+  timeZone: string
+  summaryOverride: string
+  colorId: string
+  backgroundColor: string
+  foregroundColor: string
+  hidden: boolean
+  selected: boolean
+  accessRole: string
+  defaultReminders: UserCalendarDefaultReminder[]
+  notificationSettings: UserCalendarsNotificationSettings
+  primary: boolean
+  deleted: boolean
   conferenceProperties: UserCalendarConferenceProperties
 }
 
-export type UserCalendars = {
-  kind: string,
-  etag: string,
-  items: UserCalendar[],
-  nextPageToken: string,
+export interface UserCalendars {
+  kind: string
+  etag: string
+  items: UserCalendar[]
+  nextPageToken: string
   resultSizeEstimate: string
 }
 

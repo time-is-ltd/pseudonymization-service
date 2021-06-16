@@ -28,7 +28,7 @@ const getValue = (valueMapper: ValueMapper) => (types: symbol[], value: any) => 
     return bPriority - aPriority
   })
 
-  const isArray = sortedTypes.indexOf(TYPES.Array) > -1
+  const isArray = sortedTypes.includes(TYPES.Array)
   return sortedTypes.reduce((value, type) => {
     if (isArray && type !== TYPES.Array) {
       return value
@@ -51,7 +51,7 @@ export const schemaMapper = <S extends Object, T extends Object>(schema: S, valu
     let indexedPropertyName
     const firstSchemaItem = schema[0]
     if (firstSchemaItem === Object(firstSchemaItem)) {
-      for (let key in firstSchemaItem) {
+      for (const key in firstSchemaItem) {
         if (firstSchemaItem.hasOwnProperty(key)) {
           const value = firstSchemaItem[key]
           if (isIndexable(value)) {
@@ -65,7 +65,7 @@ export const schemaMapper = <S extends Object, T extends Object>(schema: S, valu
 
     if (isIndexed) {
       const indexMap: { [key: string]: S } = schema
-        .reduce((indexMap, item)=> {
+        .reduce((indexMap, item) => {
           const indexNameOrArray = item[indexedPropertyName]
           const indexNames = Array.isArray(indexNameOrArray)
             ? indexNameOrArray

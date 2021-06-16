@@ -5,9 +5,9 @@ interface CacheItem<T> {
 }
 
 export interface Cache<T> {
-  has(key: string): boolean
-  get(key: string): CacheItem<T>
-  set(key: string, value: T, ttl: number): void
+  has: (key: string) => boolean
+  get: (key: string) => CacheItem<T>
+  set: (key: string, value: T, ttl: number) => void
 }
 
 export const cacheFactory = <T>(): Cache<T> => {
@@ -37,7 +37,7 @@ export const cacheFactory = <T>(): Cache<T> => {
   }
 
   const has = (key: string): boolean => {
-    const item = map[key as string]
+    const item = map[key]
     if (item) {
       return isValid(item)
     }
@@ -49,12 +49,12 @@ export const cacheFactory = <T>(): Cache<T> => {
     if (!has(key)) {
       throw new Error(`Key ${key} not found`)
     }
-    return map[key as string]
+    return map[key]
   }
 
   const set = (key: string, value: T, ttl = 0) => {
     const t = Date.now()
-    map[key as string] = {
+    map[key] = {
       ttl,
       t,
       v: value

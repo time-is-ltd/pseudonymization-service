@@ -19,7 +19,6 @@ export const hosts = [
   'graph.microsoft.com'
 ]
 
-
 // Router paths
 const listUserMessagesPath = '/v1.0/users/:userId/messages'
 const listUserCalendarsPath = '/v1.0/users/:userId/calendars'

@@ -6,9 +6,9 @@ import {
 import { message } from '../common/schema'
 import { Message } from '../common/interfaces'
 
-export type UserMessages = {
-  '@odata.context': string,
-  '@odata.nextLink'?: string,
+export interface UserMessages {
+  '@odata.context': string
+  '@odata.nextLink'?: string
   value: Message[]
 }
 
@@ -21,7 +21,7 @@ const schema: Schema<UserMessages> = {
     TYPES.Url,
     TYPES.Proxify
   ],
-  'value': [
+  value: [
     message
   ]
 }

@@ -6,5 +6,4 @@ export const fromCache = <T extends TransformMap>(cache: Cache<T>) => async <K e
     const item = cache.get(key as string)
     return { defaultTtl: item.ttl, v: item.v }
   }
-  return
 }

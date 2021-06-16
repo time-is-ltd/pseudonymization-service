@@ -9,7 +9,6 @@ export const contentType = (value: string): string => {
   return typeof value === 'string' ? String(value) : ''
 }
 
-
 export const id = (value: string): string => {
   return typeof value === 'string' ? String(value) : ''
 }

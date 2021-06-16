@@ -10,7 +10,7 @@ const generateKey = () => {
     },
     privateKeyEncoding: {
       type: 'pkcs8',
-      format: 'pem',
+      format: 'pem'
     }
   }, (err, publicKey, privateKey) => {
     // Handle errors and use the generated key pair.

@@ -245,10 +245,10 @@ export const event: Schema<Event> = {
   isDraft: TYPES.Boolean,
   isOnlineMeeting: TYPES.Boolean,
   isOrganizer: TYPES.Boolean,
-  isReminderOn: TYPES.Boolean, 
-  lastModifiedDateTime: TYPES.Datetime, 
+  isReminderOn: TYPES.Boolean,
+  lastModifiedDateTime: TYPES.Datetime,
   onlineMeeting,
-  onlineMeetingProvider: TYPES.String, 
+  onlineMeetingProvider: TYPES.String,
   onlineMeetingUrl: [
     TYPES.Url,
     TYPES.String,

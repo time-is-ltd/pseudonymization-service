@@ -14,11 +14,10 @@ export const fromAzureKeyVault = <T extends TransformMap>(vaultName: string) => 
 
   return async <K extends keyof T>(key: K) => {
     try {
-      const azureKeyVaultSecretName = getAzureVaultVariableName<T,K>(key)
+      const azureKeyVaultSecretName = getAzureVaultVariableName<T, K>(key)
       const azureKeyVaultSecret = await client.getSecret(azureKeyVaultSecretName)
 
       return { defaultTtl: 20 * 60, v: azureKeyVaultSecret.value }
     } catch (err) { }
-    return
   }
 }

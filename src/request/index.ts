@@ -7,7 +7,7 @@ export type RequestOptions = Partial<Pick<https.RequestOptions, 'method' | 'head
 type Response = Pick<IncomingMessage, 'statusCode' | 'statusMessage' | 'headers'> & { data?: string }
 
 export class RequestError<T extends unknown> extends Error {
-  constructor(
+  constructor (
     public statusCode: number,
     public statusMessage?: string,
     public response?: T
@@ -28,7 +28,7 @@ const decompressResponse = (response: IncomingMessage) => {
 }
 
 export const request = async (url: string, options: RequestOptions = {}) => {
-  return new Promise<Response>((resolve, reject) => {
+  return await new Promise<Response>((resolve, reject) => {
     const { data, headers = {}, method = 'GET' } = options
     const { protocol, hostname, port, pathname, search } = new URL(url)
 
@@ -39,7 +39,7 @@ export const request = async (url: string, options: RequestOptions = {}) => {
       port,
       path,
       method,
-      headers,
+      headers
     }
     const provider = protocol.includes('https') ? https : http
     const req = provider.request(requestOptions, response => {

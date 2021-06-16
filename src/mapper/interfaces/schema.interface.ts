@@ -22,7 +22,7 @@ import { Unpacked } from './unpacked.interface'
 */
 export type Schema<T> = {
   [P in keyof T]:
-    Unpacked<T[P]> extends (infer U)[] ? Schema<U>[] :
+  Unpacked<T[P]> extends Array<infer U> ? Array<Schema<U>> :
     Unpacked<T[P]> extends object ? Schema<T[P]> :
-    symbol | string | string[] | number | number[] | symbol[]
+      symbol | string | string[] | number | number[] | symbol[]
 }

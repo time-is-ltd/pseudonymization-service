@@ -4,7 +4,7 @@ export const mapBodyMiddleware = (
   authorizationFactory: AuthorizationFactory,
   bodyMapper?: BodyMapper
 ): RequestHandler => async ({ body: rawBody, ...rest }) => {
-  return new Promise(async (resolve) => {
+  return await new Promise(async (resolve) => {
     const body = typeof bodyMapper === 'function' && rawBody
       ? await bodyMapper(rawBody, authorizationFactory)
       : rawBody

@@ -17,7 +17,7 @@ export const TYPES = {
 
   // Boolean avalues
   Boolean: Symbol('Boolean'),
-  
+
   // Other
   Passthrough: Symbol('Passthrough'),
   Hashed: Symbol('Hashed'),

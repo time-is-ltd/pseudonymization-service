@@ -9,7 +9,7 @@ interface ProxyParams {
   authorizationFactory: AuthorizationFactory
   dataMapper: DataMapper
   bodyMapper?: BodyMapper
-  urlTransform?: (url: string) => string,
+  urlTransform?: (url: string) => string
   allowedHeaders?: string[]
 }
 
@@ -65,7 +65,7 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
           statusMessage
         })
       }
-  
+
       // Unknown error
       sendResponse({
         statusCode: 500,

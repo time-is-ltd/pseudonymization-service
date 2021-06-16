@@ -3,7 +3,7 @@ import { toKebabCase } from '../transformers'
 import { TransformMap } from '../types'
 
 const getGcpSecretVariableName = <T extends TransformMap, K extends keyof T>(key: K, prefix: string): string => {
-  const name =  toKebabCase(key as string).toUpperCase()
+  const name = toKebabCase(key as string).toUpperCase()
   const normalizedPrefix = prefix.toUpperCase()
 
   return prefix.length > 0
@@ -26,6 +26,5 @@ export const fromGcpSecretManager = <T extends TransformMap>(projectId: string, 
 
       return { defaultTtl: 20 * 60, v: value }
     } catch (err) { }
-    return
   }
 }

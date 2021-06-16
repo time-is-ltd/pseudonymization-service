@@ -1,11 +1,11 @@
 import { cacheFactory } from '../../cache'
 import { encryptUrlComponent, matchAll } from '../helpers'
 
-const REGEXP_EMAIL = new RegExp(`([^\/]+@[^(\/|\?)]+)`, 'gi')
+const REGEXP_EMAIL = new RegExp('([^\/]+@[^(\/|\?)]+)', 'gi')
 
 const cache = cacheFactory<string>()
 export const url = (url: string, publicKey?: string): string => {
-  if(!publicKey) {
+  if (!publicKey) {
     return url
   }
 

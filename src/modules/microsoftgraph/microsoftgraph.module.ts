@@ -231,7 +231,6 @@ export default async () => {
       return result && Boolean(item)
     }, true)
 
-
   const enabled = hasAll(applicationCredentials) || hasAll(delegatedCredentials)
   return {
     enabled,

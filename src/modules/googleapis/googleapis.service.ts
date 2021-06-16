@@ -13,14 +13,14 @@ export const refreshAccessToken = async (userId: string): Promise<Token> => {
     scopes,
     credentials: {
       private_key: privateKey,
-      client_email: clientEmail,
+      client_email: clientEmail
     },
     clientOptions: { subject: userId || adminEmail }
   })
 
   const authClient = await auth.getClient()
 
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     authClient.refreshAccessToken((err) => {
       if (err) {
         reject(err)

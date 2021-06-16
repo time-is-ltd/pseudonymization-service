@@ -6,9 +6,9 @@ import {
 import { Event } from '../common/interfaces'
 import { event } from '../common/schema'
 
-export type UserEvents = {
-  '@odata.context': string,
-  '@odata.nextLink': string,
+export interface UserEvents {
+  '@odata.context': string
+  '@odata.nextLink': string
   value: Event[]
 }
 
@@ -21,7 +21,7 @@ const schema: Schema<UserEvents> = {
     TYPES.Url,
     TYPES.Proxify
   ],
-  'value': [
+  value: [
     event
   ]
 }

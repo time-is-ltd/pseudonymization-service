@@ -19,7 +19,7 @@ export const decrypt = (toDecrypt: string, privateKey: string): string => {
   }
 
   const buffer = Buffer.from(toDecrypt, 'base64')
-  const decrypted = crypto.privateDecrypt(options , buffer)
+  const decrypted = crypto.privateDecrypt(options, buffer)
 
   return decrypted.toString('utf8')
 }

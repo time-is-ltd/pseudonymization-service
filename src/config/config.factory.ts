@@ -29,7 +29,7 @@ export const configFactory = <T extends TransformMap>(transformMap: T, vaultKeys
     ]
 
     // GCP
-    const isVaultKey = vaultKeysAllowlist.indexOf(key as string) > -1
+    const isVaultKey = vaultKeysAllowlist.includes(key as string)
     if (isVaultKey) {
       if (gcpSecretManagerProvider) {
         providers.push(gcpSecretManagerProvider)
@@ -88,6 +88,6 @@ export const configFactory = <T extends TransformMap>(transformMap: T, vaultKeys
       Object.defineProperty(obj, key, { get })
       return obj
     }, {}) as {
-      [K in keyof T]: Promise<Response<T, K>>
-    }
+    [K in keyof T]: Promise<Response<T, K>>
+  }
 }

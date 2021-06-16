@@ -11,9 +11,9 @@ export interface EventDate {
 }
 
 export interface EventUser {
-  id: string,
-  email: string,
-  displayName: string,
+  id: string
+  email: string
+  displayName: string
   self: boolean
 }
 
@@ -130,13 +130,13 @@ export interface EventItem {
   guestsCanSeeOtherGuests: boolean
   privateCopy: boolean
   locked: boolean
-  reminders:EventItemConferenceDataReminders
+  reminders: EventItemConferenceDataReminders
   source: EventItemConferenceDataSource
   attachments: EventItemConferenceDataAttachment[]
 }
 
 export interface EventDefaultReminder {
-  method: string,
+  method: string
   minutes: number
 }
 
@@ -323,7 +323,7 @@ const schema: Schema<Event> = {
           width: TYPES.Number,
           height: TYPES.Number,
           display: TYPES.String
-        },
+        }
       },
       anyoneCanAddSelf: TYPES.Boolean,
       guestsCanInviteOthers: TYPES.Boolean,
@@ -348,7 +348,7 @@ const schema: Schema<Event> = {
         title: [
           TYPES.Url,
           TYPES.Private
-        ],
+        ]
       },
       attachments: [
         {

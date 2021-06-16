@@ -21,7 +21,7 @@ const TEST_PROPERTY_NAME = 'test'
 const TEST_STRING_VALUE = 'TEsT value'
 
 const buildTest = async (
-  types: Array<symbol[]> | symbol[],
+  types: symbol[][] | symbol[],
   inputValues: any[],
   outputValues: any[]
 ) => {
@@ -281,7 +281,6 @@ test('Map private array property', () => {
 })
 
 test('Complex schema', async () => {
-  
   const baseSchema = {
     string: TYPES.String,
     id: TYPES.Id,
@@ -345,7 +344,7 @@ test('Complex schema', async () => {
       TYPES.Array
     ]
   }
-  
+
   const baseInput = {
     string: TEST_STRING_VALUE,
     id: TEST_STRING_VALUE,
