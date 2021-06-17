@@ -1,4 +1,5 @@
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
+import { logger } from '../../logger'
 import { toKebabCase } from '../transformers'
 import { TransformMap } from '../types'
 
@@ -16,6 +17,8 @@ export const fromGcpSecretManager = <T extends TransformMap>(projectId: string, 
 
   return async <K extends keyof T>(key: K) => {
     try {
+      logger('verbose', `[Config/Google Secret Manager]: Loading key ${key}`)
+
       const secretName = getGcpSecretVariableName(key as string, prefix)
       const name = `projects/${projectId}/secrets/${secretName}/versions/latest`
       const [secretVersion] = await client.accessSecretVersion({
@@ -24,7 +27,11 @@ export const fromGcpSecretManager = <T extends TransformMap>(projectId: string, 
 
       const value = secretVersion.payload.data.toString()
 
+      logger('verbose', `[Config/Google Secret Manager]: ${key} loaded`)
+
       return { defaultTtl: 20 * 60, v: value }
-    } catch (err) { }
+    } catch (err) {
+      logger('verbose', `[Config/Google Secret Manager]: ${key} error`, err)
+    }
   }
 }

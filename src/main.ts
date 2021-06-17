@@ -5,6 +5,7 @@ import * as http from 'http'
 import * as https from 'https'
 
 import config from './app.config'
+import { logger } from './logger'
 import extractToken from './helpers/extract-token'
 import googleapis from './modules/googleapis/googleapis.module'
 import microsoftgraph from './modules/microsoftgraph/microsoftgraph.module'
@@ -77,7 +78,7 @@ const bootstrap = async () => {
           const method = route.method || 'get'
           const requireAuth = route.requireAuth
 
-          console.info(`Registering route [${method.toUpperCase()}] ${path}`)
+          logger('info', `Registering route [${method.toUpperCase()}] ${path}`)
 
           const handlers = Array.isArray(route.handler)
             ? route.handler

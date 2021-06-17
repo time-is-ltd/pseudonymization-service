@@ -4,6 +4,7 @@ import { AuthorizationFactory, DataMapper, BodyMapper } from './interfaces'
 import { receiveBody } from './helpers'
 import { sendResponseFactory } from './helpers/send-response-factory.helper'
 import { request as makeRequest, RequestError, RequestOptions } from '../request'
+import { logger, VERBOSITY } from '../logger'
 
 interface ProxyParams {
   authorizationFactory: AuthorizationFactory
@@ -11,6 +12,20 @@ interface ProxyParams {
   bodyMapper?: BodyMapper
   urlTransform?: (url: string) => string
   allowedHeaders?: string[]
+}
+
+const logRequest = async (url, statusCode, statusMessage, originalBody, responseData, modifiedData) => {
+  logger('verbose', '===== Data log start =====')
+  logger('debug', `Request '${url} ${statusCode} ${statusMessage}'`)
+  if (originalBody) {
+    logger('verbose', 'Request body:')
+    logger('verbose', originalBody)
+  }
+  logger('verbose', 'Response body:')
+  logger('verbose', responseData)
+  logger('verbose', 'Modified body:')
+  logger('verbose', modifiedData)
+  logger('verbose', '===== Data log end =====')
 }
 
 export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage, res: ServerResponse, _) => {
@@ -41,13 +56,16 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
       const response = await makeRequest(url, options)
       const originalBody = originalRequest.body
       return {
+        url,
         originalBody,
         response
       }
     })
-    .then(async ({ originalBody, response }) => {
+    .then(async ({ url, originalBody, response }) => {
       const { headers, statusCode, statusMessage } = response
       const data = await dataMapper(response.data, originalBody)
+
+      logRequest(url, statusCode, statusMessage, originalBody, response.data, data)
 
       sendResponse({
         headers,
@@ -59,10 +77,12 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
     })
     .catch(err => {
       if (err instanceof RequestError) {
-        const { statusCode, statusMessage } = err
+        const { statusCode, statusMessage, data } = err
+        logger('debug', statusCode, statusMessage, data)
         return sendResponse({
           statusCode,
-          statusMessage
+          statusMessage,
+          data: VERBOSITY > 1 ? data : '{}'
         })
       }
 
