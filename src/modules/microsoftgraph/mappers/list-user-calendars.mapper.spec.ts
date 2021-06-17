@@ -64,17 +64,17 @@ const calendarOutput = {
 
 const buildInput = (messageCount: number = 0) => {
   return {
-    '@odata.context': `context`,
+    '@odata.context': 'context',
     '@odata.nextLink': 'test',
-    'value': Array.from(Array(messageCount)).map(() => calendar)
+    value: Array.from(Array(messageCount)).map(() => calendar)
   }
 }
 
 const buildOutput = (messageCount: number = 0) => {
   return {
-    '@odata.context': ``,
+    '@odata.context': '',
     '@odata.nextLink': 'test',
-    'value': Array.from(Array(messageCount)).map(() => calendarOutput)
+    value: Array.from(Array(messageCount)).map(() => calendarOutput)
   }
 }
 

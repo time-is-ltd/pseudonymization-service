@@ -16,7 +16,6 @@
   authorization: Bearer token
   Host: localhost:8443
 
-
   --===============111111111111111==--
 */
 /*
@@ -39,15 +38,15 @@
   --batch_randomString--
 */
 
-import { IncomingHttpHeaders } from "http"
+import { IncomingHttpHeaders } from 'http'
 
-export type MultipartMixedPart = {
+export interface MultipartMixedPart {
   headers: IncomingHttpHeaders
   body?: string
 }
 
-export type MultipartMixedPartList = {
-  separator: string,
+export interface MultipartMixedPartList {
+  separator: string
   parts: MultipartMixedPart[]
 }
 
@@ -114,10 +113,10 @@ const parse = (data: string): MultipartMixedPartList => {
   const parts = normalizedData
     .split(separator)
     .map(part => part.trim())
-    .filter((
+    .filter(
       part => part !== '' && // Remove empty spaces
       part !== '--' // Remove -- from the end of the request (the end of the request is in `${separator}--` format)
-    ))
+    )
 
   return {
     separator,

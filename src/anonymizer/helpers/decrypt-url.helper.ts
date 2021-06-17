@@ -6,7 +6,7 @@ const REGEXP_RSA_CONTENT = new RegExp(`\/((${RSA_PREFIX}|RSA_ENCRYPTED_EMAIL_)([
 
 const cache = cacheFactory<string>()
 export const decryptUrl = (url: string, privateKey?: string): string => {
-  if(!privateKey) {
+  if (!privateKey) {
     return url
   }
 

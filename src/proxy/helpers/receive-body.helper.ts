@@ -2,7 +2,7 @@ import { IncomingMessage } from 'http'
 import { Request, RequestPayload } from '../interfaces'
 
 export const receiveBody = () => async (request: IncomingMessage): Promise<Request> => {
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     let body = ''
     request.on('data', (chunk) => body += chunk.toString())
     request.on('end', async () => {

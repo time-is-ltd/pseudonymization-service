@@ -1,7 +1,7 @@
 import { URL } from 'url'
 
 export const proxify = (maybeUrl: string, baseUrl?: string): string => {
-  if(!baseUrl) {
+  if (!baseUrl) {
     return maybeUrl
   }
 

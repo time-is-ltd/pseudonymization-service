@@ -9,7 +9,7 @@ const configFactory = (
   taggingEnabled = false,
   internalDomainList: string[] = []
 ): AnonymizeEmailConfig => {
-  return  {
+  return {
     anonymizeInternalEmailUsername: internalUsername,
     anonymizeExternalEmailUsername: externalUsername,
     anonymizeInternalEmailDomain: internalDomain,

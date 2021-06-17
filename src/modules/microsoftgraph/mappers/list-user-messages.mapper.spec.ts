@@ -31,7 +31,6 @@ const buildInputRecipient = (id: PersonId) => {
   }
 }
 
-
 const buildOutputRecipient = (id: PersonId) => {
   return {
     emailAddress: buildOutputEmailAddress(id)
@@ -272,7 +271,7 @@ const messageOutput = {
     contentType: 'html',
     content: ''
   },
-  sender:  buildOutputRecipient(1),
+  sender: buildOutputRecipient(1),
   from: buildOutputRecipient(2),
   toRecipients: [
     buildOutputRecipient(3)
@@ -386,7 +385,7 @@ const messageOutput = {
 
 const buildInput = (messageCount: number = 0): UserMessages => {
   return {
-    '@odata.context': `https://graph.microsoft.com/beta/$metadata#users('john.doe%40gmail.com')/messages`,
+    '@odata.context': 'https://graph.microsoft.com/beta/$metadata#users(\'john.doe%40gmail.com\')/messages',
     '@odata.nextLink': 'test',
     value: Array.from(Array(messageCount)).map(() => message)
   }
@@ -394,7 +393,7 @@ const buildInput = (messageCount: number = 0): UserMessages => {
 
 const buildOutput = (messageCount: number = 0): UserMessages => {
   return {
-    '@odata.context': ``,
+    '@odata.context': '',
     '@odata.nextLink': 'test',
     value: Array.from(Array(messageCount)).map(() => messageOutput)
   }

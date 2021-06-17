@@ -3,7 +3,7 @@ import { decodeRSA } from './decode-rsa.helper'
 import { RSA_PREFIX } from '../constants'
 
 export const decryptUrlComponent = (encryptedUrlComponent: string, privateKey?: string): string => {
-  if(!privateKey) {
+  if (!privateKey) {
     return encryptedUrlComponent
   }
 

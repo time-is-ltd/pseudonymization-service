@@ -12,7 +12,7 @@ import {
 } from '../../../proxy'
 import multipart, { MultipartMixedPart, MultipartMixedPartList } from '../../../proxy/parsers/multipart-mixed.parser'
 
-type BatchRequestProxyMapperList = { [key: string]: DataMapper }
+interface BatchRequestProxyMapperList { [key: string]: DataMapper }
 
 const extractHost = (str: string) => {
   return str.split('/')[1]
@@ -154,7 +154,7 @@ const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList,
     const parsedBody = parseBody(part.body)
 
     const responseContentId = normalizeContentId(part.headers['content-id'] as string)
-    let mapper: Function | undefined = responseMapperMap[responseContentId]
+    const mapper: Function | undefined = responseMapperMap[responseContentId]
 
     // Do not send data if the mapper was not found
     const methodAllowed = !!mapper
@@ -178,7 +178,7 @@ const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList,
         body: stringifyBody(parsedBody, placeholderData)
       }
     }
-  
+
     const mappedData = await mapper(parsedBody.body)
 
     return {
@@ -199,7 +199,7 @@ type BatchHandler = (authorizationFactory: AuthorizationFactory, mapperList?: Ba
 const batchHandler: BatchHandler = (authorizationFactory: AuthorizationFactory, mapperList?: BatchRequestProxyMapperList) => (req, res, next) => {
   proxyFactory({
     authorizationFactory,
-    dataMapper: async (data: string, body?: string) => dataMapper(
+    dataMapper: async (data: string, body?: string) => await dataMapper(
       data,
       mapperList,
       body

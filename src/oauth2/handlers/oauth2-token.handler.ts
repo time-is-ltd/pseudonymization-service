@@ -2,15 +2,15 @@ import * as qs from 'querystring'
 import request from '../../request'
 import { Token } from '../../token/interfaces/token.interface'
 
-type TokenHandlerExtraDict = { [key: string]: string | number }
+interface TokenHandlerExtraDict { [key: string]: string | number }
 export interface TokenHandlerOptions {
-  url: string,
-  clientId: string,
-  clientSecret?: string,
-  grantType?: 'client_credentials' | 'refresh_token',
-  refreshToken?: string,
-  accessTokenFieldName?: string,
-  refreshTokenFieldName?: string,
+  url: string
+  clientId: string
+  clientSecret?: string
+  grantType?: 'client_credentials' | 'refresh_token'
+  refreshToken?: string
+  accessTokenFieldName?: string
+  refreshTokenFieldName?: string
   extra?: TokenHandlerExtraDict
 }
 
@@ -39,9 +39,9 @@ const getOptions = (options: TokenHandlerOptions) => {
 }
 
 export const oauth2Request = async (options: TokenHandlerOptions): Promise<{
-  status: number,
-  statusText: string,
-  data: Token,
+  status: number
+  statusText: string
+  data: Token
   headers: any
 }> => {
   const {

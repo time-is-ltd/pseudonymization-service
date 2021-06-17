@@ -32,8 +32,6 @@ export const findTemplateAndMatch = <P extends Object>(templates: string[]) => (
       return result
     }
   }
-
-  return
 }
 
 export default {
@@ -41,4 +39,3 @@ export default {
   findTemplateAndMatch,
   pathToAbsUrl
 }
-

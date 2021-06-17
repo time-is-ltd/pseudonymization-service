@@ -3,13 +3,13 @@ import { cacheFactory } from '../../cache'
 import { hash } from '../helpers'
 
 export interface AnonymizeEmailConfig {
-  anonymizeInternalEmailUsername: boolean,
-  anonymizeExternalEmailUsername: boolean,
-  anonymizeInternalEmailDomain: boolean,
-  anonymizeExternalEmailDomain: boolean,
-  internalDomainList: string[],
-  anonymizationSalt: string,
-  enableInternalEmailPlusAddressing: boolean,
+  anonymizeInternalEmailUsername: boolean
+  anonymizeExternalEmailUsername: boolean
+  anonymizeInternalEmailDomain: boolean
+  anonymizeExternalEmailDomain: boolean
+  internalDomainList: string[]
+  anonymizationSalt: string
+  enableInternalEmailPlusAddressing: boolean
   enableExternalEmailPlusAddressing: boolean
 }
 
@@ -39,18 +39,18 @@ const anonymizeAddress = (username: string, domain: string, params: AnonymizeEma
     enableExternalEmailPlusAddressing
   } = params
 
-  const isInternal = internalDomainList.indexOf(domain) > -1
+  const isInternal = internalDomainList.includes(domain)
 
-  const anonymizeInternalUsername = isInternal
-  && anonymizeInternalEmailUsername
-  const anonymizeExternalUsername = !isInternal
-  && anonymizeExternalEmailUsername
+  const anonymizeInternalUsername = isInternal &&
+  anonymizeInternalEmailUsername
+  const anonymizeExternalUsername = !isInternal &&
+  anonymizeExternalEmailUsername
   const anonymizeUsername = anonymizeInternalUsername || anonymizeExternalUsername
 
-  const anonymizeInternalDomain = isInternal
-  && anonymizeInternalEmailDomain
-  const anonymizeExternalDomain = !isInternal
-  && anonymizeExternalEmailDomain
+  const anonymizeInternalDomain = isInternal &&
+  anonymizeInternalEmailDomain
+  const anonymizeExternalDomain = !isInternal &&
+  anonymizeExternalEmailDomain
   const anonymizeDomain = anonymizeInternalDomain || anonymizeExternalDomain
 
   const isInternalPlusAddressingEnabled = isInternal && enableInternalEmailPlusAddressing

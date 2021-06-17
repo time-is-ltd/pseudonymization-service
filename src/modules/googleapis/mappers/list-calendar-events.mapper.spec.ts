@@ -152,7 +152,7 @@ const inputEvent: Event = {
           width: 100,
           height: 200,
           display: 'display'
-        },
+        }
       },
       anyoneCanAddSelf: true,
       guestsCanInviteOthers: true,
@@ -278,7 +278,7 @@ const outputEvent: Event = {
           width: 100,
           height: 200,
           display: 'display'
-        },
+        }
       },
       anyoneCanAddSelf: true,
       guestsCanInviteOthers: true,
@@ -318,4 +318,3 @@ testMapper(
   () => inputEvent,
   () => outputEvent
 )
-

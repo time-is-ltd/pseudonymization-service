@@ -3,7 +3,7 @@ import { encodeRSA } from './encode-rsa.helper'
 import { RSA_PREFIX } from '../constants'
 
 export const encryptUrlComponent = (urlComponent: string, publicKey?: string): string => {
-  if(!publicKey) {
+  if (!publicKey) {
     return urlComponent
   }
   const encryptedUrlComponent = rsa.encrypt(urlComponent, publicKey)

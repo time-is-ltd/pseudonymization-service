@@ -160,7 +160,7 @@ const event = {
   },
   onlineMeetingProvider: 'string',
   onlineMeetingUrl: 'string',
-  organizer:  {
+  organizer: {
     emailAddress: buildInputEmailAddress(2)
   },
   originalEndTimeZone: 'string',
@@ -363,7 +363,7 @@ const eventOutput = {
   },
   onlineMeetingProvider: 'string',
   onlineMeetingUrl: '',
-  organizer:  {
+  organizer: {
     emailAddress: buildOutputEmailAddress(2)
   },
   originalEndTimeZone: 'string',
@@ -433,7 +433,7 @@ const eventOutput = {
 
 const buildInput = (messageCount: number = 0): UserEvents => {
   return {
-    '@odata.context': ``,
+    '@odata.context': '',
     '@odata.nextLink': 'test',
     value: Array.from(Array(messageCount)).map(() => event)
   }
@@ -441,7 +441,7 @@ const buildInput = (messageCount: number = 0): UserEvents => {
 
 const buildOutput = (messageCount: number = 0): UserEvents => {
   return {
-    '@odata.context': ``,
+    '@odata.context': '',
     '@odata.nextLink': 'test',
     value: Array.from(Array(messageCount)).map(() => eventOutput)
   }

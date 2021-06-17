@@ -132,7 +132,7 @@ const message = {
       attachmentId: 'attachmentId',
       data: 'data'
     },
-    'parts': [
+    parts: [
       {
         partId: '0',
         mimeType: 'text/plain',
@@ -235,7 +235,7 @@ const messageOutput = {
       attachmentId: 'attachmentId',
       data: ''
     },
-    'parts': [
+    parts: [
       {
         partId: '0',
         mimeType: 'text/plain',

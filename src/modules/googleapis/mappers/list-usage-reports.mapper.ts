@@ -285,7 +285,7 @@ const schema: Schema<UsageReport> = {
       etag: TYPES.ETag,
       entity: {
         customerId: TYPES.String,
-        userEmail:  TYPES.Email,
+        userEmail: TYPES.Email,
         profileId: TYPES.String,
         entityId: TYPES.String,
         type: TYPES.String

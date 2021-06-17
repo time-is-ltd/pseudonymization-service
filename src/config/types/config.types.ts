@@ -1,5 +1,5 @@
 export type TransformMapValueFunc = (str?: string) => any
-export type TransformMapValueObj = {
+export interface TransformMapValueObj {
   transform: TransformMapValueFunc
   ttl?: number
 }

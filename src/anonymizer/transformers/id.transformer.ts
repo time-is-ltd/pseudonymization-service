@@ -8,7 +8,7 @@ interface AnonymizeIdConfig {
 }
 
 export const id = (value: string, config: AnonymizeIdConfig) => {
-  const { rsaPublicKey, anonymizationSalt }  = config
+  const { rsaPublicKey, anonymizationSalt } = config
   if (!rsaPublicKey) {
     return value
   }

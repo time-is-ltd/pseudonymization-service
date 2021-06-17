@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "start": "ts-node -r dotenv/config -r tsconfig-paths/register src/main.ts",
-    "test": "jest --maxWorkers=1"
+    "test": "standard && jest --maxWorkers=1"
   },
   "author": "",
   "license": "ISC",
@@ -18,7 +18,9 @@
     "@types/node": "^12.20.12",
     "dotenv": "^8.6.0",
     "jest": "^26.6.3",
+    "standard": "^16.0.3",
     "ts-jest": "^26.5.6",
+    "ts-standard": "^10.0.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.6.4"
   },

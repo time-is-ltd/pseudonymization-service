@@ -1,20 +1,20 @@
 import { Token } from './interfaces/token.interface'
-let store: {
+const store: {
   [key: string]: Token
 } = {}
 
 export class TokenRepository {
-  create(token: Token) {
+  create (token: Token) {
     store[token.id] = token
     return token
   }
 
-  update(token: Token) {
+  update (token: Token) {
     store[token.id] = token
     return token
   }
 
-  getById(id: string) {
+  getById (id: string) {
     return store[id]
   }
 }

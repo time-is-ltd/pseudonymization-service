@@ -4,14 +4,14 @@ import {
   Schema
 } from '../../../mapper'
 
-export type UserMessageItem = {
-  id: string,
+export interface UserMessageItem {
+  id: string
   threadId: string
 }
 
-export type UserMessages = {
-  messages: UserMessageItem[],
-  nextPageToken: string,
+export interface UserMessages {
+  messages: UserMessageItem[]
+  nextPageToken: string
   resultSizeEstimate: string
 }
 

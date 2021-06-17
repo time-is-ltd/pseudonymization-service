@@ -4,44 +4,44 @@ import {
   Schema
 } from '../../../mapper'
 
-export type UserMessagePayloadHeader = {
-  name: string,
+export interface UserMessagePayloadHeader {
+  name: string
   value: string
 }
 
-export type UserMessagePayloadPart = {
-  partId: string,
-  mimeType: string,
-  filename: string,
-  headers: UserMessagePayloadHeader[],
+export interface UserMessagePayloadPart {
+  partId: string
+  mimeType: string
+  filename: string
+  headers: UserMessagePayloadHeader[]
   body: {
-    size: number,
-    attachmentId?: string,
+    size: number
+    attachmentId?: string
     data?: string
   }
 }
 
-export type UserMessagePayload = {
-  partId: string,
-  mimeType: string,
-  filename: string,
-  headers: UserMessagePayloadHeader[],
+export interface UserMessagePayload {
+  partId: string
+  mimeType: string
+  filename: string
+  headers: UserMessagePayloadHeader[]
   body: {
-    size: number,
-    attachmentId?: string,
+    size: number
+    attachmentId?: string
     data?: string
-  },
+  }
   parts: UserMessagePayloadPart[]
 }
 
-export type UserMessage = {
-  id: string,
-  threadId: string,
-  labelIds: string[],
-  snippet: string,
-  historyId: string,
-  internalDate: string,
-  payload?: UserMessagePayload,
+export interface UserMessage {
+  id: string
+  threadId: string
+  labelIds: string[]
+  snippet: string
+  historyId: string
+  internalDate: string
+  payload?: UserMessagePayload
   sizeEstimate: number
 }
 

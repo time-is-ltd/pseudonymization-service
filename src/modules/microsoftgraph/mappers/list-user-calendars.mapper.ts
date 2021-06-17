@@ -6,9 +6,9 @@ import {
 import { Calendar } from '../common/interfaces'
 import { calendar } from '../common/schema'
 
-export type UserCalendars = {
-  '@odata.context': string,
-  '@odata.nextLink'?: string,
+export interface UserCalendars {
+  '@odata.context': string
+  '@odata.nextLink'?: string
   value: Calendar[]
 }
 
