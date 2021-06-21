@@ -75,7 +75,7 @@ const bootstrap = async () => {
         paths.forEach(routePath => {
           const path = `/${host}${routePath}`
           const method = route.method || 'get'
-          const requireAuth = route.requireAuth
+          const requireAuth = route.requireAuth !== false
 
           console.info(`Registering route [${method.toUpperCase()}] ${path}`)
 
