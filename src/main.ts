@@ -3,12 +3,14 @@ import * as compression from 'compression'
 import * as helmet from 'helmet'
 import * as http from 'http'
 import * as https from 'https'
+import * as morgan from 'morgan'
 
 import config from './app.config'
 import extractToken from './helpers/extract-token'
 import googleapis from './modules/googleapis/googleapis.module'
 import microsoftgraph from './modules/microsoftgraph/microsoftgraph.module'
 import { Route } from './router/interfaces/router.interface'
+import { logger, verboseLevel, VerboseLevel } from './logger'
 
 // Register modules
 interface Module {
@@ -52,6 +54,9 @@ const bootstrap = async () => {
   const app = express()
   app.use(compression())
   app.use(helmet())
+  if (verboseLevel >= VerboseLevel.V) {
+    app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]'))
+  }
 
   const httpPort = await config.httpPort
   const httpsPort = await config.httpsPort
@@ -77,7 +82,7 @@ const bootstrap = async () => {
           const method = route.method || 'get'
           const requireAuth = route.requireAuth
 
-          console.info(`Registering route [${method.toUpperCase()}] ${path}`)
+        logger(VerboseLevel.NORMAL, `Registering route [${method.toUpperCase()}] ${path}`)
 
           const handlers = Array.isArray(route.handler)
             ? route.handler

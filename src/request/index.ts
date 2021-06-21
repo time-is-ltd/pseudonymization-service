@@ -10,7 +10,8 @@ export class RequestError<T extends unknown> extends Error {
   constructor (
     public statusCode: number,
     public statusMessage?: string,
-    public response?: T
+    public response?: T,
+    public data?: string
   ) {
     super(statusMessage)
   }
@@ -51,7 +52,7 @@ export const request = async (url: string, options: RequestOptions = {}) => {
         const { headers, statusCode, statusMessage } = response
         const isSuccess = statusCode >= 200 && statusCode < 300
         if (!isSuccess) {
-          return reject(new RequestError(statusCode, statusMessage, response))
+          return reject(new RequestError(statusCode, statusMessage, response, data))
         }
 
         resolve({ headers, statusCode, statusMessage, data })

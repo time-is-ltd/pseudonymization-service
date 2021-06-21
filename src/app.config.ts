@@ -5,7 +5,7 @@ const appConfig = {
   sslKey: toPem(),
   sslCert: toPem(),
   httpPort: toNumber(),
-  httpsPort: toNumber()
+  httpsPort: toNumber(),
 }
 
 const config = configFactory(appConfig, [
