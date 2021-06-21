@@ -29,7 +29,7 @@ Go to https://portal.azure.com/#create/Microsoft.WebSite
 - Select `Single Container` as an `Option`
 - Select `Private Registry` as an `Image Source`
 - Use `https://eu.gcr.io` as a `Server URL`
-- Use `proxy-272310/proxy:v1.1.4` as an `Image and tag`
+- Use `proxy-272310/proxy:<version>` as an `Image and tag` (the latest image version can be found [here](https://console.cloud.google.com/gcr/images/proxy-272310/EU/proxy?gcrImageListsize=30))
 
 ### 2.3. Create App service
 - Review all provided information and click on `Create`
