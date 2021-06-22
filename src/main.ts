@@ -37,8 +37,12 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
   res.sendStatus(403)
 }
 
-const withKeepAliveTimeout = (server: http.Server, keepAliveTimeout = 620 * 1000) => {
+const withKeepAliveTimeout = (server: http.Server, keepAliveTimeout = 620 * 1000, headersTimeout = 650 * 1000) => {
   server.keepAliveTimeout = keepAliveTimeout
+  // must be bigger than keepAliveTimeout
+  // needed for nodejs > 10.15.2
+  // https://shuheikagawa.com/blog/2019/04/25/keep-alive-timeout/
+  server.headersTimeout = headersTimeout
 }
 
 const bootstrap = async () => {
