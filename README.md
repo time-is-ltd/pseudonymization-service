@@ -29,7 +29,7 @@ Removing all sensitive and private textual and personal information from the obj
 ## Installation
 
 ### Run on GCP (2 minutes)
-1. Create new GCP instance based on this docker image eu.gcr.io/proxy-272310/proxy:v1.1.4, see [how to do it in GCP](https://cloud.google.com/compute/docs/instances/create-start-instance#from-container-image)
+1. Create new GCP instance based on the latest available docker image `eu.gcr.io/proxy-272310/proxy:<version>` ([list of available versions](https://console.cloud.google.com/gcr/images/proxy-272310/EU/proxy?gcrImageListsize=30)), see [how to do it in GCP](https://cloud.google.com/compute/docs/instances/create-start-instance#from-container-image)
 
 2. Add/edit enviromental variables in the GCP instance editor UI
 
@@ -78,7 +78,7 @@ $ npm start
 
 Use the latest docker image from the GCP docker repository
 
-1. ```docker pull eu.gcr.io/proxy-272310/proxy:v1.1.4```
+1. ```docker pull eu.gcr.io/proxy-272310/proxy:<version>``` ([list of available versions](https://console.cloud.google.com/gcr/images/proxy-272310/EU/proxy?gcrImageListsize=30))
 
 2. Create and edit file with [enviromental variables](#configuration)
 ```shell
@@ -88,9 +88,9 @@ $ vi .env
 
 3. Optional: [enable SSL](#ssl)
 
-4. Run docker image
+4. Run docker image (substitute `<version>` for your version)
 ```shell
-$ docker run --env-file .env eu.gcr.io/proxy-272310/proxy:v1.1.4
+$ docker run --env-file .env eu.gcr.io/proxy-272310/proxy:<version>
 ```
 
 ### Run using docker-compose
