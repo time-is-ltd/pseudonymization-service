@@ -33,6 +33,7 @@
     "express": "^4.17.1",
     "googleapis": "^67.0.0",
     "helmet": "^4.6.0",
+    "morgan": "^1.10.0",
     "path-to-regexp": "^6.2.0"
   }
 }

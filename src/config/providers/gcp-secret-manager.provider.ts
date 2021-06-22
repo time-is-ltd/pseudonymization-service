@@ -1,8 +1,9 @@
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
 import { toKebabCase } from '../transformers'
 import { TransformMap } from '../types'
+import { logger, VerboseLevel } from '../../logger'
 
-const getGcpSecretVariableName = <T extends TransformMap, K extends keyof T>(key: K, prefix: string): string => {
+const getGcpSecretVariableName = <T extends TransformMap, K extends keyof T> (key: K, prefix: string): string => {
   const name = toKebabCase(key as string).toUpperCase()
   const normalizedPrefix = prefix.toUpperCase()
 
@@ -11,11 +12,12 @@ const getGcpSecretVariableName = <T extends TransformMap, K extends keyof T>(key
     : name
 }
 
-export const fromGcpSecretManager = <T extends TransformMap>(projectId: string, prefix = '') => {
+export const fromGcpSecretManager = <T extends TransformMap> (projectId: string, prefix = '') => {
   const client = new SecretManagerServiceClient()
 
-  return async <K extends keyof T>(key: K) => {
+  return async <K extends keyof T> (key: K) => {
     try {
+      logger(VerboseLevel.V, `[Config/Google Secret Manager]: Loading key ${key}`)
       const secretName = getGcpSecretVariableName(key as string, prefix)
       const name = `projects/${projectId}/secrets/${secretName}/versions/latest`
       const [secretVersion] = await client.accessSecretVersion({
@@ -24,7 +26,12 @@ export const fromGcpSecretManager = <T extends TransformMap>(projectId: string, 
 
       const value = secretVersion.payload.data.toString()
 
+      logger(VerboseLevel.V, `[Config/Google Secret Manager]: ${key} loaded`)
+
       return { defaultTtl: 20 * 60, v: value }
-    } catch (err) { }
+    } catch (err) {
+      logger(VerboseLevel.V, `[Config/Google Secret Manager]: ${key} error`, err)
+    }
+    return
   }
 }

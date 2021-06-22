@@ -162,6 +162,7 @@ There are 3 ways to provide config values
 | `BASE_URL`                          | `N/A`                                       | string               | Pseudonymization service base url | http://localhost       |               
 | `HTTP_PORT`                         | `N/A`                                       | number               | Optional. Http listening port. You should set at least one of `HTTP_PORT` or `HTTPS_PORT` env variables, otherwise the service will not listen on any port | 80
 | `HTTPS_PORT`                        | `N/A`                                       | number               | Optional. Https listening port. You have to provide `SSL_KEY` and `SSL_CERT` secrets | 443
+| `VERBOSITY`                         | `N/A`                                       | number (default 0) | Optional. Set verbosity level for stdout output (0, 1, 2). | 0
 | `INTERNAL_DOMAIN_LIST`              | `N/A`                                       | comma separated list | Optional. List of internal domains | yourdomain.com,yourdomain.eu
 | `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`   | `N/A`                                       | boolean (default true) | Optional. Anononymize external domain in emails | true
 | `ANONYMIZE_EXTERNAL_EMAIL_USERNAME` | `N/A`                                       | boolean (default true) | Optional. Anononymize external username in emails              | true
@@ -180,6 +181,13 @@ There are 3 ways to provide config values
 | `O365_TENANT_ID`                    | `O365-TENANT-ID`                            | string        | Optional. Office 365 tenant ID. You can get tenant ID via [How to get Office 365 credentials guide](./docs/how-it-works.md#how-to-get-office-365-credentials) | 00000000-0000-0000-0000-000000000000 
 | `O365_CLIENT_ID`                    | `O365-CLIENT-ID`                            | string        | Optional. Office 365 client ID. You can get client ID via [How to get Office 365 credentials guide](./docs/how-it-works.md#how-to-get-office-365-credentials) | 00000000-0000-0000-0000-000000000000 
 | `O365_CLIENT_SECRET`                | `O365-CLIENT-SECRET`                        | string        | Optional. Office 365 client secret. You can get client secret via [How to get Office 365 credentials guide](./docs/how-it-works.md#how-to-get-office-365-credentials)
+
+### Verbosity levels
+- 0 (default): prints registered routes
+- 1: prints request headers in Apache Common Log format + list of loaded configuration keys
+- 2: prints whole request and response including bodies
+
+All logging always goes to stdout only. 
 
 ## Test deployment with cURL
 Get pseudonymized email messages response from the pseudonymized service with cURL

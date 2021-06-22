@@ -1,6 +1,7 @@
-import { TransformMap, Response, Provider, ProviderResult } from './types'
+import { Provider, ProviderResult, Response, TransformMap } from './types'
 import { cacheFactory } from '../cache'
 import { fromAzureKeyVault, fromCache, fromEnvVariable, fromGcpSecretManager } from './providers'
+import { logger, VerboseLevel } from '../logger'
 
 export const configFactory = <T extends TransformMap>(transformMap: T, vaultKeysAllowlist: Array<keyof T> = []) => {
   const cache = cacheFactory<T>()
@@ -74,6 +75,11 @@ export const configFactory = <T extends TransformMap>(transformMap: T, vaultKeys
 
       const { ttl = defaultTtl } = transformMapItem
       const transformedValue = transform(value)
+
+      if (transformedValue) {
+        const secretStr = String(transformedValue).split('').map(v => `*`).join('')
+        logger(VerboseLevel.V, `[Config]: Key ${key} loaded (value:${secretStr})`)
+      }
 
       // Always set to prolong the ttl, if variable in use
       cache.set(key as string, transformedValue, ttl)
