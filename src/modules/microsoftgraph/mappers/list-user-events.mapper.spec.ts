@@ -1,11 +1,5 @@
 import { listUserEventsMapper, UserEvents } from './list-user-events.mapper'
-import {
-  PersonId,
-  getEmail,
-  getAnonymizedEmail,
-  testMapper,
-  ANONYMIZED_EMAIL
-} from '../../../helpers/testing'
+import { getAnonymizedEmail, getEmail, PersonId, testMapper } from '../../../helpers/testing'
 
 jest.mock('../../../anonymizer')
 
@@ -252,9 +246,9 @@ const eventOutput = {
   ],
   body: {
     contentType: 'contentType',
-    content: ''
+    content: 'extracted'
   },
-  bodyPreview: '',
+  bodyPreview: 'extracted',
   categories: ['string', 'string2'],
   changeKey: 'string',
   createdDateTime: 'String (timestamp)',
@@ -350,7 +344,7 @@ const eventOutput = {
   ],
   onlineMeeting: {
     conferenceId: 'conferenceId',
-    joinUrl: '',
+    joinUrl: 'extracted',
     phones: [
       {
         number: '',
@@ -362,7 +356,7 @@ const eventOutput = {
     tollNumber: ''
   },
   onlineMeetingProvider: 'string',
-  onlineMeetingUrl: '',
+  onlineMeetingUrl: 'extracted',
   organizer: {
     emailAddress: buildOutputEmailAddress(2)
   },
@@ -400,7 +394,7 @@ const eventOutput = {
     dateTime: 'dateTime',
     timeZone: 'timeZone'
   },
-  subject: '',
+  subject: 'extracted',
   type: 'String',
   webLink: '',
   attachments: [

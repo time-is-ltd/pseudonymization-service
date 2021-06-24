@@ -205,8 +205,8 @@ const outputEvent: Event = {
       htmlLink: '',
       created: '2019-04-26T08:53:25.000Z',
       updated: '2019-04-28T18:39:32.321Z',
-      summary: '',
-      description: '',
+      summary: 'extracted',
+      description: 'extracted',
       creator: buildOutputUser(1),
       organizer: buildOutputUser(1),
       start: {
