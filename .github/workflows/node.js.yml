@@ -1,13 +1,13 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: Build & Test
 
 on:
   push:
-    branches: [ feature/ciTests2 ]
+    branches: [ master ]
   pull_request:
-    branches: [ feature/ciTests2 ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -28,3 +28,13 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
+      env:
+        ANONYMIZATION_SALT: ${{ secrets.ANONYMIZATION_SALT }}
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+        BASE_URL: ${{ secrets.BASE_URL }}
+        GSUITE_CLIENT_EMAIL: ${{ secrets.GSUITE_CLIENT_EMAIL }}
+        GSUITE_PRIVATE_KEY: ${{ secrets.GSUITE_PRIVATE_KEY }}
+        GSUITE_SCOPES: ${{ secrets.GSUITE_SCOPES }}
+        GSUITE_TEST_USER: ${{ secrets.GSUITE_TEST_USER }}
+        INTERNAL_DOMAIN_LIST: ${{ secrets.INTERNAL_DOMAIN_LIST }}
+        VERBOSITY: ${{ secrets.VERBOSITY }}
