@@ -1,3 +1,4 @@
+[![Build & Test](https://github.com/time-is-ltd/pseudonymization-service/actions/workflows/node.js.yml/badge.svg)](https://github.com/time-is-ltd/pseudonymization-service/actions/workflows/node.js.yml)
 # Pseudonymization Service for Google Workspace and Microsoft Graph APIs 
 
 **Created and Open-sourced by [Time is Ltd.](https://www.timeisltd.com)**
