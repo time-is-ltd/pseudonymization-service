@@ -1,11 +1,5 @@
 import { listUserMessagesMapper, UserMessages } from './list-user-messages.mapper'
-import {
-  PersonId,
-  getEmail,
-  getAnonymizedEmail,
-  testMapper,
-  ANONYMIZED_EMAIL
-} from '../../../helpers/testing'
+import { ANONYMIZED_EMAIL, getAnonymizedEmail, getEmail, PersonId, testMapper } from '../../../helpers/testing'
 
 jest.mock('../../../anonymizer')
 
@@ -269,7 +263,7 @@ const messageOutput = {
   },
   body: {
     contentType: 'html',
-    content: ''
+    content: 'extracted'
   },
   sender: buildOutputRecipient(1),
   from: buildOutputRecipient(2),
@@ -322,7 +316,7 @@ const messageOutput = {
   ],
   uniqueBody: {
     contentType: 'text/html',
-    content: ''
+    content: 'extracted'
   },
   attachments: [
     {

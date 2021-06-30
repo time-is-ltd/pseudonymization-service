@@ -1,6 +1,6 @@
-import { config, email, filename, id, url, proxify, hashed, contentType } from '../anonymizer'
+import { config, contentType, email, extractDomains, filename, hashed, id, proxify, url } from '../anonymizer'
 import { TYPES } from './constants'
-import { string, boolean, number } from './transformers'
+import { boolean, number, string } from './transformers'
 
 export const valueMapperFactory = async () => {
   const [
@@ -9,22 +9,29 @@ export const valueMapperFactory = async () => {
     anonymizeInternalEmailDomain,
     anonymizeExternalEmailDomain,
     internalDomainList,
-    anonymizationSalt,
-    rsaPublicKey,
-    baseUrl,
     enableInternalEmailPlusAddressing,
-    enableExternalEmailPlusAddressing
+    enableExternalEmailPlusAddressing,
+    isExtractDomains,
+    extractDomainsWhitelist
   ] = await Promise.all([
     config.anonymizeInternalEmailUsername,
     config.anonymizeExternalEmailUsername,
     config.anonymizeInternalEmailDomain,
     config.anonymizeExternalEmailDomain,
     config.internalDomainList,
+    config.enableInternalEmailPlusAddressing,
+    config.enableExternalEmailPlusAddressing,
+    config.extractDomains,
+    config.extractDomainsWhitelist
+  ])
+  const [
+    anonymizationSalt,
+    rsaPublicKey,
+    baseUrl,
+  ] = await Promise.all([
     config.anonymizationSalt,
     config.rsaPublicKey,
     config.baseUrl,
-    config.enableInternalEmailPlusAddressing,
-    config.enableExternalEmailPlusAddressing
   ])
 
   return (type: Symbol, value: unknown) => {
@@ -39,6 +46,12 @@ export const valueMapperFactory = async () => {
         return Array.isArray(value) ? value : []
       case TYPES.ContentType:
         return contentType(string(value))
+      case TYPES.ExtractedDomains:
+        if (isExtractDomains) {
+          return extractDomains(string(value), extractDomainsWhitelist)
+        } else {
+          return undefined
+        }
       case TYPES.Text:
       case TYPES.String:
       case TYPES.Datetime:

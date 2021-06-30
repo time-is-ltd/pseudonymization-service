@@ -7,6 +7,7 @@ export const TYPES = {
   Datetime: Symbol('Datetime'),
   Email: Symbol('Email'),
   ETag: Symbol('ETag'),
+  ExtractedDomains: Symbol('ExtractedDomain'),
   Filename: Symbol('Filename'),
   Url: Symbol('Url'),
   Proxify: Symbol('Profixy'),

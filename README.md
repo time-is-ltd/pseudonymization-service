@@ -169,6 +169,8 @@ There are 3 ways to provide config values
 | `ANONYMIZE_EXTERNAL_EMAIL_USERNAME` | `N/A`                                       | boolean (default true) | Optional. Anononymize external username in emails              | true
 | `ANONYMIZE_INTERNAL_EMAIL_DOMAIN`   | `N/A`                                       | boolean (default false) | Optional. Anononymize internal domain in emails | false
 | `ANONYMIZE_INTERNAL_EMAIL_USERNAME` | `N/A`                                       | boolean (default true) | Optional. Anononymize internal username in emails | true
+| `EXTRACT_DOMAINS`                   | `N/A`                                       | boolean (default false) | Optional. Allows extraction of domains from calendar events | false
+| `EXTRACT_DOMAINS_WHITELIST`         | `N/A`                                       | comma separated list | Optional. Whitelist to allow only specific domains to be extracted. If missing or empty, all domains are allowed. | zoom.us,meet.google.com
 | `AZURE_KEY_VAULT_NAME`              | `N/A`                                       | string               | Optional. Set only if you want to use Azure Key Vault. Your Azure Key Vault name | test-kv 
 | `GCP_SECRET_MANAGER_PROJECT_ID`     | `N/A`                                       | string               | Optional. Set only if you want to use Google Secret Manager. GCP project id for which to manage secrets | test-project
 | `GCP_SECRET_MANAGER_PREFIX`         | `N/A`                                       | string               | Optional. Set only if you want to use Google Secret Manager. This option allows you to prefix secret names with a string value. (e.g. if you set prefix to `test`, `API-TOKEN` will become `TEST-API-TOKEN`) | test

@@ -9,6 +9,10 @@ export const contentType = (value: string): string => {
   return typeof value === 'string' ? String(value) : ''
 }
 
+export const extractDomains = (value: string): string => {
+  return typeof value === 'string' ? 'extracted' : ''
+}
+
 export const id = (value: string): string => {
   return typeof value === 'string' ? String(value) : ''
 }
@@ -25,5 +29,7 @@ export const proxify = (maybeUrl = ''): string => {
   return typeof maybeUrl === 'string' ? String(maybeUrl) : ''
 }
 
-// Config is not mocked
-export { config } from '../anonymizer.config'
+export const config = {
+  internalDomainList: ['timeisltd.com'],
+  extractDomains: true
+}

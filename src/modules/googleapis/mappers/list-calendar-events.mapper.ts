@@ -199,14 +199,8 @@ const schema: Schema<Event> = {
       ],
       created: TYPES.Datetime,
       updated: TYPES.Datetime,
-      summary: [
-        TYPES.Text,
-        TYPES.Private
-      ],
-      description: [
-        TYPES.Text,
-        TYPES.Private
-      ],
+      summary: TYPES.ExtractedDomains,
+      description: TYPES.ExtractedDomains,
       creator: eventUserSchema,
       organizer: eventUserSchema,
       start: eventDateSchema,

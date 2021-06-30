@@ -5,9 +5,9 @@ import {
   listUserCalendarsSchema,
   listUserMessagesSchema
 } from './googleapis-schemas'
-
-const Ajv = require('ajv')
-const request = require('supertest')
+import { containsNothingButDomains } from './test-utils'
+import * as request from 'supertest'
+import Ajv from 'ajv'
 
 const gsuite_test_user = process.env.GSUITE_TEST_USER
 const api_token = process.env.API_TOKEN
@@ -100,6 +100,10 @@ test('can list gsuite calendar events', async () => {
     .set('Authorization', `Bearer ${api_token}`)
     .then((response) => {
       validateBodyUsingSchema(response.body, listCalendarEventsSchema)
+      Object.values(response.body.items).forEach(event => {
+        containsNothingButDomains(event['summary'])
+        containsNothingButDomains(event['description'])
+      })
     })
 })
 

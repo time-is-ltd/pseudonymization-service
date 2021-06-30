@@ -1,46 +1,40 @@
-import {
-  TYPES,
-  Schema
-} from '../../../mapper'
+import { Schema, TYPES } from '../../../mapper'
 
 import {
   Attachment,
   Attendee,
+  Calendar,
+  CallRecordsEndpoint,
+  CallRecordSession,
+  DateTimeTimeZone,
   EmailAddress,
-  Recipient,
+  Event,
+  Extension,
+  FollowUpFlag,
+  Identity,
+  IdentitySet,
+  InternetMessageHeader,
+  ItemBody,
+  Location,
+  MailFolder,
+  Mention,
+  MentionsPreview,
+  Message,
   OnlineMeeting,
   OutlookGeoCoordinates,
   PatternedRecurrence,
-  ResponseStatus,
-  Calendar,
-  Extension,
-  DateTimeTimeZone,
-  Location,
-  ItemBody,
-  PhysicalAddress,
-  TimeSlot,
   Phone,
+  PhysicalAddress,
+  Recipient,
   RecurrencePattern,
   RecurrenceRange,
-  Event,
-  Message,
-  FollowUpFlag,
-  InternetMessageHeader,
-  MentionsPreview,
-  Mention,
-  Identity,
-  IdentitySet,
-  CallRecordsEndpoint,
-  CallRecordSession,
-  MailFolder
+  ResponseStatus,
+  TimeSlot
 } from './interfaces'
 
 export const itemBody: Schema<ItemBody> = {
   contentType: TYPES.ContentType,
-  content: [
-    TYPES.Private,
-    TYPES.Text
-  ]
+  content: TYPES.ExtractedDomains
 }
 
 export const dateTimeTimeZone: Schema<DateTimeTimeZone> = {
@@ -122,10 +116,7 @@ export const phone: Schema<Phone> = {
 
 export const onlineMeeting: Schema<OnlineMeeting> = {
   conferenceId: TYPES.String,
-  joinUrl: [
-    TYPES.Private,
-    TYPES.Url
-  ],
+  joinUrl: TYPES.ExtractedDomains,
   phones: [
     phone
   ],
@@ -211,14 +202,8 @@ export const calendar: Schema<Calendar> = {
 export const event: Schema<Event> = {
   id: TYPES.String,
   iCalUId: TYPES.String,
-  subject: [
-    TYPES.String,
-    TYPES.Private
-  ],
-  bodyPreview: [
-    TYPES.Text,
-    TYPES.Private
-  ],
+  subject: TYPES.ExtractedDomains,
+  bodyPreview: TYPES.ExtractedDomains,
   body: itemBody,
   categories: [
     TYPES.String,
@@ -249,11 +234,7 @@ export const event: Schema<Event> = {
   lastModifiedDateTime: TYPES.Datetime,
   onlineMeeting,
   onlineMeetingProvider: TYPES.String,
-  onlineMeetingUrl: [
-    TYPES.Url,
-    TYPES.String,
-    TYPES.Private
-  ],
+  onlineMeetingUrl: TYPES.ExtractedDomains,
   originalEndTimeZone: TYPES.Datetime,
   originalStart: TYPES.Datetime,
   originalStartTimeZone: TYPES.String,
