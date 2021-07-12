@@ -49,6 +49,22 @@ export const bootstrap = async () => {
 
   // Health check
   app.get('/healthcheck', (_, res) => res.sendStatus(200))
+  app.get('/hc', (_, res) => res.sendStatus(200))
+
+  // Diagnostics
+  app.get('/diag', authMiddleware(true), (_, res) => {
+    const routes = []
+    app._router.stack.forEach(function (route) {
+      if (route.route && route.route.path) {
+        routes.push(route.route.path)
+      }
+    })
+
+    res.json({
+      'version': process.env.npm_package_version,
+      'routes': routes
+    })
+  })
 
   // Register routes
   modules.forEach(({ enabled, routes }) => {

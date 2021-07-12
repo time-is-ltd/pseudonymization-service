@@ -11,7 +11,7 @@ const appConfig = {
 const config = configFactory(appConfig, [
   'apiToken',
   'sslKey',
-  'sslCert'
+  'sslCert',
 ])
 
 export default config
