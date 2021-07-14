@@ -47,11 +47,7 @@ export const valueMapperFactory = async () => {
       case TYPES.ContentType:
         return contentType(string(value))
       case TYPES.ExtractedDomains:
-        if (isExtractDomains) {
-          return extractDomains(string(value), extractDomainsWhitelist)
-        } else {
-          return undefined
-        }
+        return extractDomains(string(value), isExtractDomains, extractDomainsWhitelist)
       case TYPES.Text:
       case TYPES.String:
       case TYPES.Datetime:
