@@ -8,7 +8,11 @@ import { URL } from 'url'
  * @param value
  * @param whiteList
  */
-export const extractDomains = (value: string, whiteList: string[] = undefined) => {
+export const extractDomains = (value: string, extract: boolean, whiteList: string[] = undefined) => {
+  if (extract !== true) {
+    return ''
+  }
+
   const result = new Set()
   extractURLs(value)?.forEach(extractedUrl => {
     const host = new URL(extractedUrl).host

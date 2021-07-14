@@ -40,6 +40,13 @@ const TEST_CASES = {
 test('Extract third party domains', () => {
   for (let label in TEST_CASES) {
     const testCase = TEST_CASES[label]
-    expect(extractDomains(testCase.input, testCase.whitelist)).toBe(testCase.output)
+    expect(extractDomains(testCase.input, true, testCase.whitelist)).toBe(testCase.output)
+  }
+})
+
+test('Do not extract domains', () => {
+  for (let label in TEST_CASES) {
+    const testCase = TEST_CASES[label]
+    expect(extractDomains(testCase.input, false)).toBe('')
   }
 })

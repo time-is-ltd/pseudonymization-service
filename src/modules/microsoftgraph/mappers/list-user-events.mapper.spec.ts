@@ -248,7 +248,7 @@ const eventOutput = {
     contentType: 'contentType',
     content: 'extracted'
   },
-  bodyPreview: 'extracted',
+  bodyPreview: '',
   categories: ['string', 'string2'],
   changeKey: 'string',
   createdDateTime: 'String (timestamp)',
