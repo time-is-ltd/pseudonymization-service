@@ -29,7 +29,8 @@ const listCalendarEventsPath = [
 ]
 const listCalendarViewPath = [
     '/v1.0/users/:userId/calendars/:calendarId/calendarview',
-    "/v1.0/users/:userId/calendars\\(':calendarId'\\)/calendarview"
+    "/v1.0/users/:userId/calendars\\(':calendarId'\\)/calendarview",
+    '/v1.0/users/:userId/calendarview',
 ]
 
 const subscriptionsPath = '/v1.0/subscriptions'
