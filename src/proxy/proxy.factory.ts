@@ -82,17 +82,25 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
     })
     .catch(err => {
       if (err instanceof RequestError) {
-        const { statusCode, statusMessage, data } = err
+        let { statusCode, statusMessage, data } = err
+
+        // in some cases, the real error is hidden in the nested 'response' object
+        if (!data) {
+          data = JSON.stringify(err.response?.data)
+        }
 
         logger(VerboseLevel.V, statusCode, statusMessage, data)
 
+
         return sendResponse({
           statusCode,
-          statusMessage
+          statusMessage,
+          data
         })
       }
 
       // Unknown error
+      logger(VerboseLevel.V, `Unknown error: ${err}`)
       sendResponse({
         statusCode: 500,
         statusMessage: 'Unknown error'

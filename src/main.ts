@@ -2,6 +2,7 @@ import config from './app.config'
 import * as http from 'http'
 import * as https from 'https'
 import { bootstrap } from './bootstrap'
+import { runInitChecks } from './sanity'
 
 const withKeepAliveTimeout = (server: http.Server, keepAliveTimeout = 620 * 1000, headersTimeout = 650 * 1000) => {
   server.keepAliveTimeout = keepAliveTimeout
@@ -33,6 +34,9 @@ export const run = async () => {
     withKeepAliveTimeout(httpsServer)
     httpsServer.listen(httpsPort)
   }
+
+  await runInitChecks(app)
+
 }
 
 run()
