@@ -17,7 +17,7 @@ Removing all sensitive and private textual and personal information from the obj
 
 - Usage
   - [Installation](#installation)
-    - [run on GCP in 2 minutes with pre-build docker image](#run-on-gcp-2-minutes)
+    - [run on GCP with pre-build docker image](./docs/run-on-gcp.md)
     - [run on Azure with pre-build docker image](./docs/run-on-azure.md)
     - [run locally from source](#run-locally)
     - [run using docker](#run-using-docker)
@@ -28,13 +28,6 @@ Removing all sensitive and private textual and personal information from the obj
   - [Test deployment with cURL](#test-deployment-with-curl)
 
 ## Installation
-
-### Run on GCP (2 minutes)
-1. Create new GCP instance based on the latest available docker image `eu.gcr.io/proxy-272310/proxy:<version>` ([list of available versions](https://console.cloud.google.com/gcr/images/proxy-272310/EU/proxy?gcrImageListsize=30)), see [how to do it in GCP](https://cloud.google.com/compute/docs/instances/create-start-instance#from-container-image)
-
-2. Add/edit enviromental variables in the GCP instance editor UI
-
-3. Start and [test your instance with cURL](#test-deployment-with-curl)
 
 ### Run locally
 #### Prerequisites
