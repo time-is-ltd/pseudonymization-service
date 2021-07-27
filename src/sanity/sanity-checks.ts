@@ -267,6 +267,10 @@ export const runInitChecks = async (app) => {
     console.log('Aborting sanity due to fatal error.')
   }
   printHeader(`Checks total: ${total}, skipped: ${skipped}, failed: ${failed}.`, ' ')
+  if (failed) {
+    console.log('Some of the error messages may have not be printed to protect privacy. ' +
+      'To print all the details, consider temporarily setting VERBOSITY to "2".')
+  }
 }
 
 
