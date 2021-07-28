@@ -84,13 +84,19 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
       if (err instanceof RequestError) {
         let { statusCode, statusMessage, data } = err
 
-        // in some cases, the real error is hidden in the nested 'response' object
-        if (!data) {
-          data = JSON.stringify(err.response?.data)
+        if (verboseLevel >= VerboseLevel.VV) {
+          // in some cases, the real error is hidden in the nested 'response' object
+          if (!data) {
+            data = JSON.stringify(err.response?.data)
+          }
+          if (data) {
+            data = data.replace(/([^.@\s]+)(\.[^.@\s]+)*@([^.@\s]+\.)+([^.@\s]+)/g, "<email>")
+          }
+        } else {
+          data = undefined
         }
 
         logger(VerboseLevel.V, statusCode, statusMessage, data)
-
 
         return sendResponse({
           statusCode,
