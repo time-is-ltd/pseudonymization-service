@@ -21,8 +21,16 @@ Use this command to generate salt:
 $ LC_CTYPE=C tr -dc A-Za-z0-9 </dev/urandom | head -c 32 ; echo ''
 ```
 
-## 1. Create service account 
-Go to https://console.cloud.google.com/iam-admin/serviceaccounts. Select a project if needed and click `Create Service Account`.
+## 1. Enable Gmail API & Calendar API
+
+- Log into GCP Cloud Console. Select or create a project if needed.
+- In Cloud Console, go to [API Library - Gmail](https://console.cloud.google.com/apis/library/gmail.googleapis.com) 
+  - Check that Gmail API is enabled, if not, click `Enable`
+- In Cloud Console, go to [API Library - Calendar](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com)
+  - Check that Calendar API is enabled, if not, click `Enable`  
+
+## 2. Create service account 
+Go to https://console.cloud.google.com/iam-admin/serviceaccounts. Click `Create Service Account`.
 
 - Use `til-pseudonymization-service` as a `Service account name` name
 - Click `Done`
@@ -34,7 +42,7 @@ Go to https://console.cloud.google.com/iam-admin/serviceaccounts. Select a proje
 - Click `Add Key` -> `Create new key` -> `JSON` -> `Create`
 - Private key gets downloaded to you. Keep the file.
 
-## 2. Authorize the service account
+## 3. Authorize the service account
 This will provide the service account access to the gsuite data.
 
 Go to https://admin.google.com/
@@ -47,7 +55,7 @@ Go to https://admin.google.com/
 - Set `OAuth scopes` to `https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/calendar.readonly`
 - Click `Authorize`
 
-## 3. Set secrets in Google Secret Manager
+## 4. Set secrets in Google Secret Manager
 This part is optional. You can skip it if you prefer simply using environment vars over Google Secret Manager.
 
 Go to https://console.cloud.google.com/security/secret-manager. For every
@@ -59,7 +67,7 @@ of the following secrets, click `Create secret`, set the `Name`, e.g. `API-TOKEN
 - `GSUITE-PRIVATE-KEY` (use value `private_key` from the downloaded private key file)
 - `GSUITE-SCOPES` (use `https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/calendar.readonly`)
 
-## 4. Assign roles to the service account
+## 5. Assign roles to the service account
 
 This will allow our service account to read the created secrets and write to logs.
 
@@ -76,13 +84,14 @@ Note: for security reasons, we generally recommend creating two different servic
 (used by proxy itself), one to have access to secrets (used by VM instance). To not overcomplicate things in 
 this howto, we will follow with a single one.
 
-## 5. Create VM Instance
+## 6. Create VM Instance
 Go to https://console.cloud.google.com/compute. Click `Create instance`. 
 
 - Name it `til-pseudonymization-app`.
-- Use at least `e2-small` machine type in `Machine configuration`
+- Use `e2-highcpu-4` machine type in `Machine configuration`
 - Select `Deploy a container image to this VM instance`
 - Set `Container image` to `eu.gcr.io/proxy-272310/proxy:<version>` ([list of versions](https://console.cloud.google.com/gcr/images/proxy-272310/EU/proxy?gcrImageListsize=30))
+  - Remove `http://` or `https://` protocol prefix in case it's added automatically when copy-pasting the URL
 - Select `Advanced container options`
 - Set the following `Environment variables` using `Add variable`:  
   - If you use Secret Manager: 
@@ -96,6 +105,7 @@ Go to https://console.cloud.google.com/compute. Click `Create instance`.
     - `ANONYMIZATION_SALT` = your salt value
     - `GSUITE_CLIENT_EMAIL` = value `client_email` from the downloaded private key file
     - `GSUITE_PRIVATE_KEY` = use value `private_key` from the downloaded private key file
+      - Copy the key without the outer quotation marks. Check that no additional new lines are added. 
     - `GSUITE_SCOPES` = `https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/calendar.readonly`
 
 Tip: on top of these, you can also set `GSUITE_TEST_USER` with value being any of your domain accounts, 
@@ -108,9 +118,9 @@ and can be viewed using `View logs` action.
 - Under `Identity and API access` -> `Service account` select your service account.
 - Click `Create`
 
-## 6. Check deployment
+## 7. Check deployment
 
-### 6.1 View logs
+### 7.1 View logs
 
 View logs using `View logs` in the context menu of your VM instance available [here](https://console.cloud.google.com/compute/instances).
 You should see a report from the proxy either confirming successful deployment or providing one or more error messages, 
@@ -143,7 +153,7 @@ GSUITE
 Checks total: 9, skipped: 2, failed: 0.
 ```
 
-###  6.2 Test with cURL / Postman
+###  7.2 Test with cURL / Postman
 
 You can also check that proxy is responding to your requests sent from tools like cURL or Postman.
 To do this, replace these placeholders with real values:
@@ -164,3 +174,11 @@ curl -X GET \
   https://your_IP/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \
   -H 'Authorization: Bearer your_api_key' \
   -H 'Cache-Control: no-cache' --insecure
+```  
+
+## 8. Let us know
+
+Please contact your account manager and provide him:
+- The API key
+- External IP address of the VM (you can find it e.g. in the [list of VMs](https://console.cloud.google.com/compute))
+
