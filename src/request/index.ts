@@ -32,7 +32,9 @@ export const request = async (url: string, options: RequestOptions = {}) => {
   return await new Promise<Response>((resolve, reject) => {
     const { data, headers = {}, method = 'GET' } = options
     const { protocol, hostname, port, pathname, search } = new URL(url)
-
+    if (data) {
+      headers['content-length'] = String(data).length
+    }
     const path = `${pathname}${search}`
     const requestOptions: Record<string, unknown> = {
       protocol,
