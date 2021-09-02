@@ -6,6 +6,7 @@ import config from './app.config'
 import extractToken from './helpers/extract-token'
 import googleapis from './modules/googleapis/googleapis.module'
 import microsoftgraph from './modules/microsoftgraph/microsoftgraph.module'
+import office365 from './modules/office365/office365.module'
 import { Route } from './router/interfaces/router.interface'
 
 // Register modules
@@ -38,9 +39,11 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
 export const bootstrap = async () => {
   const microsoftgraphModule = await microsoftgraph()
   const googleapisModule = await googleapis()
+  const office365Module = await office365()
   const modules: Module[] = [
     microsoftgraphModule,
-    googleapisModule
+    googleapisModule,
+    office365Module
   ]
 
   const app = express()
