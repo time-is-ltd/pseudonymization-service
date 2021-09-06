@@ -18,7 +18,7 @@ export interface User {
   userPrincipalName: string
 }
 
-const schema: Schema<User> = {
+export const schema: Schema<User> = {
   '@odata.context': [
     TYPES.Private,
     TYPES.String

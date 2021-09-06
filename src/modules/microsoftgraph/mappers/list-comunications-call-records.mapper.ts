@@ -30,7 +30,7 @@ export interface CallRecord {
   sessions: CallRecordSession[]
 }
 
-const schema: Schema<CallRecord> = {
+export const schema: Schema<CallRecord> = {
   '@odata.context': [
     TYPES.Private,
     TYPES.String

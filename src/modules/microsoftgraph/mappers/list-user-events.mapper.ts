@@ -12,7 +12,7 @@ export interface UserEvents {
   value: Event[]
 }
 
-const schema: Schema<UserEvents> = {
+export const schema: Schema<UserEvents> = {
   '@odata.context': [
     TYPES.Private,
     TYPES.String

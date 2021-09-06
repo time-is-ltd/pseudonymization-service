@@ -12,7 +12,7 @@ export interface UserCalendars {
   value: Calendar[]
 }
 
-const schema: Schema<UserCalendars> = {
+export const schema: Schema<UserCalendars> = {
   '@odata.context': [
     TYPES.Private,
     TYPES.String
