@@ -11,7 +11,7 @@ export interface MailFolders {
   value: MailFolder[]
 }
 
-const schema: Schema<MailFolders> = {
+export const schema: Schema<MailFolders> = {
   '@odata.context': [
     TYPES.Private,
     TYPES.String

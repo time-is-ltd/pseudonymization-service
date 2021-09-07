@@ -12,7 +12,7 @@ export interface UserMessages {
   value: Message[]
 }
 
-const schema: Schema<UserMessages> = {
+export const schema: Schema<UserMessages> = {
   '@odata.context': [
     TYPES.Private,
     TYPES.String

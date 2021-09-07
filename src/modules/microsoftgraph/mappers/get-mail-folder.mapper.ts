@@ -6,6 +6,6 @@ import {
 import { MailFolder } from '../common/interfaces'
 import { mailFolderSchema } from '../common/schema'
 
-const schema: Schema<MailFolder> = mailFolderSchema
+export const schema: Schema<MailFolder> = mailFolderSchema
 
 export const getMailFolderMapper = jsonMapper<typeof schema, MailFolder>(schema)
