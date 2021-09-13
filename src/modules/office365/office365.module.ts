@@ -4,7 +4,9 @@ import { Route } from '../../router/interfaces/router.interface'
 import {
   startSubscriptionMapper,
   stopSubscriptionMapper,
-  listSubscriptionMapper
+  listSubscriptionMapper,
+  listContentMapper,
+  auditMapper
 } from './mappers'
 
 import tokenService from '../../token/token.service'
@@ -118,6 +120,26 @@ const listSubscriptionsRoute: Route = {
   })
 }
 
+const listContentRoute: Route = {
+  hosts,
+  method: 'get',
+  path: paths.subscriptionsContentPath,
+  handler: proxyFactory({
+    authorizationFactory: getAuthorizationFactory('application'),
+    dataMapper: listContentMapper
+  })
+}
+
+const auditRoute: Route = {
+  hosts,
+  method: 'get',
+  path: paths.auditPath,
+  handler: proxyFactory({
+    authorizationFactory: getAuthorizationFactory('application'),
+    dataMapper: auditMapper
+  })
+}
+
 export default async () => {
   const applicationCredentials = await Promise.all([
     config.tenantId,
@@ -142,7 +164,9 @@ export default async () => {
     routes: [
       startSubscriptionRoute,
       stopSubscriptionRoute,
-      listSubscriptionsRoute
+      listSubscriptionsRoute,
+      listContentRoute,
+      auditRoute
     ]
   }
 }

@@ -23,11 +23,15 @@ export const hosts = [
 const subscriptionsStartPath = '/api/v1.0/:tenantId/activity/feed/subscriptions/start'
 const subscriptionsStopPath = '/api/v1.0/:tenantId/activity/feed/subscriptions/stop'
 const subscriptionsListPath = '/api/v1.0/:tenantId/activity/feed/subscriptions/list'
+const subscriptionsContentPath = '/api/v1.0/:tenantId/activity/feed/subscriptions/content'
+const auditPath = '/api/v1.0/:tenantId/activity/feed/audit/:contentId'
 
 export const paths = {
   subscriptionsStartPath: subscriptionsStartPath,
   subscriptionsStopPath: subscriptionsStopPath,
-  subscriptionsListPath: subscriptionsListPath
+  subscriptionsListPath: subscriptionsListPath,
+  subscriptionsContentPath: subscriptionsContentPath,
+  auditPath: auditPath
 }
 
 export const tenantId = config.o365TenantId

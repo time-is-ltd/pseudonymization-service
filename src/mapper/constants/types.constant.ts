@@ -6,6 +6,7 @@ export const TYPES = {
   ContentType: Symbol('ContentType'),
   Datetime: Symbol('Datetime'),
   Email: Symbol('Email'),
+  EmailOrHashed: Symbol('EmailOrHash'),
   ETag: Symbol('ETag'),
   ExtractedDomains: Symbol('ExtractedDomain'),
   Filename: Symbol('Filename'),
