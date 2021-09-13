@@ -1,6 +1,6 @@
 {
   "name": "proxy",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
