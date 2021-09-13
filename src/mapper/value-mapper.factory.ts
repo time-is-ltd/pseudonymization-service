@@ -83,6 +83,24 @@ export const valueMapperFactory = async () => {
         }
 
         return email(string(value), emailConfig)
+      case TYPES.EmailOrHashed:
+        const emailConfig2 = {
+          anonymizeInternalEmailUsername,
+          anonymizeExternalEmailUsername,
+          anonymizeInternalEmailDomain,
+          anonymizeExternalEmailDomain,
+          internalDomainList,
+          anonymizationSalt,
+          enableExternalEmailPlusAddressing,
+          enableInternalEmailPlusAddressing
+        }
+
+        let result = email(string(value), emailConfig2)
+        if (!result) {
+          // if no email found, hash the content
+          result = hashed(string(value), anonymizationSalt)
+        }
+        return result
       case TYPES.Filename:
         return filename(string(value))
     }
