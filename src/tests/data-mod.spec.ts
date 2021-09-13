@@ -9,10 +9,6 @@ import { schema as o365_list_communications_call_records_sessions_schema } from 
 import * as yaml from 'js-yaml'
 import { TYPES } from '../mapper'
 
-beforeEach(() => {
-  global.console = require('console')
-})
-
 function process (key, value) {
   if (Array.isArray(value)) {
     if (value.includes(TYPES.Private)) {
