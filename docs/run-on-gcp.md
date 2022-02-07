@@ -1,4 +1,4 @@
-# Run on GCP with pre-build docker image
+# Run on Google Cloud Run with pre-build docker image
 
 This document describes how to deploy the pseudonymization proxy to GCP using minimal working configuration.
 The whole list of advanced configuration options is available in the [README](../README.md).
@@ -56,16 +56,14 @@ Go to https://admin.google.com/
 - Click `Authorize`
 
 ## 4. Set secrets in Google Secret Manager
-This part is optional. You can skip it if you prefer simply using environment vars over Google Secret Manager.
+Go to https://console.cloud.google.com/security/secret-manager. 
 
-Go to https://console.cloud.google.com/security/secret-manager. For every
-of the following secrets, click `Create secret`, set the `Name`, e.g. `API-TOKEN` and `Secret value`.
+For every of the following secrets, click `Create secret`, set the `Name`, e.g. `api-token` and `Secret value`.
 
-- `API-TOKEN` (use the generated API token)
-- `ANONYMIZATION-SALT` (use the generated salt)
-- `GSUITE-CLIENT-EMAIL` (use value `client_email` from the downloaded private key file)
-- `GSUITE-PRIVATE-KEY` (use value `private_key` from the downloaded private key file)
-- `GSUITE-SCOPES` (use `https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/calendar.readonly`)
+- `api-token` (use the generated API token)
+- `anonymization-salt` (use the generated salt)
+- `gsuite-client-email` (use value `client_email` from the downloaded private key file - without the outer quotation marks)
+- `gsuite-private-key` (use value `private_key` from the downloaded private key file - without the outer quotation marks)
 
 ## 5. Assign roles to the service account
 
@@ -84,38 +82,58 @@ Note: for security reasons, we generally recommend creating two different servic
 (used by proxy itself), one to have access to secrets (used by VM instance). To not overcomplicate things in 
 this howto, we will follow with a single one.
 
-## 6. Create VM Instance
-Go to https://console.cloud.google.com/compute. Click `Create instance`. 
+## 6. Create Cloud Run instance
+Go to https://console.cloud.google.com/run. Click `Create service`. 
 
-- Name it `til-pseudonymization-app`.
-- Use `e2-highcpu-4` machine type in `Machine configuration`
-- Select `Deploy a container image to this VM instance`
-- Set `Container image` to `eu.gcr.io/proxy-272310/proxy:<version>` ([list of versions](https://console.cloud.google.com/gcr/images/proxy-272310/EU/proxy?gcrImageListsize=30))
-  - Remove `http://` or `https://` protocol prefix in case it's added automatically when copy-pasting the URL
-- Select `Advanced container options`
+- Select `Deploy one revision from an existing container image`
+  - Set `Container image URL` to `eu.gcr.io/proxy-272310/proxy:<version>` ([list of versions](https://console.cloud.google.com/gcr/images/proxy-272310/EU/proxy?gcrImageListsize=30))
+- Set `Container port` to `80`
+- Set `Service name` to `til-pseudonymization-app`.
+- Set `Region` to one of `us-central1` or `europe-west-1` (based on location).
+  
+  
+### CPU allocation and pricing
+- Select `CPU is only allocated during request processing`
+
+### Autoscaling
+- Set `Minimum number of instances` to `0`
+- Set `Maximum number of instances` to `10`
+
+### Ingress
+- Select `Allow all traffic`
+
+### Authentication
+- Select `Allow unauthenticated invocations`
+
+## CONTAINER
+### Capacity
+- Set `Memory` to `1 GiB`
+- Set `CPU` to `2`
+- Set `Request timeout` to `300`
+- Set `Maximum requests per container` to `10`
+
+
+## SECURITY
+- Set `Service account` created in step 5).
+
+## VARIABLES & SECRETS
 - Set the following `Environment variables` using `Add variable`:  
-  - If you use Secret Manager: 
     - `HTTP_PORT` = `80`
-    - `INTERNAL_DOMAIN_LIST` = comma separated list of your domains (e.g. `yourdomain.com,yourdomain.eu`)  
-    - `GCP_SECRET_MANAGER_PROJECT_ID` = your project id
-  - If you only use env vars:
-    - `HTTP_PORT` = `80`
-    - `INTERNAL_DOMAIN_LIST` = you internal domains      
-    - `API_TOKEN` = your api token
-    - `ANONYMIZATION_SALT` = your salt value
-    - `GSUITE_CLIENT_EMAIL` = value `client_email` from the downloaded private key file
-    - `GSUITE_PRIVATE_KEY` = use value `private_key` from the downloaded private key file
-      - Copy the key without the outer quotation marks. Check that no additional new lines are added. 
+    - `INTERNAL_DOMAIN_LIST` = you internal domains
     - `GSUITE_SCOPES` = `https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/calendar.readonly`
 
-Tip: on top of these, you can also set `GSUITE_TEST_USER` with value being any of your domain accounts, 
-e.g. `somename@yourdomain.com`. Proxy will use it to perform a check upon its start to confirm 
-it's deployed with a correct configuration. The output is then printed to stdout
-and can be viewed using `View logs` action.
 
-- Under `Firewall`, enable both `Allow HTTP traffic` and `Allow HTTPS traffic`.
-- Under `Networking`, select `Network interface` -> `External IP` -> `Create IP address` and name it.
-- Under `Identity and API access` -> `Service account` select your service account.
+Tip: on top of these, you can also set `GSUITE_TEST_USER` with value being any of your domain accounts, 
+e.g. `somename@yourdomain.com`. Pseudonymization service will use it to perform a check upon its start to confirm 
+it's deployed with a correct configuration. The output is then printed to stdout
+and can be viewed in `Logs` panel.
+    
+- Set the following `Secrets` using `Reference a secret (Exposed as environment variable)`
+    - Secret: `api-token` -> Environment: `API_TOKEN` 
+    - Secret: `anonymization-salt` ->  Environment: `ANONYMIZATION_SALT` 
+    - Secret: `gsuite-client-email` ->  Environment: `GSUITE_CLIENT_EMAIL` 
+    - Secret: `gsuite-private-key` ->  Environment: `GSUITE_PRIVATE_KEY`
+    
 - Click `Create`
 
 ## 7. Check deployment
@@ -157,28 +175,24 @@ Checks total: 9, skipped: 2, failed: 0.
 
 You can also check that proxy is responding to your requests sent from tools like cURL or Postman.
 To do this, replace these placeholders with real values:
-- `your_IP` - IP of the instance running the pseudonymized service
+- `your_url` - URL address of the instance in Cloud Run
 - `your_email@your_company.com` - any of your GSuite email address
 - `your_api_key` - your API key
 
 ### Health check
 ```
-curl -X GET \
-  https://your_IP/healthcheck \
-  -H 'Cache-Control: no-cache' --insecure
+curl -X GET https://your_url/healthcheck
 ```
 
 ### Google Gmail API
 ```
-curl -X GET \
-  https://your_IP/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \
-  -H 'Authorization: Bearer your_api_key' \
-  -H 'Cache-Control: no-cache' --insecure
+curl -X GET https://your_url/www.googleapis.com/gmail/v1/users/your_email@your_company.com/messages \
+  -H 'Authorization: Bearer your_api_key'
 ```  
 
 ## 8. Let us know
 
 Please contact your account manager and provide him:
 - The API key
-- External IP address of the VM (you can find it e.g. in the [list of VMs](https://console.cloud.google.com/compute))
+- Cloud Run URL address
 
