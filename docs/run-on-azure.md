@@ -55,6 +55,15 @@ Go to https://portal.azure.com/#create/Microsoft.WebSite
 #### 3.2.3. Add `INTERNAL_DOMAIN_LIST` application settings
 - Use comma separeted domain list (e.g. `yourdomain.com,yourdomain.eu`) as an application settings value
 
+#### 3.2.4. Add `ANONYMIZE_INTERNAL_EMAIL_USERNAME` application settings
+- Use `false/true` depending on your anonymization settings
+#### 3.2.5. Add `ANONYMIZE_INTERNAL_EMAIL_DOMAIN` application settings
+- Use `false/true` depending on your anonymization settings
+#### 3.2.6. Add `ANONYMIZE_EXTERNAL_EMAIL_USERNAME` application settings
+- Use `false/true` depending on your anonymization settings
+#### 3.2.7. Add `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN` application settings
+- Use `false/true` depending on your anonymization settings
+
 ### 3.3. Add health check
 - Select `Health check` in the left navigation bar
 - Set `Health check` to `Enable`
