@@ -119,9 +119,14 @@ Go to https://console.cloud.google.com/run. Click `Create service`.
 ## VARIABLES & SECRETS
 - Set the following `Environment variables` using `Add variable`:  
     - `HTTP_PORT` = `80`
-    - `INTERNAL_DOMAIN_LIST` = you internal domains
     - `GSUITE_SCOPES` = `https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/calendar.readonly`
+    - `INTERNAL_DOMAIN_LIST` = you internal domains
+    - `ANONYMIZE_INTERNAL_EMAIL_USERNAME` = `false` (Depending on your anonymization setup)
+    - `ANONYMIZE_INTERNAL_EMAIL_DOMAIN` = `false` (Depending on your anonymization setup)
+    - `ANONYMIZE_EXTERNAL_EMAIL_USERNAME` = `false` (Depending on your anonymization setup)
+    - `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN` = `false` (Depending on your anonymization setup)
 
+  
 
 Tip: on top of these, you can also set `GSUITE_TEST_USER` with value being any of your domain accounts, 
 e.g. `somename@yourdomain.com`. Pseudonymization service will use it to perform a check upon its start to confirm 
