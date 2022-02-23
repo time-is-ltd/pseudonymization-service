@@ -17,8 +17,8 @@ import config, {
 } from './office365.config'
 
 type TokenType = 'application' | 'delegated'
-const MICROSOFTGRAPH_DELEGATED_TOKEN_ID = 'microsoftgraph.delegated'
-const MICROSOFTGRAPH_APPLICATION_TOKEN_ID = 'microsoftgraph.application'
+const MICROSOFTGRAPH_DELEGATED_TOKEN_ID = 'o365.delegated'
+const MICROSOFTGRAPH_APPLICATION_TOKEN_ID = 'o365.application'
 const TOKEN_HOST = 'login.windows.net'
 
 interface RefreshTokenConfig {
