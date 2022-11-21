@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
     "lib": ["es6", "dom", "es2020", "esnext.array", "ESNext.String"],
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -12,5 +12,5 @@
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }
