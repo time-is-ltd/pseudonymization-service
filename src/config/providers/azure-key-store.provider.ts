@@ -18,11 +18,11 @@ export const fromAzureKeyVault = <T extends TransformMap> (vaultName: string) =>
       const azureKeyVaultSecretName = getAzureVaultVariableName<T, K>(key)
       const azureKeyVaultSecret = await client.getSecret(azureKeyVaultSecretName)
 
-      logger(VerboseLevel.V, `[Config/Azure Key Vault]: ${key} loaded`)
+      logger(VerboseLevel.V, `[Config/Azure Key Vault]: ${String(key)} loaded`)
 
       return { defaultTtl: 20 * 60, v: azureKeyVaultSecret.value }
     } catch (err) {
-      logger(VerboseLevel.V, `[Config/Azure Key Vault]: ${key} error`, err?.statusCode, err?.details || err)
+      logger(VerboseLevel.V, `[Config/Azure Key Vault]: ${String(key)} error`, err?.statusCode, err?.details || err)
     }
     return
   }
