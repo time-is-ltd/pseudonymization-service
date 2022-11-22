@@ -21,6 +21,7 @@ export const refreshAccessToken = async (userId: string): Promise<Token> => {
   const authClient = await auth.getClient()
 
   return await new Promise((resolve, reject) => {
+    // @ts-ignore
     authClient.refreshAccessToken((err) => {
       if (err) {
         reject(err)
