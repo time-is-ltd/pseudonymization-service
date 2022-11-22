@@ -78,7 +78,7 @@ export const configFactory = <T extends TransformMap>(transformMap: T, vaultKeys
 
       if (transformedValue) {
         const secretStr = String(transformedValue).split('').map(v => `*`).join('')
-        logger(VerboseLevel.V, `[Config]: Key ${key} loaded (value:${secretStr})`)
+        logger(VerboseLevel.V, `[Config]: Key ${String(key)} loaded (value:${secretStr})`)
       }
 
       // Always set to prolong the ttl, if variable in use

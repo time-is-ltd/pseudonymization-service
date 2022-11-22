@@ -17,7 +17,7 @@ export const fromGcpSecretManager = <T extends TransformMap> (projectId: string,
 
   return async <K extends keyof T> (key: K) => {
     try {
-      logger(VerboseLevel.V, `[Config/Google Secret Manager]: Loading key ${key}`)
+      logger(VerboseLevel.V, `[Config/Google Secret Manager]: Loading key ${String(key)}`)
       const secretName = getGcpSecretVariableName(key as string, prefix)
       const name = `projects/${projectId}/secrets/${secretName}/versions/latest`
       const [secretVersion] = await client.accessSecretVersion({
@@ -26,11 +26,11 @@ export const fromGcpSecretManager = <T extends TransformMap> (projectId: string,
 
       const value = secretVersion.payload.data.toString()
 
-      logger(VerboseLevel.V, `[Config/Google Secret Manager]: ${key} loaded`)
+      logger(VerboseLevel.V, `[Config/Google Secret Manager]: ${String(key)} loaded`)
 
       return { defaultTtl: 20 * 60, v: value }
     } catch (err) {
-      logger(VerboseLevel.V, `[Config/Google Secret Manager]: ${key} error`, err)
+      logger(VerboseLevel.V, `[Config/Google Secret Manager]: ${String(key)} error`, err)
     }
     return
   }
