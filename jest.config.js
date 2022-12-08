@@ -1,6 +1,7 @@
 process.env.DISABLE_CONFIG_CACHE = "true"
 
 module.exports = {
+  testEnvironment: 'node',
   setupFiles: ["dotenv/config"],
   roots: [
     '<rootDir>/src'
