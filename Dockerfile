@@ -1,4 +1,4 @@
-FROM node:14 AS builder
+FROM node:18 AS builder
 RUN groupadd -r app && useradd -r -g app app
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -8,13 +8,13 @@ COPY ./src/. /usr/src/app/src
 COPY tsconfig.json /usr/src/app/tsconfig.json
 RUN ./node_modules/typescript/bin/tsc --p .
 
-FROM node:14 as prodBuilder
+FROM node:18 AS prodBuilder
 WORKDIR /usr/src/app
 COPY package.json package-lock.json /usr/src/app/
 RUN npm install --only=production
 RUN node -pe 'require("/usr/src/app/package.json").version' > version.txt
 
-FROM node:14
+FROM node:18
 WORKDIR /usr/src/app
 COPY --from=prodBuilder /usr/src/app/version.txt  version.txt
 COPY --from=prodBuilder /usr/src/app/node_modules node_modules/

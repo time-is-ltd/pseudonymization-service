@@ -1,8 +1,8 @@
-process.env.DISABLE_CONFIG_CACHE = "true"
+process.env.DISABLE_CONFIG_CACHE = 'true'
 
 module.exports = {
   testEnvironment: 'node',
-  setupFiles: ["dotenv/config"],
+  setupFiles: ['dotenv/config'],
   roots: [
     '<rootDir>/src'
   ],
@@ -12,11 +12,6 @@ module.exports = {
   ],
   preset: 'ts-jest',
   transform: {
-    '^.+\\.(ts|tsx)?$': 'ts-jest'
-  },
-  globals: {
-    'ts-jest': {
-      isolatedModules: true
-    }
+    '^.+\\.(ts|tsx)?$': ['ts-jest', { isolatedModules: true }]
   }
 }
