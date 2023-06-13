@@ -1,6 +1,6 @@
 import {
   listUserCalendarsMapper,
-  UserCalendars
+  type UserCalendars
 } from './list-user-calendars.mapper'
 
 import {
@@ -10,7 +10,7 @@ import {
 const buildInputMessage = (messageCount: number = 0): UserCalendars => {
   return {
     kind: 'calendar#calendarList',
-    etag: '\"p329eh0casdec0c\"',
+    etag: '"p329eh0casdec0c"',
     items: Array.from(Array(messageCount)).map((_, i) => ({
       id: `id${i}`,
       kind: 'calendar#calendarListEntry',
@@ -68,7 +68,7 @@ const buildInputMessage = (messageCount: number = 0): UserCalendars => {
 const buildOutputMessage = (messageCount: number = 0): UserCalendars => {
   return {
     kind: 'calendar#calendarList',
-    etag: '\"p329eh0casdec0c\"',
+    etag: '"p329eh0casdec0c"',
     items: Array.from(Array(messageCount)).map((_, i) => ({
       id: `id${i}`,
       kind: 'calendar#calendarListEntry',

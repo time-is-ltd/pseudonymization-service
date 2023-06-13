@@ -36,7 +36,9 @@ export const run = async () => {
   }
 
   await runInitChecks(app)
-
 }
 
-run()
+run().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})

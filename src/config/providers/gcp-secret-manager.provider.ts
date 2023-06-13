@@ -1,6 +1,6 @@
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
 import { toKebabCase } from '../transformers'
-import { TransformMap } from '../types'
+import { type TransformMap } from '../types'
 import { logger, VerboseLevel } from '../../logger'
 
 const getGcpSecretVariableName = <T extends TransformMap, K extends keyof T> (key: K, prefix: string): string => {
@@ -32,6 +32,5 @@ export const fromGcpSecretManager = <T extends TransformMap> (projectId: string,
     } catch (err) {
       logger(VerboseLevel.V, `[Config/Google Secret Manager]: ${String(key)} error`, err)
     }
-    return
   }
 }

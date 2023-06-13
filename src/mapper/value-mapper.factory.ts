@@ -27,14 +27,14 @@ export const valueMapperFactory = async () => {
   const [
     anonymizationSalt,
     rsaPublicKey,
-    baseUrl,
+    baseUrl
   ] = await Promise.all([
     config.anonymizationSalt,
     config.rsaPublicKey,
-    config.baseUrl,
+    config.baseUrl
   ])
 
-  return (type: Symbol, value: unknown) => {
+  return (type: symbol, value: unknown) => {
     switch (type) {
       case TYPES.Private:
         return undefined
@@ -51,7 +51,6 @@ export const valueMapperFactory = async () => {
       case TYPES.Text:
       case TYPES.String:
       case TYPES.Datetime:
-      case TYPES.ContentType:
       case TYPES.ETag:
       case TYPES.Username:
         return string(value)

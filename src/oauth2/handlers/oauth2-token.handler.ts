@@ -1,8 +1,8 @@
 import * as qs from 'querystring'
 import request from '../../request'
-import { Token } from '../../token/interfaces/token.interface'
+import { type Token } from '../../token/interfaces/token.interface'
 
-interface TokenHandlerExtraDict { [key: string]: string | number }
+type TokenHandlerExtraDict = Record<string, string | number>
 export interface TokenHandlerOptions {
   url: string
   clientId: string
@@ -97,7 +97,7 @@ export const oauth2Request = async (options: TokenHandlerOptions): Promise<{
     statusText: statusMessage,
     data: {
       type: json.token_type,
-      expiresAt: expiresAt,
+      expiresAt,
       token: json[accessTokenName]
     },
     headers

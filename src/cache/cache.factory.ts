@@ -62,7 +62,7 @@ export const cacheFactory = <T>(): Cache<T> => {
   }
 
   // TTL ticker
-  setInterval(() => checkValidity(), 60 * 1000)
+  setInterval(checkValidity, 60 * 1000)
 
   return {
     get,

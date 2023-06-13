@@ -1,12 +1,12 @@
 import * as https from 'https'
 import * as http from 'http'
 import * as zlib from 'zlib'
-import { IncomingMessage } from 'http'
+import { type IncomingMessage } from 'http'
 
 export type RequestOptions = Partial<Pick<https.RequestOptions, 'method' | 'headers'> & { data: unknown }>
 type Response = Pick<IncomingMessage, 'statusCode' | 'statusMessage' | 'headers'> & { data?: string }
 
-export class RequestError<T extends unknown> extends Error {
+export class RequestError<T> extends Error {
   constructor (
     public statusCode: number,
     public statusMessage?: string,
@@ -49,22 +49,24 @@ export const request = async (url: string, options: RequestOptions = {}) => {
       const decompressedResponse = decompressResponse(response)
 
       let data = ''
-      decompressedResponse.on('data', (chunk) => data += chunk.toString())
+      decompressedResponse.on('data', (chunk: Buffer) => {
+        data += chunk.toString()
+      })
       decompressedResponse.on('end', () => {
         const { headers, statusCode, statusMessage } = response
         const isSuccess = statusCode >= 200 && statusCode < 300
         if (!isSuccess) {
-          return reject(new RequestError(statusCode, statusMessage, response, data))
+          reject(new RequestError(statusCode, statusMessage, response, data)); return
         }
 
         resolve({ headers, statusCode, statusMessage, data })
       })
-      decompressedResponse.on('error', err => reject(err))
+      decompressedResponse.on('error', err => { reject(err) })
     })
     if (data) {
       req.write(data)
     }
-    req.on('error', err => reject(err))
+    req.on('error', err => { reject(err) })
     req.end()
   })
 }

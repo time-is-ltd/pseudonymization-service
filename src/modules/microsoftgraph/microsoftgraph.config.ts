@@ -1,4 +1,4 @@
-import {configFactory, toString} from '../../config'
+import { configFactory, toString } from '../../config'
 
 const googleApisConfig = {
   o365TenantId: toString(),
@@ -24,13 +24,13 @@ const listUserMessagesPath = '/v1.0/users/:userId/messages'
 const listUserCalendarsPath = '/v1.0/users/:userId/calendars'
 const listUserEventsPath = '/v1.0/users/:userId/events'
 const listCalendarEventsPath = [
-    '/v1.0/users/:userId/calendars/:calendarId/events',
-    "/v1.0/users/:userId/calendars\\(':calendarId'\\)/events"
+  '/v1.0/users/:userId/calendars/:calendarId/events',
+  "/v1.0/users/:userId/calendars\\(':calendarId'\\)/events"
 ]
 const listCalendarViewPath = [
-    '/v1.0/users/:userId/calendars/:calendarId/calendarview',
-    "/v1.0/users/:userId/calendars\\(':calendarId'\\)/calendarview",
-    '/v1.0/users/:userId/calendarview',
+  '/v1.0/users/:userId/calendars/:calendarId/calendarview',
+  "/v1.0/users/:userId/calendars\\(':calendarId'\\)/calendarview",
+  '/v1.0/users/:userId/calendarview'
 ]
 
 const subscriptionsPath = '/v1.0/subscriptions'

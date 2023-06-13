@@ -1,4 +1,4 @@
-import { Unpacked } from './unpacked.interface'
+import { type Unpacked } from './unpacked.interface'
 /*
  Replaces recursively property type with symbol | string | number
   ej:
@@ -20,7 +20,7 @@ import { Unpacked } from './unpacked.interface'
     tags: symbol | string | number
   }
 */
-export type Schema<T> = {
+export type Schema<T extends Record<string, any>> = {
   [P in keyof T]:
   Unpacked<T[P]> extends Array<infer U> ? Array<Schema<U>> :
     Unpacked<T[P]> extends object ? Schema<T[P]> :

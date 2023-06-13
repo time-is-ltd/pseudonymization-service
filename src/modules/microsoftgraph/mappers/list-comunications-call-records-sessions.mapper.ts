@@ -1,9 +1,9 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
-import { CallRecordSession } from '../common/interfaces'
+import { type CallRecordSession } from '../common/interfaces'
 import { callRecordsSessionSchema } from '../common/schema'
 
 export interface CallRecordSessions {
@@ -26,4 +26,4 @@ export const schema: Schema<CallRecordSessions> = {
   ]
 }
 
-export const listCommunicationsCallRecordsSessionsMapper = jsonMapper<typeof schema, CallRecordSessions>(schema)
+export const listCommunicationsCallRecordsSessionsMapper = jsonMapper<CallRecordSessions>(schema)

@@ -8,20 +8,19 @@ export const containsNothingButDomains = (str: string) => {
     return
   }
 
-  for (let part in str.split(' ')) {
-    if (!regexDomain.test(part))
-      return false
+  for (const part of str.split(' ')) {
+    if (!regexDomain.test(part)) { return false }
   }
   return true
 }
 
-export const overrideEnvs = (envs: object) => {
+export const overrideEnvs = (envs: Record<string, string>) => {
   Object.keys(envs).forEach((key) => {
     process.env[key] = envs[key]
   })
 }
 
-export const validateUsingSchema = (obj: Object, schema: Object) => {
+export const validateUsingSchema = (obj: Record<string, unknown>, schema: Record<string, unknown>) => {
   const validate = ajv.compile(schema)
   const valid = validate(obj)
   if (!valid) {

@@ -1,6 +1,7 @@
 import { TYPES } from './constants'
+import { type Schema } from './interfaces'
 
-export type ValueMapper = (type: Symbol, value: unknown) => unknown
+export type ValueMapper = (type: symbol, value: unknown) => unknown
 
 const isStringOrNumber = value => typeof value === 'string' || typeof value === 'number'
 
@@ -40,7 +41,7 @@ const getValue = (valueMapper: ValueMapper) => (types: symbol[], value: any) => 
   }, value)
 }
 
-export const schemaMapper = <S extends Object, T extends Object>(schema: S, valueMapper: ValueMapper) => (value?: T): unknown => {
+export const schemaMapper = <T extends Record<string, any>> (schema: Schema<T> | Array<Schema<T>>, valueMapper: ValueMapper) => (value?: Partial<T> | Array<Partial<T>>): unknown => {
   if (!value) {
     return
   }
@@ -52,7 +53,7 @@ export const schemaMapper = <S extends Object, T extends Object>(schema: S, valu
     const firstSchemaItem = schema[0]
     if (firstSchemaItem === Object(firstSchemaItem)) {
       for (const key in firstSchemaItem) {
-        if (firstSchemaItem.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(firstSchemaItem, key)) {
           const value = firstSchemaItem[key]
           if (isIndexable(value)) {
             isIndexed = true
@@ -64,7 +65,7 @@ export const schemaMapper = <S extends Object, T extends Object>(schema: S, valu
     }
 
     if (isIndexed) {
-      const indexMap: { [key: string]: S } = schema
+      const indexMap: Record<string, Schema<T>> = schema
         .reduce((indexMap, item) => {
           const indexNameOrArray = item[indexedPropertyName]
           const indexNames = Array.isArray(indexNameOrArray)
@@ -89,7 +90,7 @@ export const schemaMapper = <S extends Object, T extends Object>(schema: S, valu
           const indexValue = normalizeIndexName(item[indexedPropertyName])
           const indexedSchema = indexMap[indexValue]
           if (!indexedSchema) {
-            return
+            return undefined
           }
 
           return schemaMapper(indexedSchema, valueMapper)(item)
@@ -105,25 +106,27 @@ export const schemaMapper = <S extends Object, T extends Object>(schema: S, valu
     return Object
       .keys(schema)
       .reduce((obj, key) => {
-        if (value[key] === undefined) {
+        const schemaElement = schema[key]
+        const valueElement = value[key]
+
+        if (valueElement === undefined) {
           return obj
         }
 
-        const schemaType = typeof schema[key]
-        if (Array.isArray(schema[key]) && typeof schema[key][0] === 'symbol') {
-          obj[key] = getValue(valueMapper)(schema[key], value[key])
-        } else if (schemaType === 'symbol') {
-          obj[key] = valueMapper(schema[key], value[key])
-        } else if (schemaType === 'string') {
-          if (schema[key] === normalizeIndexName(value[key])) {
-            obj[key] = value[key]
+        if (Array.isArray(schemaElement) && typeof schemaElement[0] === 'symbol') {
+          obj[key] = getValue(valueMapper)(schemaElement as symbol[], valueElement)
+        } else if (typeof schemaElement === 'symbol') {
+          obj[key] = valueMapper(schemaElement, valueElement)
+        } else if (typeof schemaElement === 'string') {
+          if (schemaElement === normalizeIndexName(valueElement)) {
+            obj[key] = valueElement
           } else {
-            obj[key] = schema[key]
+            obj[key] = schemaElement
           }
-        } else if (schemaType === 'number') {
-          obj[key] = schema[key]
-        } else if (value[key]) {
-          obj[key] = schemaMapper(schema[key], valueMapper)((value[key]))
+        } else if (typeof schemaElement === 'number') {
+          obj[key] = schemaElement
+        } else if (valueElement) {
+          obj[key] = schemaMapper(schemaElement as Record<string, any>, valueMapper)(valueElement as Record<string, any>)
         }
         return obj
       }, {})

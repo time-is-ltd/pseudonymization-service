@@ -1,5 +1,5 @@
-import { listUserEventsMapper, UserEvents } from './list-user-events.mapper'
-import { getAnonymizedEmail, getEmail, PersonId, testMapper } from '../../../helpers/testing'
+import { listUserEventsMapper, type UserEvents } from './list-user-events.mapper'
+import { getAnonymizedEmail, getEmail, type PersonId, testMapper } from '../../../helpers/testing'
 
 jest.mock('../../../anonymizer')
 

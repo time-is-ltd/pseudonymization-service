@@ -1,5 +1,5 @@
-import { listUserMessagesMapper, UserMessages } from './list-user-messages.mapper'
-import { ANONYMIZED_EMAIL, getAnonymizedEmail, getEmail, PersonId, testMapper } from '../../../helpers/testing'
+import { listUserMessagesMapper, type UserMessages } from './list-user-messages.mapper'
+import { ANONYMIZED_EMAIL, getAnonymizedEmail, getEmail, type PersonId, testMapper } from '../../../helpers/testing'
 
 jest.mock('../../../anonymizer')
 

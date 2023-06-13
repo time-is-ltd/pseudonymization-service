@@ -2,7 +2,7 @@ import { cacheFactory } from '../../cache'
 import { matchAll, decryptUrlComponent } from '../helpers'
 import { RSA_PREFIX } from '../constants'
 
-const REGEXP_RSA_CONTENT = new RegExp(`\/((${RSA_PREFIX}|RSA_ENCRYPTED_EMAIL_)([^\/]+))`, 'gi')
+const REGEXP_RSA_CONTENT = new RegExp(`/((${RSA_PREFIX}|RSA_ENCRYPTED_EMAIL_)([^/]+))`, 'gi')
 
 const cache = cacheFactory<string>()
 export const decryptUrl = (url: string, privateKey?: string): string => {

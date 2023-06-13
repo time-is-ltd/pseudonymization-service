@@ -1,4 +1,4 @@
-import { RequestHandler } from '../interfaces'
+import { type RequestHandler } from '../interfaces'
 import { pathToAbsUrl } from '../helpers'
 
 export const transformUrlMiddleware = (urlTransform: (url: string) => string): RequestHandler => async ({ url, ...rest }) => {

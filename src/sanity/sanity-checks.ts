@@ -9,10 +9,12 @@ import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
 import googleapis from '../modules/googleapis/googleapis.module'
 import microsoftgraph from '../modules/microsoftgraph/microsoftgraph.module'
 import { VerboseLevel, verboseLevel } from '../logger'
+import { type Express } from 'express'
+import { type Module } from '../modules/module.interface'
 
 class Skipped extends CustomError {
   public constructor (
-    message?: string,
+    message?: string
   ) {
     super(message)
   }
@@ -20,16 +22,16 @@ class Skipped extends CustomError {
 
 const check = (name: string, fn: () => Promise<void>, abortOnFail = false) => {
   return {
-    name: name,
-    fn: fn,
-    abortOnFail: abortOnFail
+    name,
+    fn,
+    abortOnFail
   }
 }
 
 const checkSuite = (name, checks) => {
   return {
-    name: name,
-    checks: checks
+    name,
+    checks
   }
 }
 
@@ -50,7 +52,7 @@ const configSuite = () => {
     }, true),
     check('Can read secrets from Azure Vault', async () => {
       const vaultName = process.env.AZURE_KEY_VAULT_NAME
-      if (!Boolean(vaultName)) {
+      if (!vaultName) {
         throw new Skipped('Azure Key Vault not configured.')
       }
       const credential = new DefaultAzureCredential()
@@ -59,11 +61,11 @@ const configSuite = () => {
       try {
         await client.getSecret('dummy')
       } catch (err) {
-        if (err.name && err.name.includes('AuthenticationError')) {
+        if (err.name?.includes('AuthenticationError')) {
           throw Error(`Authentication error. See details below.\n${err.message}`)
         } else if (err.name === 'RestError') {
           // no error except 404 is allowed
-          if (!err.statusCode || err.statusCode != 404) {
+          if (!err.statusCode || err.statusCode !== 404) {
             throw Error(`Unable to read a secret. See below for details.\n${err.message}`)
           }
         } else {
@@ -73,7 +75,7 @@ const configSuite = () => {
     }, true),
     check('Can read secrets from Google Secret Manager', async () => {
       const gsmProject = process.env.GCP_SECRET_MANAGER_PROJECT_ID
-      if (!Boolean(gsmProject)) {
+      if (!gsmProject) {
         throw new Skipped('Google Secret Manager not configured.')
       }
       const client = new SecretManagerServiceClient()
@@ -82,20 +84,20 @@ const configSuite = () => {
         await client.accessSecretVersion({ name })
       } catch (err) {
         // no error except gRPC status 5 (i.e. NOT FOUND) is allowed
-        if (!err.code || err.code != 5) {
+        if (!err.code || err.code !== 5) {
           throw Error(`Unable to read a secret. See below for details.\n${err.message}`)
         }
       }
     }, true),
     check('API token is set', async () => {
       const token = await appConfig.apiToken
-      if (!Boolean(token)) {
+      if (!token) {
         throw Error('API token not set. Check configuration.')
       }
       if (token.length < 32) {
         throw Error('API token has insufficient length (must be at least 32).')
       }
-    }, true),
+    }, true)
   ]
   return checkSuite('CONFIG', checks)
 }
@@ -113,7 +115,7 @@ const appSuite = (app) => {
       const apiToken = await appConfig.apiToken
       const client = request(app)
       const response = await client.get('/diag').set('Authorization', `Bearer ${apiToken}`)
-      if (!Boolean(response.body?.version)) {
+      if (!response.body?.version) {
         throw Error(`Unexpected response from diag: ${response.text}`)
       }
     }),
@@ -128,12 +130,12 @@ const appSuite = (app) => {
       if (routes.length < 4) {
         throw Error(`Only ${routes.length} registered.`)
       }
-    }),
+    })
   ]
   return checkSuite('APP', checks)
 }
 
-const gsuiteSuite = (app, module, testUser) => {
+const gsuiteSuite = (app: Express, module: Module, testUser: string) => {
   const skipIfCannotCheck = () => {
     if (!module.enabled) {
       throw new Skipped('Google APIs module not enabled.')
@@ -174,12 +176,12 @@ const gsuiteSuite = (app, module, testUser) => {
         'https://www.googleapis.com/auth/gmail.readonly',
         'messages'
       )
-    }),
+    })
   ]
   return checkSuite('GSUITE', checks)
 }
 
-const o365Suite = (app, module, testUser) => {
+const o365Suite = (app: Express, module: Module, testUser: string) => {
   const skipIfCannotCheck = () => {
     if (!module.enabled) {
       throw new Skipped('Microsoft Graph module not enabled.')
@@ -188,7 +190,7 @@ const o365Suite = (app, module, testUser) => {
       throw new Skipped('O365 test user not set (O365_TEST_USER).')
     }
   }
-  const callGraphApi = async (endpoint, items) => {
+  const callGraphApi = async (endpoint: string, items: string) => {
     skipIfCannotCheck()
     const apiToken = await appConfig.apiToken
     const client = request(app)
@@ -214,12 +216,12 @@ const o365Suite = (app, module, testUser) => {
     }),
     check('Get mail folders', async () => {
       await callGraphApi(`/graph.microsoft.com/v1.0/users/${testUser}/mailFolders`, 'mail folders')
-    }),
+    })
   ]
   return checkSuite('O365', checks)
 }
 
-export const runInitChecks = async (app) => {
+export const runInitChecks = async (app: Express) => {
   const googleApiModule = await googleapis()
   const gsuiteTestUser = process.env.GSUITE_TEST_USER
   const msGraphModule = await microsoftgraph()
@@ -237,9 +239,9 @@ export const runInitChecks = async (app) => {
   let total = 0
   let skipped = 0
   let failed = 0
-  for (let suite of suites) {
+  for (const suite of suites) {
     printHeader(`${suite.name}`, '-')
-    for (let check of suite.checks) {
+    for (const check of suite.checks) {
       await check.fn().then(() => {
         console.log(`• ${check.name} - OK`)
       }).catch((error) => {
@@ -273,7 +275,3 @@ export const runInitChecks = async (app) => {
       'To print all the details, consider temporarily setting VERBOSITY to "2".')
   }
 }
-
-
-
-

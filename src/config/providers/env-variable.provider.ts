@@ -1,5 +1,5 @@
 import { toSnakeCase } from '../transformers'
-import { TransformMap } from '../types'
+import { type TransformMap } from '../types'
 import { logger, VerboseLevel } from '../../logger'
 
 const getEnvVariableName = <T extends TransformMap, K extends keyof T> (key: K): string => {

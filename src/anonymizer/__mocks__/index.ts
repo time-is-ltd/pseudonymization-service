@@ -1,4 +1,4 @@
-import { AnonymizeEmailConfig } from '../transformers'
+import { type AnonymizeEmailConfig } from '../transformers'
 import { ANONYMIZED_EMAIL, ANONYMIZED_FILENAME } from '../../helpers/testing'
 
 export const email = (email: string, config?: AnonymizeEmailConfig): string => {

@@ -1,7 +1,7 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
 
 export interface UserMessageItem {
@@ -26,4 +26,4 @@ const schema: Schema<UserMessages> = {
   resultSizeEstimate: TYPES.String
 }
 
-export const listUserMessagesMapper = jsonMapper<typeof schema, UserMessages>(schema)
+export const listUserMessagesMapper = jsonMapper<UserMessages>(schema)

@@ -10,4 +10,3 @@ export interface Subscription {
   status: string
   webhook: Webhook
 }
-

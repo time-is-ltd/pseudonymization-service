@@ -1,4 +1,4 @@
-import { RequestHandler, AuthorizationFactory } from '../interfaces'
+import { type RequestHandler, type AuthorizationFactory } from '../interfaces'
 
 export const modifyHeadersMiddleware = (authorizationFactory: AuthorizationFactory, throwException = true): RequestHandler => async ({ headers, url, ...rest }) => {
   const modifiedHeaders = { ...headers }

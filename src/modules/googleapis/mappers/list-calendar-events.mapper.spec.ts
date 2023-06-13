@@ -1,12 +1,12 @@
 import {
   listCalendarEventsMapper,
-  Event,
-  EventAttendee,
-  EventUser
+  type Event,
+  type EventAttendee,
+  type EventUser
 } from './list-calendar-events.mapper'
 
 import {
-  PersonId,
+  type PersonId,
   getEmail,
   getAnonymizedEmail,
   testMapper

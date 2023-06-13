@@ -1,10 +1,10 @@
-import { IncomingMessage, ServerResponse } from 'http'
+import { type IncomingMessage, type ServerResponse } from 'http'
+import { type RequestHandler } from 'express'
 import { decryptUrlMiddleware, mapBodyMiddleware, modifyHeadersMiddleware, transformUrlMiddleware } from './middlewares'
-import { AuthorizationFactory, BodyMapper, DataMapper } from './interfaces'
-import { receiveBody } from './helpers'
-import { sendResponseFactory } from './helpers/send-response-factory.helper'
-import { request as makeRequest, RequestError, RequestOptions } from '../request'
-import prettify from '../helpers/prettify'
+import { type AuthorizationFactory, type BodyMapper, type DataMapper } from './interfaces'
+import { receiveBody, sendResponseFactory } from './helpers'
+import { request as makeRequest, RequestError, type RequestOptions } from '../request'
+import prettifyRequestData from '../helpers/prettify'
 import { logger, verboseLevel, VerboseLevel } from '../logger'
 
 interface ProxyParams {
@@ -15,7 +15,7 @@ interface ProxyParams {
   allowedHeaders?: string[]
 }
 
-const logRequest = (url, statusCode, statusMessage, originalBody, responseData, modifiedData) => {
+const logRequest = (url: string, statusCode: number, statusMessage: string, originalBody: string, responseData: any, modifiedData: any) => {
   let report = '\n===== Data log start =====\n'
   report += `Request '${url} ${statusCode} ${statusMessage}'`
   if (originalBody) {
@@ -23,15 +23,15 @@ const logRequest = (url, statusCode, statusMessage, originalBody, responseData, 
     report += originalBody
   }
   report += '\nResponse body:\n'
-  report += prettify(responseData)
+  report += prettifyRequestData(responseData)
   report += '\nModified body:\n'
-  report += prettify(modifiedData)
+  report += prettifyRequestData(modifiedData)
   report += '\n===== Data log end =====\n'
 
   logger(VerboseLevel.VV, report)
 }
 
-export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage, res: ServerResponse, _) => {
+export const proxyFactory = (params: ProxyParams): RequestHandler => async (req: IncomingMessage, res: ServerResponse, _) => {
   const {
     authorizationFactory,
     dataMapper,
@@ -90,7 +90,7 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
             data = JSON.stringify(err.response?.data)
           }
           if (data) {
-            data = data.replace(/([^.@\s]+)(\.[^.@\s]+)*@([^.@\s]+\.)+([^.@\s]+)/g, "<email>")
+            data = data.replace(/([^.@\s]+)(\.[^.@\s]+)*@([^.@\s]+\.)+([^.@\s]+)/g, '<email>')
           }
         } else {
           data = undefined
@@ -98,15 +98,16 @@ export const proxyFactory = (params: ProxyParams) => async (req: IncomingMessage
 
         logger(VerboseLevel.V, statusCode, statusMessage, data)
 
-        return sendResponse({
+        sendResponse({
           statusCode,
           statusMessage,
           data
         })
+        return
       }
 
       // Unknown error
-      logger(VerboseLevel.V, `Unknown error: ${err}`)
+      logger(VerboseLevel.V, 'Unknown error', err)
       sendResponse({
         statusCode: 500,
         statusMessage: 'Unknown error'

@@ -1,8 +1,8 @@
 import { google } from 'googleapis'
 import { GaxiosError } from 'gaxios'
 import config from './googleapis.config'
-import { Token } from './interfaces/token.interface'
-import { findTemplateAndMatch, AuthorizationFactory } from '../../proxy'
+import { type Token } from './interfaces/token.interface'
+import { type AuthorizationFactory, findTemplateAndMatch } from '../../proxy'
 import { RequestError } from '../../request'
 import tokenService from '../../token/token.service'
 
@@ -21,19 +21,22 @@ export const refreshAccessToken = async (userId: string): Promise<Token> => {
   const authClient = await auth.getClient()
 
   return await new Promise((resolve, reject) => {
-    // @ts-ignore
-    authClient.refreshAccessToken((err) => {
-      if (err) {
-        reject(err)
-      }
-    })
-    authClient.once('tokens', (result) => {
-      resolve({
-        token: result.access_token || '',
-        type: result.token_type || '',
-        expiresAt: result.expiry_date || 0
+    if ('refreshAccessToken' in authClient) {
+      authClient.refreshAccessToken((err) => {
+        if (err) {
+          reject(err)
+        }
       })
-    })
+      authClient.once('tokens', (result) => {
+        resolve({
+          token: result.access_token || '',
+          type: result.token_type || '',
+          expiresAt: result.expiry_date || 0
+        })
+      })
+    } else {
+      reject(new Error('refreshAccessToken is not available'))
+    }
   })
 }
 
@@ -60,8 +63,11 @@ export const authorizationPathExtractorFactory = (templates: string[]): Authoriz
       return getBearerAuthorization(updatedToken)
     } catch (err) {
       if (err instanceof GaxiosError) {
-        if (err.response) {
-          const { status, statusText } = err.response
+        if (err.response != null) {
+          const {
+            status,
+            statusText
+          } = err.response
           if (status >= 400 && status < 500) {
             throw new RequestError(403, undefined, err.response)
           }

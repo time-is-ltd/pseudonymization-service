@@ -1,24 +1,22 @@
 import { proxyFactory } from '../../proxy'
-import { oauth2Request, TokenHandlerOptions } from '../../oauth2/handlers/oauth2-token.handler'
-import { Route } from '../../router/interfaces/router.interface'
+import { oauth2Request, type TokenHandlerOptions } from '../../oauth2/handlers/oauth2-token.handler'
+import { type Route } from '../../router/interfaces/router.interface'
 import {
-  listUserMessagesMapper,
+  createSubscriptionMapper,
+  getMailFolderMapper,
+  getUserIdMapper,
+  listCommunicationsCallRecordsMapper,
+  listMailFoldersMapper,
   listUserCalendarsMapper,
   listUserEventsMapper,
-  createSubscriptionMapper,
-  listCommunicationsCallRecordsMapper,
-  getUserIdMapper,
-  listMailFoldersMapper,
-  getMailFolderMapper
+  listUserMessagesMapper
 } from './mappers'
 
 import tokenService from '../../token/token.service'
 
-import config, {
-  hosts,
-  paths
-} from './microsoftgraph.config'
+import config, { hosts, paths } from './microsoftgraph.config'
 import { listCommunicationsCallRecordsSessionsMapper } from './mappers/list-comunications-call-records-sessions.mapper'
+import { type Module } from '../module.interface'
 
 type TokenType = 'application' | 'delegated'
 const MICROSOFTGRAPH_DELEGATED_TOKEN_ID = 'microsoftgraph.delegated'
@@ -213,7 +211,7 @@ const listMailFolderMessagesRoute: Route = {
   })
 }
 
-export default async () => {
+export default async (): Promise<Module> => {
   const applicationCredentials = await Promise.all([
     config.tenantId,
     config.clientId,

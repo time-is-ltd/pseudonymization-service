@@ -9,15 +9,15 @@ import { URL } from 'url'
  * @param whiteList
  */
 export const extractDomains = (value: string, extract: boolean, whiteList: string[] = undefined) => {
-  if (extract !== true) {
+  if (!extract) {
     return ''
   }
 
   const result = new Set()
   extractURLs(value)?.forEach(extractedUrl => {
     const host = new URL(extractedUrl).host
-    if (whiteList && whiteList.length) {
-      for (let whiteListed of whiteList) {
+    if (whiteList && (whiteList.length > 0)) {
+      for (const whiteListed of whiteList) {
         if (host.endsWith(whiteListed)) {
           result.add(host)
           break

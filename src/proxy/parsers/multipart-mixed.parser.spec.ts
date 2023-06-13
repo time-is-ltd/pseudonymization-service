@@ -32,7 +32,7 @@ const buildMultipart = (iterations: number = 1, separator: string, header: strin
   return output
 }
 
-const buildParseTest = (iterations: number = 1, separator: string, header: string, body: string, parsedHeader: Object, newLine = '\r\n') => {
+const buildParseTest = (iterations: number = 1, separator: string, header: string, body: string, parsedHeader: Record<string, unknown>, newLine = '\r\n') => {
   const input = buildMultipart(iterations, separator, header, body, newLine)
   const parsedInput = multipart.parse(input)
 

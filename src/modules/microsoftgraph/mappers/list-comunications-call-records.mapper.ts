@@ -1,11 +1,11 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
 import {
-  IdentitySet,
-  CallRecordSession
+  type IdentitySet,
+  type CallRecordSession
 } from '../common/interfaces'
 import {
   identitySetSchema,
@@ -58,4 +58,4 @@ export const schema: Schema<CallRecord> = {
   ]
 }
 
-export const listCommunicationsCallRecordsMapper = jsonMapper<typeof schema, CallRecord>(schema)
+export const listCommunicationsCallRecordsMapper = jsonMapper<CallRecord>(schema)

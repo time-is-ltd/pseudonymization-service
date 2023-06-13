@@ -38,7 +38,7 @@
   --batch_randomString--
 */
 
-import { IncomingHttpHeaders } from 'http'
+import { type IncomingHttpHeaders } from 'http'
 
 export interface MultipartMixedPart {
   headers: IncomingHttpHeaders
@@ -56,7 +56,7 @@ const stringifyHeaders = (headers: IncomingHttpHeaders): string => {
   return Object.keys(headers)
     .map(key => {
       const value = headers[key]
-      return `${key}: ${value}`
+      return `${key}: ${value.toString()}`
     })
     .join(newLine)
 }

@@ -1,7 +1,7 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
 
 interface UsageReportEntity {
@@ -295,4 +295,4 @@ const schema: Schema<UsageReport> = {
   nextPageToken: TYPES.String
 }
 
-export const listUsageReportsMapper = jsonMapper<typeof schema, UsageReport>(schema)
+export const listUsageReportsMapper = jsonMapper<UsageReport>(schema)

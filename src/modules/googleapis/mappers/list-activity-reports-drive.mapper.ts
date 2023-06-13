@@ -1,9 +1,9 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
-import { ActivityReport, itemSchemaWithoutEvents } from './list-activity-reports-mapper.helper'
+import { type ActivityReport, itemSchemaWithoutEvents } from './list-activity-reports-mapper.helper'
 
 const schema: Schema<ActivityReport> = {
   kind: TYPES.String,
@@ -96,4 +96,4 @@ const schema: Schema<ActivityReport> = {
   nextPageToken: TYPES.String
 }
 
-export const listActivityReportsDriveMapper = jsonMapper<typeof schema, ActivityReport>(schema)
+export const listActivityReportsDriveMapper = jsonMapper<ActivityReport>(schema)

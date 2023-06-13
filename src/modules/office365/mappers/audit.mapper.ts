@@ -1,4 +1,4 @@
-import { jsonMapper, Schema, TYPES } from '../../../mapper'
+import { jsonMapper, type Schema, TYPES } from '../../../mapper'
 
 interface AuditRecord {
   CreationTime: string
@@ -36,4 +36,4 @@ const schema: Schema<AuditRecord> = {
   FileSizeBytes: TYPES.Number
 }
 
-export const auditMapper = jsonMapper<typeof schema[], AuditRecord>([schema])
+export const auditMapper = jsonMapper<AuditRecord>([schema])
