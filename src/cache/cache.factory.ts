@@ -18,6 +18,7 @@ export const cacheFactory = <T>(): Cache<T> => {
       .forEach(key => {
         const item = map[key]
         if (!isValid(item)) {
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete map[key]
         }
       })

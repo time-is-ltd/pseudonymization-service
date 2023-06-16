@@ -43,7 +43,7 @@ interface ParsedBody {
 const parseBody = (part: string): ParsedBody => {
   const parsedPart = part
     .split(/(\n\n|\r\n\r\n)/)
-    .filter(v => v && v.trim())
+    .filter(v => v.trim())
 
   const { headers, status } = parsedPart[0]
     .split(/(\n|\r\n)/)
@@ -63,7 +63,7 @@ const parseBody = (part: string): ParsedBody => {
   }
 }
 
-const stringifyBody = (parsedBody: ParsedBody, data?: any) => {
+const stringifyBody = (parsedBody: ParsedBody, data?: string | Record<string, unknown>) => {
   const stringifyHeaders = (headers: IncomingHttpHeaders): string => {
     return Object.keys(headers)
       .map(key => {
@@ -75,7 +75,7 @@ const stringifyBody = (parsedBody: ParsedBody, data?: any) => {
 
   let body = `${parsedBody.status}\r\n${stringifyHeaders(parsedBody.headers)}`
   if (data) {
-    body += `\r\n\r\n${data}`
+    body += `\r\n\r\n${String(data)}`
   }
 
   return body
@@ -130,7 +130,7 @@ const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList,
 
   const { parts: bodyParts } = multipart.parse(bodyRaw)
   const responseMapperMap = bodyParts
-    .reduce((map, part) => {
+    .reduce((map: Record<string, DataMapper>, part) => {
       const contentId = normalizeContentId(part.headers['content-id'] as string)
 
       const parsedBody = parseBody(part.body)
@@ -157,7 +157,7 @@ const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList,
     const parsedBody = parseBody(part.body)
 
     const responseContentId = normalizeContentId(part.headers['content-id'] as string)
-    const mapper: Function | undefined = responseMapperMap[responseContentId]
+    const mapper: DataMapper | undefined = responseMapperMap[responseContentId]
 
     // Do not send data if the mapper was not found
     const methodAllowed = !(mapper == null)

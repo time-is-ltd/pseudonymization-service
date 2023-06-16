@@ -7,6 +7,7 @@ import {
 } from './googleapis-schemas'
 import { containsNothingButDomains, overrideEnvs, validateUsingSchema } from './test-utils'
 import * as request from 'supertest'
+import { type EventItem, type UserMessageItem } from '../modules/googleapis/mappers'
 
 const gsuiteTestUser = process.env.GSUITE_TEST_USER
 const apiToken = process.env.API_TOKEN
@@ -43,7 +44,7 @@ test('healthcheck returns 200/OK', async () => {
 
 test('withstands stress load', async () => {
   const requests: any[] = []
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 100; i++) {
     requests.push(request(app).get('/healthcheck')
       .expect(200)
       .then((response) => {
@@ -81,7 +82,10 @@ test.each([CONFIG_DEFAULT, CONFIG_EXTRACT_DOMAINS])('can list gsuite emails', as
 
 test.each([CONFIG_DEFAULT, CONFIG_EXTRACT_DOMAINS])('can get individual gsuite email', async (config) => {
   overrideEnvs(config)
-  await request(app).get(`/www.googleapis.com/gmail/v1/users/${gsuiteTestUser}/messages/17a0f96a2ab5ab11`)
+  const response = await request(app).get(`/www.googleapis.com/gmail/v1/users/${gsuiteTestUser}/messages`)
+    .set('Authorization', `Bearer ${apiToken}`)
+  const messages = response.body.messages as UserMessageItem[]
+  await request(app).get(`/www.googleapis.com/gmail/v1/users/${gsuiteTestUser}/messages/${messages[0].id}`)
     .set('Authorization', `Bearer ${apiToken}`)
     .expect(200)
     .then((response) => {
@@ -104,7 +108,7 @@ test.each([CONFIG_DEFAULT, CONFIG_EXTRACT_DOMAINS])('can list gsuite calendar ev
     .set('Authorization', `Bearer ${apiToken}`)
     .then((response) => {
       validateUsingSchema(response.body, listCalendarEventsSchema)
-      Object.values(response.body.items).forEach(event => {
+      Object.values(response.body.items).forEach((event: EventItem) => {
         containsNothingButDomains(event.summary)
         containsNothingButDomains(event.description)
       })

@@ -77,7 +77,7 @@ export const parsePart = (part: string): MultipartMixedPart => {
   // Split content by 2x CRLF
   const contentParts = part
     .split(newLine.repeat(2))
-    .filter(v => v && v.trim())
+    .filter(v => v.trim())
 
   // Join headers
   const headers = parseHeaders(contentParts[0])

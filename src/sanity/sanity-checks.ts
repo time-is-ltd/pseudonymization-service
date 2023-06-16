@@ -12,6 +12,12 @@ import { VerboseLevel, verboseLevel } from '../logger'
 import { type Express } from 'express'
 import { type Module } from '../modules/module.interface'
 
+interface Check {
+  name: string
+  fn: () => Promise<void>
+  abortOnFail: boolean
+}
+
 class Skipped extends CustomError {
   public constructor (
     message?: string
@@ -20,7 +26,7 @@ class Skipped extends CustomError {
   }
 }
 
-const check = (name: string, fn: () => Promise<void>, abortOnFail = false) => {
+const check = (name: string, fn: () => Promise<void>, abortOnFail = false): Check => {
   return {
     name,
     fn,
@@ -28,7 +34,7 @@ const check = (name: string, fn: () => Promise<void>, abortOnFail = false) => {
   }
 }
 
-const checkSuite = (name, checks) => {
+const checkSuite = (name: string, checks: Check[]) => {
   return {
     name,
     checks
@@ -61,15 +67,16 @@ const configSuite = () => {
       try {
         await client.getSecret('dummy')
       } catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
         if (err.name?.includes('AuthenticationError')) {
-          throw Error(`Authentication error. See details below.\n${err.message}`)
+          throw Error(`Authentication error. See details below.\n${message}`)
         } else if (err.name === 'RestError') {
           // no error except 404 is allowed
           if (!err.statusCode || err.statusCode !== 404) {
-            throw Error(`Unable to read a secret. See below for details.\n${err.message}`)
+            throw Error(`Unable to read a secret. See below for details.\n${message}`)
           }
         } else {
-          throw Error(`Unable to read a secret. See below for details.\n${err.message}`)
+          throw Error(`Unable to read a secret. See below for details.\n${message}`)
         }
       }
     }, true),
@@ -85,7 +92,8 @@ const configSuite = () => {
       } catch (err) {
         // no error except gRPC status 5 (i.e. NOT FOUND) is allowed
         if (!err.code || err.code !== 5) {
-          throw Error(`Unable to read a secret. See below for details.\n${err.message}`)
+          const message = err instanceof Error ? err.message : String(err)
+          throw Error(`Unable to read a secret. See below for details.\n${message}`)
         }
       }
     }, true),
@@ -122,7 +130,7 @@ const appSuite = (app) => {
     check('Routes are registered', async () => {
       const routes = []
       app._router.stack.forEach(function (route) {
-        if (route.route && route.route.path) {
+        if (route.route?.path) {
           routes.push(route.route.path)
         }
       })
@@ -144,7 +152,7 @@ const gsuiteSuite = (app: Express, module: Module, testUser: string) => {
       throw new Skipped('Gsuite test user not set (GSUITE_TEST_USER).')
     }
   }
-  const callGoogleApi = async (endpoint, requiredScope, items) => {
+  const callGoogleApi = async (endpoint: string, requiredScope: string, items: string) => {
     skipIfCannotCheck()
     const scopes = await gsuiteConfig.scopes
     if (!scopes.includes(requiredScope)) {
@@ -152,11 +160,12 @@ const gsuiteSuite = (app: Express, module: Module, testUser: string) => {
     }
     const apiToken = await appConfig.apiToken
     const client = request(app)
-    let response
+    let response: request.Response
     try {
       response = await client.get(endpoint).set('Authorization', `Bearer ${apiToken}`)
     } catch (err) {
-      throw Error(`Unable to get ${items}. See below for details:\n${err.message}`)
+      const message = err instanceof Error ? err.message : String(err)
+      throw Error(`Unable to get ${items}. See below for details:\n${message}`)
     }
     if (response.status >= 300) {
       throw Error(`Unable to get ${items} - status ${response.status} (${response.text})`)
@@ -194,11 +203,12 @@ const o365Suite = (app: Express, module: Module, testUser: string) => {
     skipIfCannotCheck()
     const apiToken = await appConfig.apiToken
     const client = request(app)
-    let response
+    let response: request.Response
     try {
       response = await client.get(endpoint).set('Authorization', `Bearer ${apiToken}`)
     } catch (err) {
-      throw Error(`Unable to get ${items}. See below for details:\n${err.message}`)
+      const message = err instanceof Error ? err.message : String(err)
+      throw Error(`Unable to get ${items}. See below for details:\n${message}`)
     }
     if (response.status >= 300) {
       throw Error(`Unable to get ${items} - status ${response.status} (${response.text})`)
@@ -244,12 +254,13 @@ export const runInitChecks = async (app: Express) => {
     for (const check of suite.checks) {
       await check.fn().then(() => {
         console.log(`• ${check.name} - OK`)
-      }).catch((error) => {
-        if (error instanceof Skipped) {
-          console.log(`• ${check.name} - SKIPPED: ${error.message}`)
+      }).catch((err) => {
+        if (err instanceof Skipped) {
+          console.log(`• ${check.name} - SKIPPED: ${err.message}`)
           skipped += 1
         } else {
-          console.log(`• ${check.name} - ERROR: ${error.message}`)
+          const message = err instanceof Error ? err.message : String(err)
+          console.log(`• ${check.name} - ERROR: ${message}`)
           failed += 1
           if (check.abortOnFail) {
             abort = true

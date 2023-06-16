@@ -85,9 +85,9 @@ export const bootstrap = async (): Promise<express.Express> => {
         paths.forEach(routePath => {
           const path = `/${host}${routePath}`
           const method = route.method || 'get'
-          const requireAuth = route.requireAuth
+          const requireAuth = route.requireAuth ?? true
 
-          console.info(`Registering route [${method.toUpperCase()}] ${path}`)
+          console.info(`Registering ${requireAuth ? 'protected' : 'public'} route [${method.toUpperCase()}] ${path}`)
 
           const handlers = Array.isArray(route.handler)
             ? route.handler
