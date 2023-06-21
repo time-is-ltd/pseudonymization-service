@@ -12,6 +12,15 @@ const withKeepAliveTimeout = (server: http.Server, keepAliveTimeout = 620 * 1000
   server.headersTimeout = headersTimeout
 }
 
+const stopOnSignal = (server: http.Server) => {
+  const signals = ['SIGINT', 'SIGTERM', 'SIGQUIT']
+  signals.forEach(signal => {
+    process.on(signal, () => {
+      server.close()
+    })
+  })
+}
+
 export const run = async () => {
   const app = await bootstrap()
 
@@ -24,6 +33,7 @@ export const run = async () => {
     const httpServer = http.createServer(app)
     withKeepAliveTimeout(httpServer)
     httpServer.listen(httpPort)
+    stopOnSignal(httpServer)
   }
 
   if (httpsPort > 0) {
@@ -33,6 +43,7 @@ export const run = async () => {
     }, app)
     withKeepAliveTimeout(httpsServer)
     httpsServer.listen(httpsPort)
+    stopOnSignal(httpsServer)
   }
 
   await runInitChecks(app)

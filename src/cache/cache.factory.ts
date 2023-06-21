@@ -63,7 +63,14 @@ export const cacheFactory = <T>(): Cache<T> => {
   }
 
   // TTL ticker
-  setInterval(checkValidity, 60 * 1000)
+  const interval = setInterval(checkValidity, 60 * 1000)
+  // Watch signals to clear interval
+  const signals = ['SIGINT', 'SIGTERM', 'SIGQUIT']
+  signals.forEach(signal => {
+    process.on(signal, () => {
+      clearInterval(interval)
+    })
+  })
 
   return {
     get,
