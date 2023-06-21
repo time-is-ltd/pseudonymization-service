@@ -1,6 +1,6 @@
 import multipart from './multipart-mixed.parser'
 
-const normalizeNewLine = (str: string) => str.replace('\n', '\r\n')
+const normalizeNewLine = (str: string) => str.replace(/\n/g, '\r\n')
 const REQUEST_SEPARATOR = '--===============111111111111111=='
 const REQUEST_HEADER = normalizeNewLine(`content-type: application/http
 content-id: <fde099ea-e992-42a9-8cc9-ddea517ebd0f + 1>
