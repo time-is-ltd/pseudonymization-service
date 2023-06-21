@@ -6,8 +6,8 @@
     "build": "tsc -p tsconfig.build.json",
     "start": "ts-node -r dotenv/config -r tsconfig-paths/register src/main.ts",
     "start:dev": "ts-node-dev -r dotenv/config -r tsconfig-paths/register src/main.ts",
-    "test": "jest --silent --maxWorkers=1 --detectOpenHandles --forceExit",
-    "test:cov": "jest --silent --coverage --maxWorkers=1 --detectOpenHandles --forceExit",
+    "test": "jest --silent --maxWorkers=1",
+    "test:cov": "jest --silent --coverage --maxWorkers=1",
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --ext .ts src --fix"
   },
