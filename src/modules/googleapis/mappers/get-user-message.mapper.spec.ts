@@ -1,6 +1,6 @@
 import { getUserMessageMapper } from './get-user-message.mapper'
 import {
-  PersonId,
+  type PersonId,
   getEmail,
   getAnonymizedEmail,
   ANONYMIZED_FILENAME,

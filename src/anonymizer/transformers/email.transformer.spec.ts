@@ -1,4 +1,4 @@
-import { email, AnonymizeEmailConfig } from './email.transformer'
+import { email, type AnonymizeEmailConfig } from './email.transformer'
 jest.mock('../../cache')
 
 const configFactory = (

@@ -1,11 +1,11 @@
 import { filename } from './filename.transformer'
 
-const contentTypeNameRegexp = /(name=\\?\"?([^;]+)\\?\"?)/
+const contentTypeNameRegexp = /(name=\\?"?([^;]+)\\?"?)/
 
 export const contentType = (value: string) => {
   const parts = value.match(contentTypeNameRegexp)
 
-  if (!parts) {
+  if (parts == null) {
     return value
   }
 

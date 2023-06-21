@@ -1,20 +1,18 @@
-import { Token } from './interfaces/token.interface'
-const store: {
-  [key: string]: Token
-} = {}
+import { type Token } from './interfaces/token.interface'
+const store: Record<string, Token> = {}
 
 export class TokenRepository {
-  create (token: Token) {
+  create (token: Token): Token {
     store[token.id] = token
     return token
   }
 
-  update (token: Token) {
+  update (token: Token): Token {
     store[token.id] = token
     return token
   }
 
-  getById (id: string) {
+  getById (id: string): Token {
     return store[id]
   }
 }

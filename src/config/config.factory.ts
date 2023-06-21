@@ -1,4 +1,4 @@
-import { Provider, ProviderResult, Response, TransformMap } from './types'
+import { type Provider, type ProviderResult, type Response, type TransformMap } from './types'
 import { cacheFactory } from '../cache'
 import { fromAzureKeyVault, fromCache, fromEnvVariable, fromGcpSecretManager } from './providers'
 import { logger, VerboseLevel } from '../logger'
@@ -77,7 +77,7 @@ export const configFactory = <T extends TransformMap>(transformMap: T, vaultKeys
       const transformedValue = transform(value)
 
       if (transformedValue) {
-        const secretStr = String(transformedValue).split('').map(v => `*`).join('')
+        const secretStr = String(transformedValue).split('').map(v => '*').join('')
         logger(VerboseLevel.V, `[Config]: Key ${String(key)} loaded (value:${secretStr})`)
       }
 

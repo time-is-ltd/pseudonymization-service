@@ -1,40 +1,40 @@
-import { Schema, TYPES } from '../../../mapper'
+import { type Schema, TYPES } from '../../../mapper'
 
 import {
-  Attachment,
-  Attendee,
-  Calendar,
-  CallRecordsEndpoint,
-  CallRecordSession,
-  DateTimeTimeZone,
-  EmailAddress,
-  Event,
-  Extension,
-  FollowUpFlag,
-  Identity,
-  IdentitySet,
-  InternetMessageHeader,
-  ItemBody,
-  Location,
-  MailFolder,
-  Mention,
-  MentionsPreview,
-  Message,
-  OnlineMeeting,
-  OutlookGeoCoordinates,
-  PatternedRecurrence,
-  Phone,
-  PhysicalAddress,
-  Recipient,
-  RecurrencePattern,
-  RecurrenceRange,
-  ResponseStatus,
-  TimeSlot
+  type Attachment,
+  type Attendee,
+  type Calendar,
+  type CallRecordsEndpoint,
+  type CallRecordSession,
+  type DateTimeTimeZone,
+  type EmailAddress,
+  type Event,
+  type Extension,
+  type FollowUpFlag,
+  type Identity,
+  type IdentitySet,
+  type InternetMessageHeader,
+  type ItemBody,
+  type Location,
+  type MailFolder,
+  type Mention,
+  type MentionsPreview,
+  type Message,
+  type OnlineMeeting,
+  type OutlookGeoCoordinates,
+  type PatternedRecurrence,
+  type Phone,
+  type PhysicalAddress,
+  type Recipient,
+  type RecurrencePattern,
+  type RecurrenceRange,
+  type ResponseStatus,
+  type TimeSlot
 } from './interfaces'
 
 export const itemBody: Schema<ItemBody> = {
   contentType: TYPES.ContentType,
-  content: TYPES.ExtractedDomains,
+  content: TYPES.ExtractedDomains
 }
 
 export const dateTimeTimeZone: Schema<DateTimeTimeZone> = {
@@ -98,12 +98,12 @@ export const timeSlot: Schema<TimeSlot> = {
 export const attendee: Schema<Attendee> = {
   type: TYPES.String,
   status: responseStatus,
-  emailAddress: emailAddress,
+  emailAddress,
   proposedNewTime: timeSlot
 }
 
 export const recipient: Schema<Recipient> = {
-  emailAddress: emailAddress
+  emailAddress
 }
 
 export const phone: Schema<Phone> = {

@@ -7,7 +7,7 @@ import extractToken from './helpers/extract-token'
 import googleapis from './modules/googleapis/googleapis.module'
 import microsoftgraph from './modules/microsoftgraph/microsoftgraph.module'
 import office365 from './modules/office365/office365.module'
-import { Route } from './router/interfaces/router.interface'
+import { type Route } from './router/interfaces/router.interface'
 
 // Register modules
 interface Module {
@@ -17,11 +17,12 @@ interface Module {
 
 const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requireAuth: boolean) => async (req, res, next) => {
   if (!requireAuth) {
-    return next()
+    next()
+    return
   }
 
   const authorization = req.headers.authorization
-  if (authorization) {
+  if (authorization != null) {
     // Check proxy key
     const apiTokenInAuthorizationHeader = extractToken(authorization)
     const apiToken = await config.apiToken
@@ -29,14 +30,15 @@ const authMiddleware: (requireAuth: boolean) => express.RequestHandler = (requir
     // Do not allow short apiToken
     const isTokenValid = apiToken?.length >= 32
     if (isTokenValid && apiToken === apiTokenInAuthorizationHeader) {
-      return next()
+      next()
+      return
     }
   }
 
   res.sendStatus(403)
 }
 
-export const bootstrap = async () => {
+export const bootstrap = async (): Promise<express.Express> => {
   const microsoftgraphModule = await microsoftgraph()
   const googleapisModule = await googleapis()
   const office365Module = await office365()
@@ -56,16 +58,16 @@ export const bootstrap = async () => {
 
   // Diagnostics
   app.get('/diag', authMiddleware(true), (_, res) => {
-    const routes = []
-    app._router.stack.forEach(function (route) {
-      if (route.route && route.route.path) {
+    const routes: any[] = []
+    app._router.stack.forEach((route: any) => {
+      if (route.route?.path) {
         routes.push(route.route.path)
       }
     })
 
     res.json({
-      'version': process.env.npm_package_version,
-      'routes': routes
+      version: process.env.npm_package_version,
+      routes
     })
   })
 
@@ -83,9 +85,9 @@ export const bootstrap = async () => {
         paths.forEach(routePath => {
           const path = `/${host}${routePath}`
           const method = route.method || 'get'
-          const requireAuth = route.requireAuth !== false
+          const requireAuth = route.requireAuth ?? true
 
-          console.info(`Registering route [${method.toUpperCase()}] ${path}`)
+          console.info(`Registering ${requireAuth ? 'protected' : 'public'} route [${method.toUpperCase()}] ${path}`)
 
           const handlers = Array.isArray(route.handler)
             ? route.handler

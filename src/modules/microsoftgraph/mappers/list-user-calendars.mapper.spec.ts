@@ -1,6 +1,6 @@
 import { listUserCalendarsMapper } from './list-user-calendars.mapper'
 import {
-  PersonId,
+  type PersonId,
   getEmail,
   getAnonymizedEmail,
   testMapper

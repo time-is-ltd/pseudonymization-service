@@ -9,7 +9,7 @@ import { schema as o365_list_communications_call_records_sessions_schema } from 
 import * as yaml from 'js-yaml'
 import { TYPES } from '../mapper'
 
-function process (key, value) {
+function process (key: string, value: symbol) {
   if (Array.isArray(value)) {
     if (value.includes(TYPES.Private)) {
       value = TYPES.Private
@@ -44,26 +44,26 @@ function process (key, value) {
     case TYPES.Number:
       return '✓'
     default:
-      throw new Error('Unexpected value ' + value.toString())
+      throw new Error(`Unexpected value ${value.toString()}`)
   }
 }
 
 function traverse (o, desc, func) {
-  for (let i in o) {
-    if (typeof (o[i]) == 'symbol') {
+  for (const i in o) {
+    if (typeof (o[i]) === 'symbol') {
       desc[i] = process(i, o[i])
     } else if (Array.isArray(o[i])) {
-      const all_symbols = o[i].every((val, i, arr) => typeof (val) == 'symbol')
-      if (all_symbols) {
+      const allSymbols = o[i].every((val, i, arr) => typeof (val) === 'symbol')
+      if (allSymbols) {
         desc[i] = process(i, o[i])
       } else {
         desc[i] = []
-        for (let j in o[i]) {
+        for (const j in o[i]) {
           desc[i][j] = {}
           traverse(o[i][j], desc[i][j], func)
         }
       }
-    } else if (typeof (o[i]) == 'object') {
+    } else if (typeof (o[i]) === 'object') {
       desc[i] = {}
       traverse(o[i], desc[i], func)
     } else {
@@ -72,7 +72,7 @@ function traverse (o, desc, func) {
   }
 }
 
-function dump_data_mod (schema) {
+function dumpDataMod (schema) {
   const desc = {}
   traverse(schema, desc, process)
   const out = yaml.dump(desc)
@@ -80,33 +80,33 @@ function dump_data_mod (schema) {
 }
 
 test('data mod - o365 list user calendars', async () => {
-  dump_data_mod(o365_list_user_calendars_schema)
+  dumpDataMod(o365_list_user_calendars_schema)
 })
 
 test('data mod - o365 list user events', async () => {
-  dump_data_mod(o365_list_user_events_schema)
+  dumpDataMod(o365_list_user_events_schema)
 })
 
 test('data mod - o365 list user messages', async () => {
-  dump_data_mod(o365_list_user_messages_schema)
+  dumpDataMod(o365_list_user_messages_schema)
 })
 
 test('data mod - o365 list mail folders', async () => {
-  dump_data_mod(o365_list_mail_folders_schema)
+  dumpDataMod(o365_list_mail_folders_schema)
 })
 
 test('data mod - o365 get user id', async () => {
-  dump_data_mod(o365_get_user_id_schema)
+  dumpDataMod(o365_get_user_id_schema)
 })
 
 test('data mod - o365 get mail folder', async () => {
-  dump_data_mod(o365_get_mail_folder_schema)
+  dumpDataMod(o365_get_mail_folder_schema)
 })
 
 test('data mod - o365 list communications call records', async () => {
-  dump_data_mod(o365_list_communications_call_records_schema)
+  dumpDataMod(o365_list_communications_call_records_schema)
 })
 
 test('data mod - o365 list communications call records sessions', async () => {
-  dump_data_mod(o365_list_communications_call_records_sessions_schema)
+  dumpDataMod(o365_list_communications_call_records_sessions_schema)
 })

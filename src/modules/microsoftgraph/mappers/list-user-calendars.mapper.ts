@@ -1,9 +1,9 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
-import { Calendar } from '../common/interfaces'
+import { type Calendar } from '../common/interfaces'
 import { calendar } from '../common/schema'
 
 export interface UserCalendars {
@@ -26,4 +26,4 @@ export const schema: Schema<UserCalendars> = {
   ]
 }
 
-export const listUserCalendarsMapper = jsonMapper<typeof schema, UserCalendars>(schema)
+export const listUserCalendarsMapper = jsonMapper<UserCalendars>(schema)

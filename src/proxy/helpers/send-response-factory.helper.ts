@@ -1,4 +1,4 @@
-import { OutgoingHttpHeaders, ServerResponse } from 'http'
+import { type OutgoingHttpHeaders, type ServerResponse } from 'http'
 
 interface ResponseOptions {
   statusCode?: number

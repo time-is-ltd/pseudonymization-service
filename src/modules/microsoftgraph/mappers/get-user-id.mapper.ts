@@ -1,7 +1,7 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
 
 export interface User {
@@ -53,4 +53,4 @@ export const schema: Schema<User> = {
   userPrincipalName: TYPES.Email
 }
 
-export const getUserIdMapper = jsonMapper<typeof schema, User>(schema)
+export const getUserIdMapper = jsonMapper<User>(schema)

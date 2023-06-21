@@ -1,4 +1,4 @@
-import { jsonMapper, Schema, TYPES } from '../../../mapper'
+import { jsonMapper, type Schema, TYPES } from '../../../mapper'
 
 interface Content {
   contentUri: string
@@ -16,4 +16,4 @@ const schema: Schema<Content> = {
   contentExpiration: TYPES.String
 }
 
-export const listContentMapper = jsonMapper<typeof schema[], Content>([schema])
+export const listContentMapper = jsonMapper<Content>([schema])

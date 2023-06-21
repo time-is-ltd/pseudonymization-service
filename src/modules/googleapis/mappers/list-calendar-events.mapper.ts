@@ -1,6 +1,6 @@
 import {
   jsonMapper,
-  Schema,
+  type Schema,
   TYPES
 } from '../../../mapper'
 
@@ -366,4 +366,4 @@ const schema: Schema<Event> = {
   ]
 }
 
-export const listCalendarEventsMapper = jsonMapper<typeof schema, Event>(schema)
+export const listCalendarEventsMapper = jsonMapper<Event>(schema)

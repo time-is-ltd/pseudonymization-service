@@ -1,4 +1,4 @@
-import { match, MatchResult } from 'path-to-regexp'
+import { match, type MatchResult } from 'path-to-regexp'
 import { URL } from 'url'
 
 export const pathToAbsUrl = (urlPath: string, protocol = 'https') => {
@@ -7,7 +7,7 @@ export const pathToAbsUrl = (urlPath: string, protocol = 'https') => {
   return `${protocol}://${urlPathWithoutLeadingSlash}`
 }
 
-export const transformPath = <P extends Object>(template: string, transform: (params: MatchResult<P>) => string) => (path: string) => {
+export const transformPath = <P extends Record<string, unknown>>(template: string, transform: (params: MatchResult<P>) => string) => (path: string) => {
   const normalizedPath = new URL(pathToAbsUrl(path)).pathname
 
   const fn = match<P>(template)
@@ -23,7 +23,7 @@ export const transformPath = <P extends Object>(template: string, transform: (pa
   })
 }
 
-export const findTemplateAndMatch = <P extends Object>(templates: string[]) => (path: string) => {
+export const findTemplateAndMatch = <P extends Record<string, unknown>>(templates: string[]) => (path: string) => {
   const normalizedPath = new URL(pathToAbsUrl(path)).pathname
 
   for (const template of templates) {

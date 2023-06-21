@@ -1,6 +1,6 @@
 import {
   listUserMessagesMapper,
-  UserMessages
+  type UserMessages
 } from './list-user-messages.mapper'
 
 import {

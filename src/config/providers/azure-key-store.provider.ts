@@ -1,7 +1,7 @@
 import { DefaultAzureCredential } from '@azure/identity'
 import { SecretClient } from '@azure/keyvault-secrets'
 import { toKebabCase } from '../transformers'
-import { TransformMap } from '../types'
+import { type TransformMap } from '../types'
 import { logger, VerboseLevel } from '../../logger'
 
 const getAzureVaultVariableName = <T extends TransformMap, K extends keyof T> (key: K): string => {
@@ -24,6 +24,5 @@ export const fromAzureKeyVault = <T extends TransformMap> (vaultName: string) =>
     } catch (err) {
       logger(VerboseLevel.V, `[Config/Azure Key Vault]: ${String(key)} error`, err?.statusCode, err?.details || err)
     }
-    return
   }
 }

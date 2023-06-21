@@ -1,24 +1,18 @@
 import {
-  listUserMessagesMapper,
   getUserMessageMapper,
-  listCalendarEventsMapper,
-  listUserCalendarsMapper,
-  listActivityReportsMeetMapper,
   listActivityReportsDriveMapper,
-  listUsageReportsMapper
+  listActivityReportsMeetMapper,
+  listCalendarEventsMapper,
+  listUsageReportsMapper,
+  listUserCalendarsMapper,
+  listUserMessagesMapper
 } from './mappers'
 import { authorizationPathExtractorFactory } from './googleapis.service'
 import { proxyFactory } from '../../proxy'
-import { Route } from '../../router/interfaces/router.interface'
-import {
-  scopes,
-  hosts,
-  paths,
-  pathTransforms,
-  clientEmail,
-  privateKey
-} from './googleapis.config'
+import { type Route } from '../../router/interfaces/router.interface'
+import { clientEmail, hosts, paths, pathTransforms, privateKey, scopes } from './googleapis.config'
 import batchHandler from './handlers/batch.handler'
+import { type Module } from '../module.interface'
 
 const authorizationFactory = authorizationPathExtractorFactory(Object.values(paths))
 
@@ -97,7 +91,7 @@ const listUsageReportsRoute: Route = {
   })
 }
 
-export default async () => {
+export default async (): Promise<Module> => {
   const enabledPromiseAll = await Promise.all([scopes, clientEmail, privateKey])
 
   const enabled = enabledPromiseAll

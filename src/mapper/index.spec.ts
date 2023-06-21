@@ -13,7 +13,9 @@ test('Falsy values', async () => {
   expect(mapper(null)).toBe(undefined)
   expect(mapper(undefined)).toBe(undefined)
   expect(mapper()).toBe(undefined)
+  // @ts-expect-error Testing invalid input
   expect(mapper('')).toBe(undefined)
+  // @ts-expect-error Testing invalid input
   expect(mapper(false)).toBe(undefined)
 })
 
@@ -26,14 +28,14 @@ const buildTest = async (
   outputValues: any[]
 ) => {
   const valueMapper = await valueMapperFactory()
-  types.forEach(type => {
+  types.forEach((type: symbol[] | symbol) => {
     const schema = { test: type }
     inputValues.forEach((inputValue, i) => {
       const outputValue = outputValues[i]
       const input = { [TEST_PROPERTY_NAME]: inputValue }
       const output = { [TEST_PROPERTY_NAME]: outputValue }
 
-      const mapper = schemaMapper<typeof schema, typeof input>(schema, valueMapper)
+      const mapper = schemaMapper<typeof input>(schema, valueMapper)
       expect(mapper(input)).toMatchObject(output)
     })
   })
@@ -50,7 +52,7 @@ const inputValues = [
   [TEST_STRING_VALUE, TEST_STRING_VALUE]
 ]
 
-test('Map string property', () => {
+test('Map string property', async () => {
   const types = [
     TYPES.String,
     TYPES.Datetime,
@@ -70,10 +72,10 @@ test('Map string property', () => {
     ''
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map private string property', () => {
+test('Map private string property', async () => {
   const types = [
     [
       TYPES.Text,
@@ -100,10 +102,10 @@ test('Map private string property', () => {
     ''
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map numeric property', () => {
+test('Map numeric property', async () => {
   const types = [
     TYPES.Number
   ]
@@ -118,10 +120,10 @@ test('Map numeric property', () => {
     0
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map private numeric property', () => {
+test('Map private numeric property', async () => {
   const types = [
     [
       TYPES.Private,
@@ -139,10 +141,10 @@ test('Map private numeric property', () => {
     0
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map boolean property', () => {
+test('Map boolean property', async () => {
   const types = [
     TYPES.Boolean
   ]
@@ -157,10 +159,10 @@ test('Map boolean property', () => {
     false
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map private boolean property', () => {
+test('Map private boolean property', async () => {
   const types = [
     [
       TYPES.Private,
@@ -178,10 +180,10 @@ test('Map private boolean property', () => {
     false
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map email property', () => {
+test('Map email property', async () => {
   const types = [
     TYPES.Email
   ]
@@ -196,10 +198,10 @@ test('Map email property', () => {
     ANONYMIZED_EMAIL
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map filename property', () => {
+test('Map filename property', async () => {
   const types = [
     TYPES.Filename
   ]
@@ -214,10 +216,10 @@ test('Map filename property', () => {
     ANONYMIZED_FILENAME
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map string array property', () => {
+test('Map string array property', async () => {
   const types = [
     [
       TYPES.String,
@@ -235,10 +237,10 @@ test('Map string array property', () => {
     [TEST_STRING_VALUE, TEST_STRING_VALUE]
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map private array property', () => {
+test('Map private array property', async () => {
   const types = [
     [
       TYPES.Private,
@@ -256,10 +258,10 @@ test('Map private array property', () => {
     []
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
-test('Map private array property', () => {
+test('Map private array property', async () => {
   const types = [
     [
       TYPES.Private,
@@ -277,7 +279,7 @@ test('Map private array property', () => {
     []
   ]
 
-  buildTest(types, inputValues, outputValues)
+  await buildTest(types, inputValues, outputValues)
 })
 
 test('Complex schema', async () => {
@@ -416,6 +418,6 @@ test('Complex schema', async () => {
   const output = build(baseOutput)
 
   const valueMapper = await valueMapperFactory()
-  const mapper = schemaMapper<typeof schema, typeof input>(schema, valueMapper)
+  const mapper = schemaMapper<typeof input>(schema, valueMapper)
   expect(mapper(input)).toMatchObject(output)
 })

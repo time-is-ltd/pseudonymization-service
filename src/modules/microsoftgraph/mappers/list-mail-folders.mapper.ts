@@ -1,9 +1,9 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
-import { MailFolder } from '../common/interfaces'
+import { type MailFolder } from '../common/interfaces'
 import { mailFolderSchema } from '../common/schema'
 
 export interface MailFolders {
@@ -21,4 +21,4 @@ export const schema: Schema<MailFolders> = {
   ]
 }
 
-export const listMailFoldersMapper = jsonMapper<typeof schema, MailFolders>(schema)
+export const listMailFoldersMapper = jsonMapper<MailFolders>(schema)

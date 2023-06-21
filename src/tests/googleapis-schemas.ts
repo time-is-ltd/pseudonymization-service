@@ -15,10 +15,10 @@ export const listUserMessagesSchema = {
         },
         required: ['id', 'threadId'],
         additionalProperties: false
-      },
+      }
     }
   },
-  required: ['messages'],
+  required: ['messages']
 }
 
 export const getUserMessageSchema = {
@@ -33,7 +33,7 @@ export const getUserMessageSchema = {
     snippet: { type: 'string' },
     historyId: { type: 'string' },
     internalDate: { type: 'string' },
-    payload: { '$ref': '#/definitions/payload' },
+    payload: { $ref: '#/definitions/payload' }
   },
   required: ['id', 'threadId', 'labelIds', 'snippet', 'internalDate', 'payload'],
   definitions: {
@@ -63,10 +63,10 @@ export const getUserMessageSchema = {
         },
         parts: {
           type: 'array',
-          items: { '$ref': '#/definitions/payload' }
+          items: { $ref: '#/definitions/payload' }
         }
       },
-      required: ['partId', 'mimeType', 'filename', 'headers', 'body'],
+      required: ['partId', 'mimeType', 'filename', 'headers', 'body']
     },
     siteEstimate: { type: 'integer' }
   }
@@ -134,7 +134,7 @@ export const listUserCalendarsSchema = {
       }
     }
   },
-  required: ['kind', 'etag', 'items',]
+  required: ['kind', 'etag', 'items']
 }
 
 export const listCalendarEventsSchema = {
@@ -155,7 +155,7 @@ export const listCalendarEventsSchema = {
         }
       }
     },
-    nextSyncToken: { type: 'string' },
+    nextSyncToken: { type: 'string' }
   },
-  required: ['kind', 'etag', 'summary', 'updated', 'timeZone', 'accessRole', 'defaultReminders', 'nextSyncToken',]
+  required: ['kind', 'etag', 'summary', 'updated', 'timeZone', 'accessRole', 'defaultReminders', 'nextSyncToken']
 }

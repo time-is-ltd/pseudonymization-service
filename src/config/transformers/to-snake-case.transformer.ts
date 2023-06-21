@@ -1,3 +1,3 @@
 export const toSnakeCase = (s = '') => s
-  .replace(/(?:^|\.?)([A-Z])/g, (_, y) => `_${y.toLowerCase()}`)
+  .replace(/(?:^|\.?)([A-Z])/g, (_: string, y: string) => `_${y.toLowerCase()}`)
   .replace(/^_/, '')

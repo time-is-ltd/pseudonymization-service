@@ -1,5 +1,5 @@
-import { Cache } from '../../cache'
-import { TransformMap } from '../types'
+import { type Cache } from '../../cache'
+import { type TransformMap } from '../types'
 import { logger, VerboseLevel } from '../../logger'
 
 export const fromCache = <T extends TransformMap> (cache: Cache<T>) => async <K extends keyof T> (key: K) => {

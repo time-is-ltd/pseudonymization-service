@@ -27,51 +27,60 @@ export const valueMapperFactory = async () => {
   const [
     anonymizationSalt,
     rsaPublicKey,
-    baseUrl,
+    baseUrl
   ] = await Promise.all([
     config.anonymizationSalt,
     config.rsaPublicKey,
-    config.baseUrl,
+    config.baseUrl
   ])
 
-  return (type: Symbol, value: unknown) => {
-    switch (type) {
-      case TYPES.Private:
-        return undefined
-      case TYPES.Hashed:
-        return hashed(string(value), anonymizationSalt)
-      case TYPES.Passthrough:
-        return value
-      case TYPES.Array:
-        return Array.isArray(value) ? value : []
-      case TYPES.ContentType:
-        return contentType(string(value))
-      case TYPES.ExtractedDomains:
-        return extractDomains(string(value), isExtractDomains, extractDomainsWhitelist)
-      case TYPES.Text:
-      case TYPES.String:
-      case TYPES.Datetime:
-      case TYPES.ContentType:
-      case TYPES.ETag:
-      case TYPES.Username:
-        return string(value)
-      case TYPES.Number:
-        return number(value)
-      case TYPES.Boolean:
-        return boolean(value)
-      case TYPES.Url:
-        return url(string(value), rsaPublicKey)
-      case TYPES.Proxify:
-        return proxify(string(value), baseUrl)
-      case TYPES.Id:
-        const idConfig = {
+  return (type: symbol, value: unknown) => {
+    if (type === TYPES.Private) {
+      return undefined
+    }
+    if (type === TYPES.Hashed) {
+      return hashed(string(value), anonymizationSalt)
+    }
+    if (type === TYPES.Passthrough) {
+      return value
+    }
+    if (type === TYPES.Array) {
+      return Array.isArray(value) ? value : []
+    }
+    if (type === TYPES.ContentType) {
+      return contentType(string(value))
+    }
+    if (type === TYPES.ExtractedDomains) {
+      return extractDomains(string(value), isExtractDomains, extractDomainsWhitelist)
+    }
+    if (type === TYPES.Text || type === TYPES.String || type === TYPES.Datetime || type === TYPES.ETag || type === TYPES.Username) {
+      return string(value)
+    }
+    if (type === TYPES.Number) {
+      return number(value)
+    }
+    if (type === TYPES.Boolean) {
+      return boolean(value)
+    }
+    if (type === TYPES.Url) {
+      return url(string(value), rsaPublicKey)
+    }
+    if (type === TYPES.Proxify) {
+      return proxify(string(value), baseUrl)
+    }
+    if (type === TYPES.Id) {
+      return id(
+        string(value),
+        {
           rsaPublicKey,
           anonymizationSalt
         }
-
-        return id(string(value), idConfig)
-      case TYPES.Email:
-        const emailConfig = {
+      )
+    }
+    if (type === TYPES.Email) {
+      return email(
+        string(value),
+        {
           anonymizeInternalEmailUsername,
           anonymizeExternalEmailUsername,
           anonymizeInternalEmailDomain,
@@ -81,10 +90,12 @@ export const valueMapperFactory = async () => {
           enableExternalEmailPlusAddressing,
           enableInternalEmailPlusAddressing
         }
-
-        return email(string(value), emailConfig)
-      case TYPES.EmailOrHashed:
-        const emailConfig2 = {
+      )
+    }
+    if (type === TYPES.EmailOrHashed) {
+      let result = email(
+        string(value),
+        {
           anonymizeInternalEmailUsername,
           anonymizeExternalEmailUsername,
           anonymizeInternalEmailDomain,
@@ -94,15 +105,15 @@ export const valueMapperFactory = async () => {
           enableExternalEmailPlusAddressing,
           enableInternalEmailPlusAddressing
         }
-
-        let result = email(string(value), emailConfig2)
-        if (!result) {
-          // if no email found, hash the content
-          result = hashed(string(value), anonymizationSalt)
-        }
-        return result
-      case TYPES.Filename:
-        return filename(string(value))
+      )
+      if (!result) {
+        // if no email found, hash the content
+        result = hashed(string(value), anonymizationSalt)
+      }
+      return result
+    }
+    if (type === TYPES.Filename) {
+      return filename(string(value))
     }
 
     return undefined

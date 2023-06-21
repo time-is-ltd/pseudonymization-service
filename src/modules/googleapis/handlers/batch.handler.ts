@@ -1,20 +1,23 @@
-import { RequestHandler } from 'express'
+import { type RequestHandler } from 'express'
 import { URL } from 'url'
-import { IncomingHttpHeaders } from 'http'
+import { type IncomingHttpHeaders } from 'http'
 import { pathToRegexp } from 'path-to-regexp'
 import {
-  proxyFactory,
-  pathToAbsUrl,
+  type AuthorizationFactory,
+  type DataMapper,
   decryptUrlMiddleware,
   modifyHeadersMiddleware,
-  AuthorizationFactory,
-  DataMapper
+  pathToAbsUrl,
+  proxyFactory
 } from '../../../proxy'
-import multipart, { MultipartMixedPart, MultipartMixedPartList } from '../../../proxy/parsers/multipart-mixed.parser'
+import multipart, {
+  type MultipartMixedPart,
+  type MultipartMixedPartList
+} from '../../../proxy/parsers/multipart-mixed.parser'
 
-interface BatchRequestProxyMapperList { [key: string]: DataMapper }
+type BatchRequestProxyMapperList = Record<string, DataMapper>
 
-const extractHost = (str: string) => {
+const extractHost = (str: string): string => {
   return str.split('/')[1]
 }
 
@@ -40,7 +43,7 @@ interface ParsedBody {
 const parseBody = (part: string): ParsedBody => {
   const parsedPart = part
     .split(/(\n\n|\r\n\r\n)/)
-    .filter(v => v && v.trim())
+    .filter(v => v.trim())
 
   const { headers, status } = parsedPart[0]
     .split(/(\n|\r\n)/)
@@ -60,19 +63,19 @@ const parseBody = (part: string): ParsedBody => {
   }
 }
 
-const stringifyBody = (parsedBody: ParsedBody, data?: any) => {
+const stringifyBody = (parsedBody: ParsedBody, data?: string | Record<string, unknown>) => {
   const stringifyHeaders = (headers: IncomingHttpHeaders): string => {
     return Object.keys(headers)
       .map(key => {
         const value = headers[key]
-        return `${key}: ${value}`
+        return `${key}: ${value.toString()}`
       })
       .join('\n')
   }
 
   let body = `${parsedBody.status}\r\n${stringifyHeaders(parsedBody.headers)}`
   if (data) {
-    body += `\r\n\r\n${data}`
+    body += `\r\n\r\n${String(data)}`
   }
 
   return body
@@ -98,7 +101,7 @@ const bodyMapper = async (body: string, authorizationFactory: (path: string) => 
       const path = request.url
       const host = extractHost(path)
 
-      const url = request.url.replace(new RegExp(`\/${host}`, 'gi'), '') // Remove path prefix (e.g. /www.googleapis.com)
+      const url = request.url.replace(new RegExp(`/${host}`, 'gi'), '') // Remove path prefix (e.g. /www.googleapis.com)
       const status = `${request.method} ${url} ${request.protocol}`
       const bodyStr = stringifyBody({ status, headers: request.headers })
 
@@ -118,8 +121,8 @@ const normalizeContentId = (contentId?: string) => {
   }
 
   return contentId
-    .replace(/^\</, '')
-    .replace(/\>$/, '')
+    .replace(/^</, '')
+    .replace(/>$/, '')
 }
 
 const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList, bodyRaw?: string): Promise<string> => {
@@ -127,7 +130,7 @@ const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList,
 
   const { parts: bodyParts } = multipart.parse(bodyRaw)
   const responseMapperMap = bodyParts
-    .reduce((map, part) => {
+    .reduce((map: Record<string, DataMapper>, part) => {
       const contentId = normalizeContentId(part.headers['content-id'] as string)
 
       const parsedBody = parseBody(part.body)
@@ -154,10 +157,10 @@ const dataMapper = async (data: string, mapperList: BatchRequestProxyMapperList,
     const parsedBody = parseBody(part.body)
 
     const responseContentId = normalizeContentId(part.headers['content-id'] as string)
-    const mapper: Function | undefined = responseMapperMap[responseContentId]
+    const mapper: DataMapper | undefined = responseMapperMap[responseContentId]
 
     // Do not send data if the mapper was not found
-    const methodAllowed = !!mapper
+    const methodAllowed = !(mapper == null)
     if (!methodAllowed) {
       // Send correct data type
       // Empty string for text

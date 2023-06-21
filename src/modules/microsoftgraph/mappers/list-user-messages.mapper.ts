@@ -1,10 +1,10 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
 import { message } from '../common/schema'
-import { Message } from '../common/interfaces'
+import { type Message } from '../common/interfaces'
 
 export interface UserMessages {
   '@odata.context': string
@@ -26,4 +26,4 @@ export const schema: Schema<UserMessages> = {
   ]
 }
 
-export const listUserMessagesMapper = jsonMapper<typeof schema, UserMessages>(schema)
+export const listUserMessagesMapper = jsonMapper<UserMessages>(schema)

@@ -1,7 +1,7 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
 
 export interface UserCalendarDefaultReminder {
@@ -52,7 +52,9 @@ export interface UserCalendars {
   resultSizeEstimate: string
 }
 
-const schema: Schema<UserCalendars> = {
+export type UserCalendarsSchema = Schema<UserCalendars>
+
+const schema: UserCalendarsSchema = {
   kind: TYPES.String,
   etag: TYPES.ETag,
   items: [
@@ -108,4 +110,4 @@ const schema: Schema<UserCalendars> = {
   resultSizeEstimate: TYPES.String
 }
 
-export const listUserCalendarsMapper = jsonMapper<typeof schema, UserCalendars>(schema)
+export const listUserCalendarsMapper = jsonMapper<UserCalendars>(schema)

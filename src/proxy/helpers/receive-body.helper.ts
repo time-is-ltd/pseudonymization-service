@@ -1,11 +1,13 @@
-import { IncomingMessage } from 'http'
-import { Request, RequestPayload } from '../interfaces'
+import { type IncomingMessage } from 'http'
+import { type Request, type RequestPayload } from '../interfaces'
 
 export const receiveBody = () => async (request: IncomingMessage): Promise<Request> => {
   return await new Promise((resolve, reject) => {
     let body = ''
-    request.on('data', (chunk) => body += chunk.toString())
-    request.on('end', async () => {
+    request.on('data', (chunk: Buffer) => {
+      body += chunk.toString()
+    })
+    request.on('end', () => {
       const originalRequest: RequestPayload = {
         url: request.url,
         protocol: `HTTP/${request.httpVersion}`,
@@ -19,6 +21,8 @@ export const receiveBody = () => async (request: IncomingMessage): Promise<Reque
       })
     })
 
-    request.on('error', (err) => reject(err))
+    request.on('error', (err) => {
+      reject(err)
+    })
   })
 }

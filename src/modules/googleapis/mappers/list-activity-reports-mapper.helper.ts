@@ -1,4 +1,4 @@
-import { TYPES, Schema } from '../../../mapper'
+import { TYPES, type Schema } from '../../../mapper'
 
 export interface ActivityReportItemEventNestedParameter {
   name: string

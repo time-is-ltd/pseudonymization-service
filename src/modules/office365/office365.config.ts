@@ -1,4 +1,4 @@
-import {configFactory, toString} from '../../config'
+import { configFactory, toString } from '../../config'
 
 const o365ApisConfig = {
   o365TenantId: toString(),
@@ -27,11 +27,11 @@ const subscriptionsContentPath = '/api/v1.0/:tenantId/activity/feed/subscription
 const auditPath = '/api/v1.0/:tenantId/activity/feed/audit/:contentId'
 
 export const paths = {
-  subscriptionsStartPath: subscriptionsStartPath,
-  subscriptionsStopPath: subscriptionsStopPath,
-  subscriptionsListPath: subscriptionsListPath,
-  subscriptionsContentPath: subscriptionsContentPath,
-  auditPath: auditPath
+  subscriptionsStartPath,
+  subscriptionsStopPath,
+  subscriptionsListPath,
+  subscriptionsContentPath,
+  auditPath
 }
 
 export const tenantId = config.o365TenantId

@@ -1,7 +1,7 @@
 import {
   jsonMapper,
   TYPES,
-  Schema
+  type Schema
 } from '../../../mapper'
 
 export interface CreateSubscription {
@@ -46,4 +46,4 @@ const schema: Schema<CreateSubscription> = {
   ]
 }
 
-export const createSubscriptionMapper = jsonMapper<typeof schema, CreateSubscription>(schema)
+export const createSubscriptionMapper = jsonMapper<CreateSubscription>(schema)
