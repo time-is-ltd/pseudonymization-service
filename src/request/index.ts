@@ -2,6 +2,7 @@ import * as https from 'https'
 import * as http from 'http'
 import * as zlib from 'zlib'
 import { type IncomingMessage } from 'http'
+import { ProxyAgent } from 'proxy-agent'
 
 export type RequestOptions = Partial<Pick<https.RequestOptions, 'method' | 'headers'> & { data: unknown }>
 type Response = Pick<IncomingMessage, 'statusCode' | 'statusMessage' | 'headers'> & { data?: string }
@@ -36,13 +37,15 @@ export const request = async (url: string, options: RequestOptions = {}) => {
       headers['content-length'] = String(data).length
     }
     const path = `${pathname}${search}`
+    const agent = new ProxyAgent()
     const requestOptions: Record<string, unknown> = {
       protocol,
       hostname,
       port,
       path,
       method,
-      headers
+      headers,
+      agent
     }
     const provider = protocol.includes('https') ? https : http
     const req = provider.request(requestOptions, response => {

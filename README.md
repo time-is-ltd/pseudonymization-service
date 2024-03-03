@@ -156,6 +156,8 @@ There are 3 ways to provide config values
 | `BASE_URL`                          | `N/A`                                       | string               | Pseudonymization service base url | http://localhost       |               
 | `HTTP_PORT`                         | `N/A`                                       | number               | Optional. Http listening port. You should set at least one of `HTTP_PORT` or `HTTPS_PORT` env variables, otherwise the service will not listen on any port | 80
 | `HTTPS_PORT`                        | `N/A`                                       | number               | Optional. Https listening port. You have to provide `SSL_KEY` and `SSL_CERT` secrets | 443
+| `HTTP_PROXY`                        | `N/A`                                       | string        | HTTP proxy to be used by this app | http://yourproxy.com:8080
+| `HTTPS_PROXY`                       | `N/A`                                       | string        | HTTPS proxy to be used by this app. | https://yourproxy.com:8080
 | `VERBOSITY`                         | `N/A`                                       | number (default 0) | Optional. Set verbosity level for stdout output (0, 1, 2). | 0
 | `INTERNAL_DOMAIN_LIST`              | `N/A`                                       | comma separated list | Optional. List of internal domains | yourdomain.com,yourdomain.eu
 | `ANONYMIZE_EXTERNAL_EMAIL_DOMAIN`   | `N/A`                                       | boolean (default true) | Optional. Anononymize external domain in emails | true
